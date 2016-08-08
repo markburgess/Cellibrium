@@ -2,12 +2,14 @@
 Cellibrium
 ----------
 
-This project expands on the latent AI ideas that were intoduced in
-CFEngine between 1998-2012, and were since abandoned publicly.
+This project expands on and reworks the latent AI ideas that were
+intoduced in CFEngine between 1998-2012, and were since abandoned
+publicly.
 
-This work supports a model of disributed embedded reasoning for IoT, cloud,
-and applications like Smart Cities. It is based on the author's research into
-Semantic Spaces.
+The cellibrium (cellular equilibrium cerebellum) supports a model of
+distributed embedded reasoning for IoT, cloud, and applications like
+Smart Cities. It is based on the author's research into Semantic
+Spaces.
 
 - Cellibrium
 - Percolibrium
