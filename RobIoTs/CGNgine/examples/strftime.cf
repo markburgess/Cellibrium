@@ -1,0 +1,52 @@
+#  Copyright (C) Cfengine AS
+
+#  This file is part of Cfengine 3 - written and maintained by Cfengine AS.
+
+#  This program is free software; you can redistribute it and/or modify it
+#  under the terms of the GNU General Public License as published by the
+#  Free Software Foundation; version 3.
+
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA
+
+# To the extent this program is licensed as part of the Enterprise
+# versions of Cfengine, the applicable Commercial Open Source License
+# (COSL) may apply to this file if you as a licensee so wish it. See
+# included file COSL.txt.
+
+#+begin_src cfengine3
+body common control
+{
+      bundlesequence => { "example" };
+}
+
+bundle agent example
+{
+  vars:
+      "time" int => "1234567890";
+      "at_time" string => strftime("localtime", "%Y-%m-%d %T", $(time));
+      "then" string => strftime("localtime", "%Y-%m-%d %T", 0);
+
+      "gmt_at_time" string => strftime("gmtime", "%Y-%m-%d %T", $(time));
+      "gmt_then" string => strftime("gmtime", "%Y-%m-%d %T", 0);
+
+  reports:
+      # this will be different depending on your time zone
+      # "time $(time); at_time $(at_time); then $(then)";
+
+      # this will be the same in every time zone
+      "time $(time); GMT at_time $(gmt_at_time); GMT then $(gmt_then)";
+}
+#+end_src
+###############################################################################
+#+begin_src example_output
+#@ ```
+#@ R: time 1234567890; GMT at_time 2009-02-13 23:31:30; GMT then 1970-01-01 00:00:00
+#@ ```
+#+end_src

@@ -1,0 +1,55 @@
+#######################################################
+#
+# Test command modules
+#
+#######################################################
+
+body common control
+{
+      inputs => { "../../default.cf.sub", "../../plucked.cf.sub" };
+      bundlesequence  => { default("$(this.promise_filename)") };
+      version => "1.0";
+}
+
+#######################################################
+
+bundle agent init
+{
+  vars:
+      "script_name" string => "$(this.promise_filename).txt";
+}
+
+#######################################################
+
+bundle agent test
+{
+  vars:
+    !windows::
+      "cat_prefix" string => "cat";
+    windows::
+      "cat_prefix" string => "cat_exe";
+
+  commands:
+      "$(G.cat) $(init.script_name)"
+        contain => in_shell,
+        module => "true";
+}
+
+#######################################################
+
+bundle agent check
+{
+  classes:
+      "ok" expression => strcmp("$($(test.cat_prefix).myvar[dot.dash-test])", "42");
+
+  reports:
+    DEBUG::
+      "${$(test.cat_prefix).myvar[dot.dash-test]} =?= 42";
+    ok::
+      "$(this.promise_filename) Pass";
+    !ok::
+      "$(this.promise_filename) FAIL ";
+}
+
+### PROJECT_ID: core
+### CATEGORY_ID: 26

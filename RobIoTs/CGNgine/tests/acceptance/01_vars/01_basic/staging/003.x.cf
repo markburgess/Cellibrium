@@ -1,0 +1,40 @@
+#######################################################
+#
+# Test simple variables failures
+#
+#######################################################
+
+body common control
+{
+      inputs => { "../../default.cf.sub" };
+      bundlesequence  => { default("$(this.promise_filename)") };
+      version => "1.0";
+}
+
+#######################################################
+
+bundle agent init
+{
+  vars:
+      "dummy" string => "dummy";
+}
+
+#######################################################
+
+bundle agent test
+{
+  vars:
+      "ten" int => "12345678901234567890"; # Integer too big
+}
+
+#######################################################
+
+bundle agent check
+{
+  reports:
+    DEBUG::
+      "The int variable assignment should fail";
+    cfengine_3::
+      "$(this.promise_filename) FAIL";
+}
+

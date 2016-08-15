@@ -1,0 +1,64 @@
+#
+# IoT demo with direct push from sensors to a db
+#
+
+body common control
+{
+      bundlesequence => { "databases" };
+}
+
+############################################################
+
+bundle agent databases
+
+{
+classes:
+
+  "collector_host" expression => "any";
+  "things"         expression => "any";
+
+vars:
+
+#  "temperature" string => execresult("/bin/cat /tmp/sensor", "noshell");
+
+"temperature" string => "76";
+
+databases:
+
+ collector_host::
+
+    "test/sensor_data"
+
+      database_columns => {
+                          "epoch int",
+                          "t timestamp default current_timestamp on update current_timestamp",
+                          "temp float",
+                          "workspace varchar(20)",
+                          },
+
+      database_server => remote_mysql;
+
+ things::
+
+   "test/sensor_data"
+
+         database_rows => {
+                          "epoch=>'$(sys.systime)', temp=>'$(temperature)', workspace=>'power_management' ",
+                          },
+
+      database_server => remote_mysql;
+
+}
+
+
+############################################################
+
+body database_server remote_mysql
+{
+db_server_owner => "mark";
+db_server_password => "mypassword";
+db_server_host => "192.168.1.183";
+db_server_type => "mysql";
+#db_server_connection_db => "mysql";
+}
+

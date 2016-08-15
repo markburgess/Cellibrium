@@ -1,0 +1,40 @@
+body common control
+{
+      bundlesequence => { "access_rules" };
+      inputs => { "../../default.cf.sub" };
+
+}
+
+#########################################################
+# Server config
+#########################################################
+
+body server control
+
+{
+      port => "9883";
+
+      allowconnects         => { "127.0.0.1" , "::1" };
+      allowallconnects      => { "127.0.0.1" , "::1" };
+      trustkeysfrom         => { "127.0.0.1" , "::1" };
+}
+
+#########################################################
+
+bundle server access_rules()
+
+{
+  access:
+
+      "$(G.testdir)/source_file"     admit   => { "127.0.0.1", "::1" };
+
+      "delta"
+      resource_type => "query",
+      report_data_select => test_report_filter;
+}
+
+body report_data_select test_report_filter
+{
+      monitoring_include => { "lala.*", "lalala.*" };
+      monitoring_exclude => { "lala.*", "lalala.*" };
+}

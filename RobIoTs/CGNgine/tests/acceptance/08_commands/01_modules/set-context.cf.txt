@@ -1,0 +1,23 @@
+^context=xyz_123___456
++myclass
+=myvar=hello there
+@mylist={"abc", "def", "ghi"} 
+@myalist={"{{abc}}", "  ' def}", "ghi'''"} 
+@myblist={'{{a,bc}}', '  " de,f}', 'gh,,i"""'} 
+@myclist={"{{a'bc',,}}", '  ",, d"ef}', "ghi,},'''"} 
+%mycontainer1={"x":[456,789]}
+%mycontainer2={"x":"y"
+%mycontainer3="long string here"
+%mycontainer4=null
+%mycontainer5=["read", "some", "strings"]
+%mycontainer6={"mix": ["match"], "ping": "pong", "paddle": true, "nothing": null}
+^context=_456
+=myvar=hello there
+^context=456
+=myvar=hello there
+^context=_
+=myvar=hello there
+^context=a__456__
+=myvar=hello there
+^context=__a__
+=myvar=hello there

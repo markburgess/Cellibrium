@@ -1,0 +1,104 @@
+PREREQUISITES
+-------------
+
+In order to build CFEngine you need the following tools and libraries installed:
+
+* C compiler supporting C90 + selected C99 constructs:
+    - _Bool type
+    - anonymous aggregates "(MyType) { .foo = 1, .bar = 2 }"
+    - declarations in "for" loop
+    - named initializers
+    - uintmax_t and corresponding printf/scanf formats
+  The following compilers are known to work:
+    - gcc >= 3.0
+    - clang >= 2.6
+* GNU make
+
+* PAM library
+* OpenSSL library
+* PCRE library
+* POSIX threads (pthreads) library, if not provided by the operating system
+* Latest available LMDB (Lightning Memory-mapped DataBase), Tokyo Cabinet or QDBM
+
+* MySQL client library (optional)
+* PostgreSQL client library (optional)
+* libacl library (optional)
+
+In order to build CFEngine cloned from git, you will need the
+following additional tools:
+
+* GNU Automake >= 1.10.1
+* GNU Autoconf >= 2.60
+* GNU Libtool >= 1.5.24
+* Yacc (note: GNU Bison 2.4.2 has troubles invoking m4)
+* Lex
+
+Latest stable versions of the tools and libraries are generally advised.
+
+OPERATING SYSTEMS
+-----------------
+
+CFEngine is regularly built and tested on the following operating systems:
+
+* GNU/Linux (many distributions)
+* Solaris
+* Windows with MinGW
+
+HARDWARE PLATFORMS
+------------------
+
+CFEngine is regularly built and tested on the following CPU architectures:
+
+* x86
+* x86-64
+* SPARC
+
+OTHER CONFIGURATIONS
+--------------------
+
+In case you have successfully compiled CFEngine on a different OS and/or using
+different tools or versions of tools, please report it to help-cfengine@ mailing
+list[1]. Please consider running a testsuite (see below), and posting results to
+mailing list too.
+
+[1] https://cfengine.org/mailman/listinfo/help-cfengine
+
+BUILD INSTRUCTIONS
+------------------
+
+From tarball:
+
+$ ./configure [configure options]
+$ make [-jN]
+
+From git checkout:
+
+$ ./autogen.sh [configure options]
+$ make [-jN]
+
+See the available configure options:
+
+$ ./configure --help
+or
+$ ./autogen.sh --help
+
+INSTALLATION INSTRUCTIONS
+-------------------------
+
+CFEngine might be installed in two configurations:
+
+ * (default) Native CFEngine file layout. Everything is installed in
+   /var/cfengine, laid out as a "secondary FHS root". This layout is designed to
+   keep CFEngine running even if most of the system is broken (e.g. /usr is not
+   mounted due to NFS breakage).
+
+* FHS file layout, enabled by --enable-fhs. This layout follows FHS 2.3.
+
+After the build process has completed (see BUILD INSTRUCTIONS above), type:
+
+$ make install
+
+RUNNING TESTSUITE
+-----------------
+
+Please refer to the instructions in tests/README file.

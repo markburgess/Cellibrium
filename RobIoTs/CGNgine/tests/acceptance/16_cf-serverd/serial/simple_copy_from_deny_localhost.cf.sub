@@ -1,0 +1,76 @@
+#######################################################
+#
+# Test cf-serverd related promises, mtime simple copy localhost
+# The source server has access_rules admit=>{"localhost"}
+#
+#######################################################
+
+body common control
+{
+      inputs => { "../../default.cf.sub" };
+      bundlesequence  => { default("$(this.promise_filename)") };
+      version => "1.0";
+}
+
+#######################################################
+
+bundle agent init
+{
+}
+
+#######################################################
+
+bundle agent test
+{
+  files:
+      # localhost_closed_hostname
+      "$(G.testdir)/server1_classic"
+        copy_from => copy_file("9885", "classic"),
+        classes => if_repaired("repaired1_classic");
+      "$(G.testdir)/server1_latest"
+        copy_from => copy_file("9885", "latest"),
+        classes => if_repaired("repaired1_latest");
+      # localhost_closed_deny_hostnames
+      "$(G.testdir)/server2_classic"
+        copy_from => copy_file("9887", "classic"),
+        classes => if_repaired("repaired2_classic");
+      "$(G.testdir)/server2_latest"
+        copy_from => copy_file("9887", "latest"),
+        classes => if_repaired("repaired2_latest");
+}
+
+#########################################################
+
+body copy_from copy_file(port, protocol_version)
+{
+      source      => "$(G.testdir)/source_file";
+      servers     => { "127.0.0.1" };
+      compare     => "mtime";
+      copy_backup => "false";
+
+      portnumber       => "$(port)";
+      protocol_version => "$(protocol_version)";
+
+      #encrypt     => "true";
+      #verify      => "true";
+      #purge       => "false";
+      #type_check  => "true";
+      #force_ipv4  => "true";
+      trustkey => "true";
+}
+
+#######################################################
+
+bundle agent check
+{
+  classes:
+      "dummy" expression => regextract("(.*)\.sub", $(this.promise_filename), "fn");
+
+  reports:
+
+    !repaired1_classic.!repaired1_latest.!repaired2_classic.!repaired2_latest::
+      "$(fn[1]) Pass";
+    repaired1_classic|repaired1_latest|repaired2_classic|repaired2_latest::
+      "$(fn[1]) FAIL";
+
+}

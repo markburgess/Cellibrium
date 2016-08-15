@@ -1,0 +1,107 @@
+# intermediate / autogen
+
+*.la
+*.lo
+*.o
+.deps
+.libs
+Makefile
+Makefile.in
+stamp-h1
+
+/aclocal.m4
+/autom4te.cache
+/compile
+/config.guess
+/config.log
+/config.status
+/config.sub
+/configure
+/depcomp
+/install-sh
+/libtool
+/ltmain.sh
+/m4/libtool.m4
+/m4/lt*.m4
+/missing
+/revision
+/ylwrap
+/test-driver
+/tests/unit/*.log
+/tests/load/*.log
+
+/configure_flags.env
+
+# binaries
+/cf-agent/cf-agent
+/cf-agent/cf-agent.exe
+/cf-execd/cf-execd
+/cf-execd/cf-execd.exe
+/cf-key/cf-key
+/cf-key/cf-key.exe
+/cf-monitord/cf-monitord
+/cf-monitord/cf-monitord.exe
+/cf-promises/cf-promises
+/cf-promises/cf-promises.exe
+/cf-runagent/cf-runagent
+/cf-runagent/cf-runagent.exe
+/cf-serverd/cf-serverd
+/cf-serverd/cf-serverd.exe
+/cf-upgrade/cf-upgrade
+/cf-upgrade/cf-upgrade.exe
+/ext/rpmvercmp
+/ext/rpmvercmp.exe
+
+# autogen
+/libpromises/cf3lex.c
+/libpromises/cf3parse.c
+/libpromises/cf3parse.h
+/libutils/config.h
+/libutils/config.h.in
+/libutils/config.post.h
+
+# examples
+/examples/cfengine_stdlib.cf
+
+# gcov/lcov
+*.gcno
+*.gcda
+*.trace
+cfengine-lcov-base.info
+cfengine-lcov.info
+coverage-html/
+
+# links
+/nova
+
+# tags
+TAGS
+tags
+cscope.*
+
+# vim
+*~
+.*.swp
+.*.swo
+
+# emacs
+*~
+\#*#
+.dir-locals.el
+/contrib/*.elc
+
+# eclipse
+.cproject
+.project
+.settings
+
+# qt-creator
+/core.config
+/core.creator
+/core.creator.user
+/core.files
+/core.includes
+*.autosave
+
+# Mac Finder
+.DS_Store

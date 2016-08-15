@@ -1,0 +1,48 @@
+#######################################################
+#
+# Try to insert lines from a file that is really a directory.
+#
+#######################################################
+
+body common control
+{
+      inputs => { "../../default.cf.sub" };
+      bundlesequence  => { default("$(this.promise_filename)") };
+      version => "1.0";
+}
+
+#######################################################
+
+
+bundle agent test {
+  meta:
+      "test_suppress_fail" string => "aix|hpux|sunos_5_9|sunos_5_10",
+        meta => { "redmine6336" };
+
+  files:
+      "$(G.testfile)"
+      edit_line => insert_dir,
+      create => "true";
+}
+
+bundle edit_line insert_dir {
+  insert_lines:
+      "$(G.testroot)" insert_type => "file",
+      classes => if_notkept("ok");
+}
+
+#######################################################
+
+bundle agent check
+{
+  reports:
+    DEBUG::
+      "This should only pass if inserting lines from a directory fails";
+    ok::
+      "$(this.promise_filename) Pass";
+    !ok::
+      "$(this.promise_filename) FAIL";
+}
+
+### PROJECT_ID: core
+### CATEGORY_ID: 27

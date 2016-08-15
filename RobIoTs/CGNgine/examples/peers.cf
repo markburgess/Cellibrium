@@ -1,0 +1,77 @@
+#  Copyright (C) Cfengine AS
+
+#  This file is part of Cfengine 3 - written and maintained by Cfengine AS.
+
+#  This program is free software; you can redistribute it and/or modify it
+#  under the terms of the GNU General Public License as published by the
+#  Free Software Foundation; version 3.
+
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA
+
+# To the extent this program is licensed as part of the Enterprise
+# versions of Cfengine, the applicable Commercial Open Source License
+# (COSL) may apply to this file if you as a licensee so wish it. See
+# included file COSL.txt.
+#+begin_src prep
+#@ ```
+#@ echo alpha > /tmp/cfe_hostlist
+#@ echo beta >> /tmp/cfe_hostlist
+#@ echo gamma >> /tmp/cfe_hostlist
+#@ echo "Set HOSTNAME appropriately beforehand"
+#@ echo "$HOSTNAME" >> /tmp/cfe_hostlist
+#@ echo "Delta Delta Delta may I help ya help ya help ya"
+#@ echo delta1 >> /tmp/cfe_hostlist
+#@ echo delta2 >> /tmp/cfe_hostlist
+#@ echo delta3 >> /tmp/cfe_hostlist
+#@ echo may1.I.help.ya >> /tmp/cfe_hostlist
+#@ echo may2.I.help.ya >> /tmp/cfe_hostlist
+#@ echo may3.I.help.ya >> /tmp/cfe_hostlist
+#@ ```
+#+end_src
+###############################################################################
+#+begin_src cfengine3
+body common control
+{
+      bundlesequence => { "peers" };
+}
+
+bundle agent peers
+{
+  vars:
+
+      "mygroup" slist => peers("/tmp/cfe_hostlist","#.*",4);
+
+      "myleader" string => peerleader("/tmp/cfe_hostlist","#.*",4);
+
+      "all_leaders" slist => peerleaders("/tmp/cfe_hostlist","#.*",4);
+
+  reports:
+
+      # note that the current host name is fourth in the host list, so
+      # its peer group is the first 4-host group, minus the host itself.
+      "/tmp/cfe_hostlist mypeer $(mygroup)";
+      # note that the current host name is fourth in the host list, so
+      # the peer leader is "alpha"
+      "/tmp/cfe_hostlist myleader $(myleader)";
+      "/tmp/cfe_hostlist another leader $(all_leaders)";
+}
+#+end_src
+###############################################################################
+#+begin_src example_output
+#@ ```
+#@ R: /tmp/cfe_hostlist mypeer alpha
+#@ R: /tmp/cfe_hostlist mypeer beta
+#@ R: /tmp/cfe_hostlist mypeer gamma
+#@ R: /tmp/cfe_hostlist myleader alpha
+#@ R: /tmp/cfe_hostlist another leader alpha
+#@ R: /tmp/cfe_hostlist another leader delta1
+#@ R: /tmp/cfe_hostlist another leader may2.I.help.ya
+#@ ```
+#+end_src

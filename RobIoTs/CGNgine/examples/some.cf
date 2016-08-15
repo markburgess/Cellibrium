@@ -1,0 +1,124 @@
+#  Copyright (C) Cfengine AS
+
+#  This file is part of Cfengine 3 - written and maintained by Cfengine AS.
+
+#  This program is free software; you can redistribute it and/or modify it
+#  under the terms of the GNU General Public License as published by the
+#  Free Software Foundation; version 3.
+
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA
+
+# To the extent this program is licensed as part of the Enterprise
+# versions of Cfengine, the applicable Commercial Open Source License
+# (COSL) may apply to this file if you as a licensee so wish it. See
+# included file COSL.txt.
+
+#+begin_src cfengine3
+body common control
+{
+      bundlesequence => { "test" };
+}
+
+bundle agent test
+{
+  classes:
+
+      # This is an easy way to check if a list is empty, better than
+      # expression => strcmp(length(x), "0")
+
+      # Note that if you use length() or none() or every() they will
+      # go through all the elements!!! some() returns as soon as any
+      # element matches.
+      "empty_x" not => some(".*", x);
+      "empty_y" not => some(".*", y);
+
+      "some11" expression => some("long string", test1);
+      "some12" expression => some("none", test1);
+      "some21" expression => some("long string", test2);
+      "some22" expression => some("none", test2);
+
+  vars:
+      "x" slist => { "a", "b" };
+      "y" slist => { };
+
+      "test1" slist => {
+                        1,2,3,
+                        "one", "two", "three",
+                        "long string",
+                        "four", "fix", "six",
+                        "one", "two", "three",
+      };
+
+
+      "test2" data => parsejson('[1,2,3,
+                        "one", "two", "three",
+                        "long string",
+                        "four", "fix", "six",
+                        "one", "two", "three",]');
+
+  reports:
+    empty_x::
+      "x has no elements";
+    empty_y::
+      "y has no elements";
+
+    any::
+      "The test1 list is $(test1)";
+    some11::
+      "some() test1 1 passed";
+    !some11::
+      "some() test1 1 failed";
+    some12::
+      "some() test1 2 failed";
+    !some12::
+      "some() test1 2 passed";
+
+      "The test2 list is $(test2)";
+    some21::
+      "some() test2 1 passed";
+    !some21::
+      "some() test2 1 failed";
+    some22::
+      "some() test2 2 failed";
+    !some22::
+      "some() test2 2 passed";
+
+}
+#+end_src
+###############################################################################
+#+begin_src example_output
+#@ ```
+#@ R: y has no elements
+#@ R: The test1 list is 1
+#@ R: The test1 list is 2
+#@ R: The test1 list is 3
+#@ R: The test1 list is one
+#@ R: The test1 list is two
+#@ R: The test1 list is three
+#@ R: The test1 list is long string
+#@ R: The test1 list is four
+#@ R: The test1 list is fix
+#@ R: The test1 list is six
+#@ R: some() test1 1 passed
+#@ R: some() test1 2 passed
+#@ R: The test2 list is 1
+#@ R: The test2 list is 2
+#@ R: The test2 list is 3
+#@ R: The test2 list is one
+#@ R: The test2 list is two
+#@ R: The test2 list is three
+#@ R: The test2 list is long string
+#@ R: The test2 list is four
+#@ R: The test2 list is fix
+#@ R: The test2 list is six
+#@ R: some() test2 1 passed
+#@ R: some() test2 2 passed
+#@ ```
+#+end_src

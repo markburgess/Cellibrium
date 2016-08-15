@@ -1,0 +1,14 @@
+body common control
+{
+  bundlesequence  => { "test" };
+}
+
+bundle agent test
+{
+vars:
+  "index" slist => { "index" };
+  "array[$(index)]" string => "value";
+
+  "indices" slist => getindices("array");
+  "values" slist => getvalues("array");
+}

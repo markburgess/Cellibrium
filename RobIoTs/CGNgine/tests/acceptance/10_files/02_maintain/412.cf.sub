@@ -1,0 +1,37 @@
+#######################################################
+#
+# Test that action => "warn" works correctly for rename { rotate => 1 } (Issue 841)
+#
+#######################################################
+
+body common control
+{
+  inputs => { "../../default.cf.sub" };
+  bundlesequence  => { "test" };
+}
+
+#######################################################
+
+bundle agent test
+{
+files:
+  "$(G.testfile)"
+   edit_line => append_nonsense,
+        edit_defaults => rotate;
+}
+
+body edit_defaults rotate
+{
+        edit_backup => "rotate";
+        rotate => "4";
+        max_file_size => "300000";
+}
+
+bundle edit_line append_nonsense
+{
+vars:
+  "ns" string => execresult("$(G.date) +%N", "noshell");
+insert_lines:
+        "$(ns)";
+}
+

@@ -1,0 +1,71 @@
+#######################################################
+#
+# Test cf-serverd related promises, mtime simple copy localhost
+#
+#######################################################
+
+body common control
+{
+      inputs => { "../../default.cf.sub" };
+      bundlesequence  => { default("$(this.promise_filename)") };
+      version => "1.0";
+}
+
+#######################################################
+
+bundle agent init
+{
+}
+
+#######################################################
+
+bundle agent test
+{
+  files:
+      "$(G.testdir)/destfile_classic" copy_from => copy_src_file("classic");
+      "$(G.testdir)/destfile_latest"  copy_from => copy_src_file("latest");
+}
+
+#########################################################
+
+body copy_from copy_src_file(protocol_version)
+{
+      source      => "$(G.testdir)/source_file";
+      servers     => { "127.0.0.1" };
+      compare     => "mtime";
+      copy_backup => "false";
+      protocol_version => "$(protocol_version)";
+
+      portnumber => "9876"; # localhost_open
+
+      #encrypt     => "true";
+      #verify      => "true";
+      #purge       => "false";
+      #type_check  => "true";
+      #force_ipv4  => "true";
+      trustkey => "true";
+}
+
+#######################################################
+
+bundle agent check
+{
+  classes:
+      "dummy" expression => regextract("(.*)\.sub", $(this.promise_filename), "fn");
+
+  methods:
+      "any" usebundle => dcs_if_diff_expected(
+                             "$(G.testdir)/source_file", "$(G.testdir)/destfile_classic",
+                             "no", "same_classic", "differ_classic");
+      "any" usebundle => dcs_if_diff_expected(
+                             "$(G.testdir)/source_file", "$(G.testdir)/destfile_latest",
+                             "no", "same_latest", "differ_latest");
+
+  reports:
+
+    same_classic.same_latest::
+      "$(fn[1]) Pass";
+    !same_classic|!same_latest::
+      "$(fn[1]) FAIL";
+
+}

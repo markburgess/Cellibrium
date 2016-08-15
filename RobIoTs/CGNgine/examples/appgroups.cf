@@ -1,0 +1,157 @@
+#  Copyright (C) Cfengine AS
+
+#  This file is part of Cfengine 3 - written and maintained by Cfengine AS.
+
+#  This program is free software; you can redistribute it and/or modify it
+#  under the terms of the GNU General Public License as published by the
+#  Free Software Foundation; version 3.
+
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA
+
+# To the extent this program is licensed as part of the Enterprise
+# versions of Cfengine, the applicable Commercial Open Source License
+# (COSL) may apply to this file if you as a licensee so wish it. See
+# included file COSL.txt.
+
+#+begin_src cfengine3
+body common control
+{
+      bundlesequence => { run };
+}
+
+bundle agent run
+{
+  vars:
+      # you can also readjson() from a file
+      "groups" data => parsejson('{
+"ByGroup":
+{
+  "App1":
+  [
+    "GrpA",
+    "GrpB",
+    "GrpC"
+  ],
+  "App2":
+  [
+    "GrpX",
+    "GrpY",
+    "GrpZ"
+  ]
+},
+
+"ByApp":
+{
+  "App1":
+  [
+    "Host1",
+    "Host2",
+    "Host3"
+  ],
+  "App2":
+  [
+    "Host1",
+    "Host3"
+  ]
+}
+}');
+
+  methods:
+      # use the first one on the client
+      #"go" usebundle => appgroups($(sys.uqhost), @(groups));
+      "go" usebundle => appgroups("Host1", @(groups));
+      "go" usebundle => appgroups("Host2", @(groups));
+}
+
+bundle agent appgroups(name, g)
+{
+  classes:
+      # stage (3) now for each APP, define have_app_APP if the host is in APP's host list
+      "have_app_$(apps)" expression => strcmp($(name), "$(hosts_$(apps))");
+
+      # stage (4) define the class have_group_GROUP for every GROUP belonging to APP
+      "have_group_$(groups_$(apps))" expression => "have_app_$(apps)";
+
+      # stage (5) define the class have_group if we found any groups
+      "have_group" not => strcmp("0", length("$(cname)_list"));
+
+  vars:
+      # stage (1) start here: we get the apps from the list of "by app" keys
+      "apps" slist => getindices("g[ByApp]");
+      "apps_str" string => format("%S", "apps");
+      # stage (2) now for each app, we collect the hosts assigned to it
+      "hosts_$(apps)" slist => getvalues("g[ByApp][$(apps)]");
+      "hosts_$(apps)_str" string => format("%S", "hosts_$(apps)");
+
+      # stage (2) now for each app, we collect the groups assigned to it
+      "groups_$(apps)" slist => getvalues("g[ByGroup][$(apps)]");
+      "groups_$(apps)_str" string => format("%S", "groups_$(apps)");
+
+      # stage (5) collect the space-separated group names from an intermediate array
+      "cname" string => canonify($(name));
+
+      "$(cname)_grouplist[$(groups_$(apps))]" string => "1",
+      ifvarclass => "have_app_$(apps)";
+
+      "$(cname)_grouplist" slist => getvalues("$(cname)_grouplist");
+
+      # get the keys of the array and sort them, then join with spaces
+      "$(cname)_list" slist => getindices("$(cname)_grouplist");
+      "$(cname)_list_sorted" slist => sort("$(cname)_list", "lex");
+      "$(cname)_list_spaces" string => join(" ", "$(cname)_list_sorted");
+
+  reports:
+      # stage (1)
+      "$(this.bundle): looking for $(name)";
+
+      "$(this.bundle): apps: $(apps_str)";
+      # stage (2)
+      "$(this.bundle): hosts for $(apps): $(hosts_$(apps)_str)";
+      "$(this.bundle): groups for $(apps): $(groups_$(apps)_str)";
+
+      # stage (3)
+      "$(this.bundle): $(name) is assigned $(apps)"
+      ifvarclass => "have_app_$(apps)";
+
+      # stage (4)
+      "$(this.bundle): all groups for $(name) = $(groups_$(apps))"
+       ifvarclass => "have_group_$(groups_$(apps))";
+
+      # stage (5)
+    have_group::
+      "$(this.bundle): space-separated groups for $(name) = $($(cname)_list_spaces)";
+}
+#+end_src
+###############################################################################
+#+begin_src example_output
+#@ ```
+#@ R: appgroups: looking for Host1
+#@ R: appgroups: apps: { "App1", "App2" }
+#@ R: appgroups: hosts for App1: { "Host1", "Host2", "Host3" }
+#@ R: appgroups: hosts for App2: { "Host1", "Host3" }
+#@ R: appgroups: groups for App1: { "GrpA", "GrpB", "GrpC" }
+#@ R: appgroups: groups for App2: { "GrpX", "GrpY", "GrpZ" }
+#@ R: appgroups: Host1 is assigned App1
+#@ R: appgroups: Host1 is assigned App2
+#@ R: appgroups: all groups for Host1 = GrpA
+#@ R: appgroups: all groups for Host1 = GrpX
+#@ R: appgroups: all groups for Host1 = GrpB
+#@ R: appgroups: all groups for Host1 = GrpC
+#@ R: appgroups: all groups for Host1 = GrpY
+#@ R: appgroups: all groups for Host1 = GrpZ
+#@ R: appgroups: space-separated groups for Host1 = GrpA GrpB GrpC GrpX GrpY GrpZ
+#@ R: appgroups: looking for Host2
+#@ R: appgroups: Host2 is assigned App1
+#@ R: appgroups: all groups for Host2 = GrpA
+#@ R: appgroups: all groups for Host2 = GrpB
+#@ R: appgroups: all groups for Host2 = GrpC
+#@ R: appgroups: space-separated groups for Host2 = GrpA GrpB GrpC
+#@ ```
+#+end_src

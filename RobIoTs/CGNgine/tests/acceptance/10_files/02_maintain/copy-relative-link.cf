@@ -1,0 +1,49 @@
+# Test that copying relative link does not mangle it (Mantis #1117)
+
+body common control
+{
+      inputs => { "../../default.cf.sub" };
+      bundlesequence  => { default("$(this.promise_filename)") };
+      version => "1.0";
+}
+
+bundle agent init
+{
+  commands:
+      "$(G.mkdir) -p $(G.testdir)/a";
+      "$(G.touch) $(G.testdir)/a/dest";
+      "$(G.ln) -s dest $(G.testdir)/a/link";
+}
+
+bundle agent test
+{
+  meta:
+      "test_skip_unsupported" string => "windows";
+
+  files:
+      "$(G.testdir)/b"
+      copy_from => local_cp("$(G.testdir)/a"),
+      depth_search => recurse("inf");
+}
+
+bundle agent check
+{
+  vars:
+      "expect" string => "dest";
+      "result" string => filestat("$(G.testdir)/b/link", "linktarget");
+
+  classes:
+      "ok" expression => strcmp("$(result)", "$(expect)");
+
+  reports:
+    DEBUG::
+      "expected: '$(expect)'";
+      "got:      '$(result)'";
+    ok::
+      "$(this.promise_filename) Pass";
+    !ok::
+      "$(this.promise_filename) FAIL";
+}
+
+### PROJECT_ID: core
+### CATEGORY_ID: 27

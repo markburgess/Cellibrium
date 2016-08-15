@@ -1,0 +1,40 @@
+#######################################################
+#
+# Test simple variables failures
+#
+#######################################################
+
+body common control
+{
+      inputs => { "../../default.cf.sub" };
+      bundlesequence  => { default("$(this.promise_filename)") };
+      version => "1.0";
+}
+
+#######################################################
+
+bundle agent init
+{
+  vars:
+      "dummy" string => "dummy";
+}
+
+#######################################################
+
+bundle agent test
+{
+  vars:
+      "ten" real => "."; # Not a float
+}
+
+#######################################################
+
+bundle agent check
+{
+  reports:
+    DEBUG::
+      "The real variable assignment should fail";
+    cfengine_3::
+      "$(this.promise_filename) FAIL";
+}
+

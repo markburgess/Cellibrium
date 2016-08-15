@@ -1,18 +1,34 @@
 
-Cellibrium
-----------
 
-This project expands on and reworks the latent AI ideas that were
-intoduced in CFEngine between 1998-2012, and were since abandoned
-publicly.
+CELLIBRIUM Project
 
-The cellibrium (cellular equilibrium cerebellum) supports a model of
-distributed embedded reasoning for IoT, cloud, and applications like
-Smart Cities. It is based on the author's research into Semantic
-Spaces.
+
+This project expands on, and reworks, the latent AI/AR ideas that were
+intoduced in CFEngine between 1998-2012, and were since abandoned for
+the commercial activity. This work modifies and extends the concepts,
+from Computer Immunology to Semantic Spacetimes, and embeds a mostly
+compatible agent collection for users of CFEngine. Other agents will
+be added in the future.
+
+The CELLIBRIUM (CELLular equilIBRIUM cerebellum) supports a model of
+distributed embedded reasoning for use in IoT, Cloud, and Applications
+centric computing, including Smart Cities. It merges inputs from
+automated RobIoTs and from Anthropods of humans! It supports workspaces,
+as described in http://markburgess.org/workspaces.html
+
+Code here is based on research into Semantic Spaces, found at 
+http://markburgess.org/spacetime.html
+
+For now, think of this as an experimental proof of concept cognitive
+computing model
 
 - Cellibrium
+    -RobIoTs
+       -CGNgine (derivative of CFEngine)
+   -AnthropIoHs
+       -LINGugine
 - Percolibrium
-- KM-CFEngine
+    -Annealers
+    -Narrators
 
-Details to be shared gradually.
+Details to be shared gradually, for interested parties.

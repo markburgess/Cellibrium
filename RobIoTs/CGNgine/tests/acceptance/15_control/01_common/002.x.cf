@@ -1,0 +1,47 @@
+#######################################################
+#
+# Test ignore_missing_bundles - explicit failure expected
+#
+#######################################################
+
+body common control
+{
+      inputs => { "../../default.cf.sub" };
+      bundlesequence  => { "missing", default("$(this.promise_filename)") };
+      version => "1.0";
+      ignore_missing_bundles => "off";
+}
+
+#######################################################
+
+bundle agent init
+{
+  vars:
+      "dummy" string => "dummy";
+}
+
+#######################################################
+
+bundle agent test
+{
+  vars:
+      "dummy" string => "dummy";
+}
+
+#######################################################
+
+bundle agent check
+{
+  vars:
+      "dummy" string => "dummy";
+
+  classes:
+      "ok" expression => "any";
+
+  reports:
+    ok::
+      "$(this.promise_filename) Pass";
+    !ok::
+      "$(this.promise_filename) FAIL";
+}
+

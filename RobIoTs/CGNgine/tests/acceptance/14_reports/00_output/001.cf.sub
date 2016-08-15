@@ -1,0 +1,20 @@
+body common control
+{
+  inputs => { "../../default.cf.sub" };
+  bundlesequence  => { "test" };
+  version => "1.0";
+}
+
+bundle agent test
+{
+reports:
+  cfengine_3::
+    "doesnotmatter"
+      printfile => p;
+}
+
+body printfile p
+{
+file_to_print => "$(this.promise_filename).in";
+number_of_lines => "1";
+}

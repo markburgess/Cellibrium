@@ -1,0 +1,34 @@
+#######################################################
+#
+# This is a special test - it exercises runtime switches
+#
+#######################################################
+
+body common control
+{
+      inputs => { "../../default.cf.sub" };
+      bundlesequence  => { test };
+      version => "1.0";
+}
+
+#######################################################
+
+bundle agent test
+{
+  vars:
+      "cmd1" string =>
+      "$(sys.cf_agent) -Kf $(this.promise_filename).sub1 -D AUTO -N bingo";
+      "cmd2" string =>
+      "$(sys.cf_agent) -Kf $(this.promise_filename).sub2 -D AUTO";
+
+  commands:
+      "$(cmd1)";
+      "$(cmd2)";
+
+  reports:
+    DEBUG::
+      "Running: $(cmd1)";
+      "Running: $(cmd2)";
+      "Setup comes from $(this.promise_filename).sub1, results come from $(this.promise_filename).sub2";
+}
+

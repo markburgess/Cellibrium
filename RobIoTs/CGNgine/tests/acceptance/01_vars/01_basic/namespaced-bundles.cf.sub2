@@ -1,0 +1,19 @@
+body file control
+{
+      namespace => "namespaced_bundles_2";
+}
+
+bundle agent unique
+{
+  reports:
+    DEBUG::
+      "$(this.bundle): run";
+}
+
+
+bundle agent unique2(justone)
+{
+  reports:
+    DEBUG::
+      "$(this.bundle): run($(justone))";
+}

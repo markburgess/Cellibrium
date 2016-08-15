@@ -1,0 +1,57 @@
+bundle common test_meta
+{
+  vars:
+      "description" string => "Test that body action_policy warn restricts mustache template rendering";
+      "story_id" string => "5535";
+      "covers" string => "dryrun_repaired";
+}
+
+# Ref: https://dev.cfengine.com/issues/6739
+
+#######################################################
+
+body common control
+{
+      inputs => { "../default.cf.sub" };
+      bundlesequence  => { default("$(this.promise_filename)") };
+      version => "1.0";
+}
+
+#######################################################
+
+bundle agent init
+{
+  vars:
+    "template_target" string => "$(G.testfile)";
+
+   files:
+    "$(template_target)"
+      create => "true";
+}
+
+bundle agent test
+{
+  vars:
+    "template_target" string => "$(init.template_target)";
+
+  files:
+    # The template should not be rendered because dryrun is set
+    "$(template_target)"
+      edit_template => "$(this.promise_filename).mustache",
+      template_method => "mustache",
+      action => warn_only;
+}
+
+#######################################################
+
+bundle agent check
+{
+  classes:
+    "fail" expression => regline("SHOULD NOT RENDER", $(test.template_target) );
+
+  reports:
+    !fail::
+      "$(this.promise_filename) Pass";
+    fail::
+      "$(this.promise_filename) FAIL";
+}

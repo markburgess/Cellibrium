@@ -1,0 +1,87 @@
+#######################################################
+#
+# Create a file, expect simultaneous symbolic link to fail
+#
+#######################################################
+
+body common control
+{
+      inputs => { "../../default.cf.sub" };
+      bundlesequence  => { default("$(this.promise_filename)") };
+      version => "1.0";
+}
+
+#######################################################
+
+bundle agent init
+{
+  files:
+      "$(G.testfile)"
+      delete => init_delete;
+}
+
+body delete init_delete
+{
+      dirlinks => "delete";
+      rmdirs   => "true";
+}
+
+#######################################################
+
+bundle agent test
+{
+  meta:
+      "test_skip_unsupported" string => "windows";
+
+  vars:
+      "mode" int => "0600";
+
+  files:
+      "$(G.testfile)"
+      create => "true",
+      perms => test_perms($(mode)),
+      link_from => test_link;
+}
+
+body link_from test_link
+{
+      source => "$(G.etc_group)";
+      link_type => "symlink";
+}
+
+body perms test_perms(m)
+{
+      mode => "$(m)";
+      owners => { "0" };
+      groups => { "0" };
+}
+
+#######################################################
+
+bundle agent check
+{
+  vars:
+      "expect[permoct]" string => "$(test.mode)";
+      "expect[nlink]" string => "1";
+      "expect[uid]" string => "0";
+      "expect[gid]" string => "0";
+      "expect[size]" string => "0";
+
+      "fields" slist => getindices("expect");
+      "result[$(fields)]" string => filestat("$(G.testfile)", "$(fields)");
+
+  classes:
+      "not_ok" not => regcmp("$(expect[$(fields)])", "$(result[$(fields)])");
+
+  reports:
+    DEBUG::
+      "expected: $(fields) = '$(expect[$(fields)])'";
+      "got:      $(fields) = '$(result[$(fields)])'";
+    !not_ok::
+      "$(this.promise_filename) Pass";
+    not_ok::
+      "$(this.promise_filename) FAIL";
+}
+
+### PROJECT_ID: core
+### CATEGORY_ID: 27
