@@ -67,9 +67,9 @@ static const char *const CF_MONITORD_SHORT_DESCRIPTION =
     "monitoring daemon for CFEngine";
 
 static const char *const CF_MONITORD_MANPAGE_LONG_DESCRIPTION =
-    "cf-monitord is the monitoring daemon for CFEngine. It samples probes defined in policy code and attempts to learn the "
+    "cgn-monitord is the monitoring daemon for CGNgine. It samples probes defined in policy code and attempts to learn the "
     "normal system state based on current and past observations. Current estimates are made available as "
-    "special variables (e.g. $(mon.av_cpu)) to cf-agent, which may use them to inform policy decisions.";
+    "special variables (e.g. $(mon.av_cpu)) to cgn-agent, which may use them to inform policy decisions.";
 
 static const struct option OPTIONS[] =
 {
@@ -188,7 +188,7 @@ static GenericAgentConfig *CheckOpts(int argc, char **argv)
         case 'h':
         {
             Writer *w = FileWriter(stdout);
-            GenericAgentWriteHelp(w, "cf-monitord", OPTIONS, HINTS, true);
+            GenericAgentWriteHelp(w, "cgn-monitord", OPTIONS, HINTS, true);
             FileWriterDetach(w);
         }
         exit(EXIT_SUCCESS);
@@ -196,7 +196,7 @@ static GenericAgentConfig *CheckOpts(int argc, char **argv)
         case 'M':
         {
             Writer *out = FileWriter(stdout);
-            ManPageWrite(out, "cf-monitord", time(NULL),
+            ManPageWrite(out, "cgn-monitord", time(NULL),
                          CF_MONITORD_SHORT_DESCRIPTION,
                          CF_MONITORD_MANPAGE_LONG_DESCRIPTION,
                          OPTIONS, HINTS,
@@ -219,7 +219,7 @@ static GenericAgentConfig *CheckOpts(int argc, char **argv)
         default:
         {
             Writer *w = FileWriter(stdout);
-            GenericAgentWriteHelp(w, "cf-monitord", OPTIONS, HINTS, true);
+            GenericAgentWriteHelp(w, "cgn-monitord", OPTIONS, HINTS, true);
             FileWriterDetach(w);
         }
         exit(EXIT_FAILURE);

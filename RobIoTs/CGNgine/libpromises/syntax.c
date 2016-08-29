@@ -1295,19 +1295,30 @@ JsonElement *SyntaxToJson(void)
 
 void SyntaxToGr(void)
 {
+ int done[CF3_MODULES];
+ 
  for (int module_index = 0; module_index < CF3_MODULES; module_index++)
     {
+    done[module_index] = 0;
+    
     for (int promise_type_index = 0; CF_ALL_PROMISE_TYPES[module_index][promise_type_index].promise_type; promise_type_index++)
        {
        const PromiseTypeSyntax *promise_type_syntax = &CF_ALL_PROMISE_TYPES[module_index][promise_type_index];
 
-       // skip global constraints
-       if (strcmp("*", promise_type_syntax->promise_type) == 0)
+       if (!done[module_index])
           {
+          printf("(CGNgine,1,contains,is part of,%s)\n",promise_type_syntax->bundle_type,promise_type_syntax->promise_type);
+          done[module_index] = 1;
+          }
+
+       // skip global constraints
+       if (strcmp("*", promise_type_syntax->bundle_type) == 0)
+          {
+          printf("(CGNgine agents,1,makes promises of type,is a kind of promise made by,%s)\n",promise_type_syntax->promise_type);
           continue;
           }
 
-       printf("(%s,1,has promise,is promised by,%s)\n",promise_type_syntax->bundle_type,promise_type_syntax->promise_type);
+       printf("(%s,1,makes promises of type,is a kind of promise made by,%s)\n",promise_type_syntax->bundle_type,promise_type_syntax->promise_type);
        }
     }
 

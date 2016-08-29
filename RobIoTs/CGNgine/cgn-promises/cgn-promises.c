@@ -48,11 +48,11 @@ static void ShowVariablesFormatted(EvalContext *ctx);
 static const char *const CF_PROMISES_SHORT_DESCRIPTION =
     "validate and analyze CFEngine policy code";
 
-static const char *const CF_PROMISES_MANPAGE_LONG_DESCRIPTION = "cf-promises is a tool for checking CFEngine policy code. "
+static const char *const CF_PROMISES_MANPAGE_LONG_DESCRIPTION = "cf-promises is a tool for checking CGNgine policy code. "
     "It operates by first parsing policy code checing for syntax errors. Second, it validates the integrity of "
     "policy consisting of multiple files. Third, it checks for semantic errors, e.g. specific attribute set rules. "
-    "Finally, cf-promises attempts to expose errors by partially evaluating the policy, resolving as many variable and "
-    "classes promise statements as possible. At no point does cf-promises make any changes to the system.";
+    "Finally, cgn-promises attempts to expose errors by partially evaluating the policy, resolving as many variable and "
+    "classes promise statements as possible. At no point does cgn-promises make any changes to the system.";
 
 typedef enum
 {
@@ -77,7 +77,6 @@ static const struct option OPTIONS[] =
     {"negate", required_argument, 0, 'N'},
     {"inform", no_argument, 0, 'I'},
     {"diagnostic", no_argument, 0, 'x'},
-    {"reports", no_argument, 0, 'r'},
     {"policy-output-format", required_argument, 0, 'p'},
     {"syntax-description", required_argument, 0, 's'},
     {"full-check", no_argument, 0, 'c'},
@@ -85,6 +84,7 @@ static const struct option OPTIONS[] =
     {"legacy-output", no_argument, 0, 'l'},
     {"color", optional_argument, 0, 'C'},
     {"tag-release", required_argument, 0, 'T'},
+    {"graph", no_argument, 0, 'g'},
     {NULL, 0, 0, '\0'}
 };
 
@@ -104,7 +104,6 @@ static const char *const HINTS[] =
     "Define a list of comma separated classes to be undefined at the start of execution",
     "Print basic information about changes made to the system, i.e. promises repaired",
     "Activate internal diagnostics (developers only)",
-    "Generate reports about configuration and insert into CFDB",
     "Output the parsed policy. Possible values: 'none', 'cf', 'json'. Default is 'none'. (experimental)",
     "Output a document describing the available syntax elements of CFEngine. Possible values: 'none', 'json'. Default is 'none'.",
     "Ensure full policy integrity checks",
@@ -112,8 +111,11 @@ static const char *const HINTS[] =
     "Use legacy output format",
     "Enable colorized output. Possible values: 'always', 'auto', 'never'. If option is used, the default value is 'auto'",
     "Tag a directory with promises.cf with cf_promises_validated and cf_promises_release_id",
+    "Annotated graph of promises",
     NULL
 };
+
+int GRAPH = false;
 
 /*******************************************************************/
 /* Level 0 : Main                                                  */
@@ -211,7 +213,7 @@ GenericAgentConfig *CheckOpts(int argc, char **argv)
     GenericAgentConfig *config = GenericAgentConfigNewDefault(AGENT_TYPE_COMMON);
     config->tag_release_dir = NULL;
 
-    while ((c = getopt_long(argc, argv, "dvnIf:D:N:VSrxMb:i:p:s:cg:hW:lC::T:", OPTIONS, &optindex)) != EOF)
+    while ((c = getopt_long(argc, argv, "dvnIf:D:N:VSxMb:i:p:s:cghW:lC::T:", OPTIONS, &optindex)) != EOF)
     {
         switch ((char) c)
         {
@@ -349,7 +351,7 @@ GenericAgentConfig *CheckOpts(int argc, char **argv)
         case 'h':
         {
             Writer *w = FileWriter(stdout);
-            GenericAgentWriteHelp(w, "cf-promises", OPTIONS, HINTS, true);
+            GenericAgentWriteHelp(w, "cgn-promises", OPTIONS, HINTS, true);
             FileWriterDetach(w);
         }
         exit(EXIT_SUCCESS);
@@ -357,7 +359,7 @@ GenericAgentConfig *CheckOpts(int argc, char **argv)
         case 'M':
         {
             Writer *out = FileWriter(stdout);
-            ManPageWrite(out, "cf-promises", time(NULL),
+            ManPageWrite(out, "cgn-promises", time(NULL),
                          CF_PROMISES_SHORT_DESCRIPTION,
                          CF_PROMISES_MANPAGE_LONG_DESCRIPTION,
                          OPTIONS, HINTS,
@@ -366,10 +368,10 @@ GenericAgentConfig *CheckOpts(int argc, char **argv)
             exit(EXIT_SUCCESS);
         }
 
-        case 'r':
-            SHOWREPORTS = true;
-            break;
-
+       case 'g':
+           GRAPH = true;
+           break;
+           
         case 'W':
             if (!GenericAgentConfigParseWarningOptions(config, optarg))
             {
@@ -398,7 +400,7 @@ GenericAgentConfig *CheckOpts(int argc, char **argv)
         default:
         {
             Writer *w = FileWriter(stdout);
-            GenericAgentWriteHelp(w, "cf-promises", OPTIONS, HINTS, true);
+            GenericAgentWriteHelp(w, "cgn-promises", OPTIONS, HINTS, true);
             FileWriterDetach(w);
         }
         exit(EXIT_FAILURE);

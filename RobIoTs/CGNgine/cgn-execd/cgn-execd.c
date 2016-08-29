@@ -68,13 +68,13 @@ static bool LocalExecInThread(const ExecConfig *config);
 /*******************************************************************/
 
 static const char *const CF_EXECD_SHORT_DESCRIPTION =
-    "scheduling daemon for cf-agent";
+    "scheduling daemon for cgn-agent";
 
 static const char *const CF_EXECD_MANPAGE_LONG_DESCRIPTION =
-    "cf-execd is the scheduling daemon for cf-agent. It runs cf-agent locally according to a schedule specified in "
-    "policy code (executor control body). After a cf-agent run is completed, cf-execd gathers output from cf-agent, "
+    "cgn-execd is the scheduling daemon for cgn-agent. It runs cgn-agent locally according to a schedule specified in "
+    "policy code (executor control body). After a cgn-agent run is completed, cgn-execd gathers output from cgn-agent, "
     "and may be configured to email the output to a specified address. It may also be configured to splay (randomize) the "
-    "execution schedule to prevent synchronized cf-agent runs across a network.";
+    "execution schedule to prevent synchronized cgn-agent runs across a network.";
 
 static const struct option OPTIONS[] =
 {
@@ -113,7 +113,7 @@ static const char *const HINTS[] =
     "Activate internal diagnostics (developers only)",
     "Run as a foreground processes (do not fork)",
     "Run once and then exit (implies no-fork)",
-    "Do not run as a service on windows - use this when running from a command shell (CFEngine Nova only)",
+    "Do not run as a service on windows - use this when running from a command shell",
     "Set the internal value of LD_LIBRARY_PATH for child processes",
     "Use legacy output format",
     "Enable colorized output. Possible values: 'always', 'auto', 'never'. If option is used, the default value is 'auto'",
@@ -141,7 +141,7 @@ int main(int argc, char *argv[])
     }
     else
     {
-        Log(LOG_LEVEL_ERR, "CFEngine was not able to get confirmation of promises from cf-promises, so going to failsafe");
+        Log(LOG_LEVEL_ERR, "CGNgine was not able to get confirmation of promises from cgn-promises, so going to failsafe");
         EvalContextClassPutHard(ctx, "failsafe_fallback", "attribute_name=Errors,source=agent");
         GenericAgentConfigSetInputFile(config, GetInputDir(), "failsafe.cf");
         policy = LoadPolicy(ctx, config);
@@ -255,7 +255,7 @@ static GenericAgentConfig *CheckOpts(int argc, char **argv)
         case 'h':
         {
             Writer *w = FileWriter(stdout);
-            GenericAgentWriteHelp(w, "cf-execd", OPTIONS, HINTS, true);
+            GenericAgentWriteHelp(w, "cgn-execd", OPTIONS, HINTS, true);
             FileWriterDetach(w);
         }
         exit(EXIT_SUCCESS);
@@ -263,7 +263,7 @@ static GenericAgentConfig *CheckOpts(int argc, char **argv)
         case 'M':
         {
             Writer *out = FileWriter(stdout);
-            ManPageWrite(out, "cf-execd", time(NULL),
+            ManPageWrite(out, "cgn-execd", time(NULL),
                          CF_EXECD_SHORT_DESCRIPTION,
                          CF_EXECD_MANPAGE_LONG_DESCRIPTION,
                          OPTIONS, HINTS,
@@ -286,7 +286,7 @@ static GenericAgentConfig *CheckOpts(int argc, char **argv)
         default:
         {
             Writer *w = FileWriter(stdout);
-            GenericAgentWriteHelp(w, "cf-execd", OPTIONS, HINTS, true);
+            GenericAgentWriteHelp(w, "cgn-execd", OPTIONS, HINTS, true);
             FileWriterDetach(w);
         }
         exit(EXIT_FAILURE);
@@ -324,14 +324,14 @@ void StartServer(EvalContext *ctx, Policy *policy, GenericAgentConfig *config, E
 #ifndef __MINGW32__
     if (!ONCE)
     {
-        /* Kill previous instances of cf-execd if those are still running */
+        /* Kill previous instances of cgn-execd if those are still running */
         Apoptosis();
     }
 
     time_t now = time(NULL);
     if ((!NO_FORK) && (fork() != 0))
     {
-        Log(LOG_LEVEL_INFO, "cf-execd starting %.24s", ctime(&now));
+        Log(LOG_LEVEL_INFO, "cgn-execd starting %.24s", ctime(&now));
         _exit(EXIT_SUCCESS);
     }
 
@@ -349,7 +349,7 @@ void StartServer(EvalContext *ctx, Policy *policy, GenericAgentConfig *config, E
 
 #endif
 
-    WritePID("cf-execd.pid");
+    WritePID("cgn-execd.pid");
     signal(SIGINT, HandleSignalsForDaemon);
     signal(SIGTERM, HandleSignalsForDaemon);
     signal(SIGHUP, SIG_IGN);
@@ -418,7 +418,7 @@ static bool LocalExecInThread(const ExecConfig *config)
 static void Apoptosis(void)
 {
     char promiser_buf[CF_SMALLBUF];
-    snprintf(promiser_buf, sizeof(promiser_buf), "%s/bin/cf-execd", CFWORKDIR);
+    snprintf(promiser_buf, sizeof(promiser_buf), "%s/bin/cgn-execd", CFWORKDIR);
 
     if (LoadProcessTable(&PROCESSTABLE))
     {
@@ -448,7 +448,7 @@ static void Apoptosis(void)
                 }
                 else
                 {
-                    Log(LOG_LEVEL_ERR, "Unable to kill stale cf-execd process pid=%d. (kill: %s)",
+                    Log(LOG_LEVEL_ERR, "Unable to kill stale cgn-execd process pid=%d. (kill: %s)",
                         (int)pid, GetErrorStr());
                 }
             }
@@ -505,7 +505,7 @@ static bool ScheduleRun(EvalContext *ctx, Policy **policy, GenericAgentConfig *c
     sleep(CFPULSETIME);         /* 1 Minute resolution is enough */
 
     /*
-     * FIXME: this logic duplicates the one from cf-serverd.c. Unify ASAP.
+     * FIXME: this logic duplicates the one from cgn-serverd.c. Unify ASAP.
      */
 
     if (CheckNewPromises(config) == RELOAD_FULL)

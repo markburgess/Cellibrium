@@ -423,10 +423,10 @@ static void GetNameInfo3(EvalContext *ctx)
 #endif
  
 #define COMPONENTS_SIZE 13
- char *components[COMPONENTS_SIZE] = { "cf-twin", "cf-agent", "cf-serverd", "cf-monitord", "cf-know",
-                                       "cf-report", "cf-key", "cf-runagent", "cf-execd", "cf-hub",
-                                       "cf-promises",
-                                       "cf-upgrade",
+ char *components[COMPONENTS_SIZE] = { "cgn-twin", "cgn-agent", "cgn-serverd", "cgn-monitord", "cgn-know",
+                                       "cgn-report", "cgn-key", "cgn-runagent", "cgn-execd", "cgn-hub",
+                                       "cgn-promises",
+                                       "cgn-upgrade",
                                        NULL
                                      };
  int have_component[COMPONENTS_SIZE];
@@ -611,7 +611,7 @@ static void GetNameInfo3(EvalContext *ctx)
     // twin has own dir, and is named agent
     if (i == 0)
        {
-       snprintf(name, CF_MAXVARSIZE - 1, "%s%cbin-twin%ccf-agent.exe", CFWORKDIR, FILE_SEPARATOR, FILE_SEPARATOR);
+       snprintf(name, CF_MAXVARSIZE - 1, "%s%cbin-twin%ccgn-agent.exe", CFWORKDIR, FILE_SEPARATOR, FILE_SEPARATOR);
        }
     else
        {
@@ -820,14 +820,14 @@ static void Get3Environment(EvalContext *ctx)
  struct stat statbuf;
  time_t now = time(NULL);
  
- Log(LOG_LEVEL_VERBOSE, "Looking for environment from cf-monitord...");
+ Log(LOG_LEVEL_VERBOSE, "Looking for environment from cgn-monitord...");
  
  snprintf(env, CF_BUFSIZE, "%s/state/%s", CFWORKDIR, CF_ENV_FILE);
  MapName(env);
  
  if (stat(env, &statbuf) == -1)
     {
-    Log(LOG_LEVEL_VERBOSE, "Unable to detect environment from cf-monitord");
+    Log(LOG_LEVEL_VERBOSE, "Unable to detect environment from cgn-monitord");
     return;
     }
  
@@ -851,7 +851,7 @@ static void Get3Environment(EvalContext *ctx)
  FILE *fp = fopen(env, "r");
  if (fp == NULL)
     {
-    Log(LOG_LEVEL_VERBOSE, "\nUnable to detect environment from cf-monitord");
+    Log(LOG_LEVEL_VERBOSE, "\nUnable to detect environment from cgn-monitord");
     return;
     }
  

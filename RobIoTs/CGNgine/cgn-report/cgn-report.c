@@ -92,7 +92,6 @@ int NOWOPT = false;
 int EMBEDDED = false;
 int TIMESTAMPS = false;
 int LISTALL = false;
-int GRAPH = false;
 
 static double HISTOGRAM[CF_OBSERVABLES][7][CF_GRAINS] = { { { 0.0 } } };
 static double SMOOTHHISTOGRAM[CF_OBSERVABLES][7][CF_GRAINS] = { { { 0.0 } } };
@@ -119,10 +118,10 @@ static const char *const CF_REPORT_SHORT_DESCRIPTION =
     "output machine learned data collected by CFEngine";
 
 static const char *const CF_REPORT_MANPAGE_LONG_DESCRIPTION =
-    "cf-report is a simple data reporting tool for CFEngine. It extracts data from embedded databases "
+    "cgn-report is a simple data reporting tool for CGNngine. It extracts data from embedded databases "
     "and formats it as text for the console or as JSON for use by other tools";
 
-static const struct option OPTIONS[13] =
+static const struct option OPTIONS[12] =
 {
     {"help", no_argument, 0, 'h'},
     {"version", no_argument, 0, 'V'},
@@ -135,11 +134,10 @@ static const struct option OPTIONS[13] =
     {"no-error-bars", no_argument, 0, 'e'},
     {"by-name", required_argument, 0, 'n'},
     {"promise", optional_argument, 0, 'p'},
-    {"graph", no_argument, 0, 'g'},
     {NULL, 0, 0, '\0'}
 };
 
-static const char *HINTS[13] =
+static const char *HINTS[12] =
 {
     "Print the help message",
     "Output the version of the software",
@@ -152,7 +150,6 @@ static const char *HINTS[13] =
     "Do not add error bars to the printed graphs",
     "Report only on the named measurement",
     "Report on agent promises",
-    "Annotated graph of promises",
     NULL
 };
 
@@ -186,7 +183,7 @@ static GenericAgentConfig *CheckOpts(int argc, char **argv)
  int c;
  GenericAgentConfig *config = GenericAgentConfigNewDefault(AGENT_TYPE_REPORTER);
  
- while ((c = getopt_long(argc, argv, "gMVf:lR:o:n:p:", OPTIONS, &optindex)) != EOF)
+ while ((c = getopt_long(argc, argv, "MVf:lR:o:n:p:", OPTIONS, &optindex)) != EOF)
     {
     switch ((char) c)
        {
@@ -206,7 +203,7 @@ static GenericAgentConfig *CheckOpts(int argc, char **argv)
        case 'h':
            {
            Writer *w = FileWriter(stdout);
-           GenericAgentWriteHelp(w, "cf-report", OPTIONS, HINTS, true);
+           GenericAgentWriteHelp(w, "cgn-report", OPTIONS, HINTS, true);
            FileWriterDetach(w);
            }   
          exit(EXIT_SUCCESS);
@@ -214,7 +211,7 @@ static GenericAgentConfig *CheckOpts(int argc, char **argv)
        case 'M':
            {
            Writer *out = FileWriter(stdout);
-           ManPageWrite(out, "cf-report", time(NULL),
+           ManPageWrite(out, "cgn-report", time(NULL),
                         CF_REPORT_SHORT_DESCRIPTION,
                         CF_REPORT_MANPAGE_LONG_DESCRIPTION,
                         OPTIONS, HINTS,
@@ -243,10 +240,6 @@ static GenericAgentConfig *CheckOpts(int argc, char **argv)
            strncpy(BYPROMISE, optarg, CF_BUFSIZE-1);
            break;
 
-       case 'g':
-           GRAPH = true;
-           break;
-           
        case 'N':
            NOWOPT = true;
            break;
@@ -254,7 +247,7 @@ static GenericAgentConfig *CheckOpts(int argc, char **argv)
        default:
        {
        Writer *w = FileWriter(stdout);
-       GenericAgentWriteHelp(w, "cf-report", OPTIONS, HINTS, true);
+       GenericAgentWriteHelp(w, "cgn-report", OPTIONS, HINTS, true);
        FileWriterDetach(w);
        }
        exit(EXIT_FAILURE);
@@ -286,11 +279,11 @@ static void ThisAgentInit(void)
           Log(LOG_LEVEL_VERBOSE,"Couldn't read system clock\n");
           }
        
-       snprintf(OUTPUTDIR, CF_BUFSIZE, "cf-reports-%s-%s", CanonifyName(VFQNAME), cf_ctime(&now));
+       snprintf(OUTPUTDIR, CF_BUFSIZE, "cgn-reports-%s-%s", CanonifyName(VFQNAME), cf_ctime(&now));
        }
     else
        {
-       snprintf(OUTPUTDIR, CF_BUFSIZE, "cf-reports-%s", CanonifyName(VFQNAME));
+       snprintf(OUTPUTDIR, CF_BUFSIZE, "cgn-reports-%s", CanonifyName(VFQNAME));
        }
     }
  
@@ -303,11 +296,7 @@ static void KeepReportsPromises()
 {
  char buf[CF_BUFSIZE];
 
- if (GRAPH)
-    {
-    SyntaxToGr();
-    }
- else if (LISTALL)
+ if (LISTALL)
     {
     ReadAverages(false);
     ListAll();
@@ -322,7 +311,7 @@ static void KeepReportsPromises()
     }
  else
     {
-    Banner("cf-report");
+    Banner("cgn-report");
     
     printf(" -> Output directory is set to %s/%s\n", getcwd(buf,CF_BUFSIZE),OUTPUTDIR);
     printf(" -> Current Time key is %s", GenTimeKey(time(NULL)));

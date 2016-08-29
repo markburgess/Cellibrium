@@ -1281,8 +1281,7 @@ void GenericAgentWriteHelp(Writer *w, const char *component, const struct option
         }
     }
 
-    WriterWriteF(w, "\nWebsite: http://www.cfengine.com\n");
-    WriterWriteF(w, "This software is Copyright (C) 2008,2010-present CFEngine AS.\n");
+    WriterWriteF(w, "This software is based on a version of CFEngine, made by Mark Burgess for research purposes.\n");
 }
 
 ENTERPRISE_VOID_FUNC_1ARG_DEFINE_STUB(void, GenericAgentWriteVersion, Writer *, w)
