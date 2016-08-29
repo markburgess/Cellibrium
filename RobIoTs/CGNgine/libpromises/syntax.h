@@ -86,6 +86,7 @@ const BodySyntax *BodySyntaxGet(const char *body_type);
 const ConstraintSyntax *BodySyntaxGetConstraintSyntax(const ConstraintSyntax *body_syntax, const char *lval);
 
 const char *SyntaxStatusToString(SyntaxStatus status);
+void SyntaxToGr(void);
 
 JsonElement *SyntaxToJson(void);
 

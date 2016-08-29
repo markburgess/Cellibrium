@@ -50,6 +50,7 @@
 #include <verify_classes.h>
 #include <unix_iface.h>
 #include <time_classes.h>
+#include <graph.h>
 
 /*****************************************************************************/
 /* Globals                                                                   */
@@ -63,43 +64,6 @@
 #define CF_GRAPHNEW_FILE "env_graph.new"
 #define CF_GRAPH_FILE    "env_graph"
 
-/*****************************************************************************/
-
-const int CONTAINS  = 1;  // bitwise for OR
-const int FOLLOWS   = 2;
-const int EXPRESSES = 4;
-const int NEAR      = 8;
-
-const int F = 0;
-const int B = 1;
-
-/*****************************************************************************/
-
-enum associations
-{
-    a_concurrent,
-    a_contains,
-    a_name,
-    a_origin,
-    a_hasattr,
-    a_hasvalue,
-    a_hasinstance,
-    a_approx,
-    a_ass_dim
-};
-
-char *A[a_ass_dim+1][2] =
-{
-    {"seen concurrent with","seen concurrent with"},
-    {"contains","is a member of"},
-    {"is the name for","is referred to by"},
-    {"is the source of","originates from"},
-    {"has attribute","is an attribute of"},
-    {"has value","is the value of"},
-    {"has instance","is an instance of"},
-    {"is approximately","is approximately"},
-    {NULL, NULL},
-};
 
 /*****************************************************************************/
 
@@ -164,9 +128,6 @@ static void AnnotateContext(EvalContext *ctx, FILE *fp, char *now);
 static void AnnotateNumbers(FILE *consc,char *now,char *origin, char *name, char *gradient, char *state, char* level, double q, double E, double sig, double Et, double tsig, char *description);
 static void AnnotateCoactivation(FILE *consc,char *now,char *origin,char *name,char *gradient,char *state, char* level, double q, double E, double sig, double Et, double tsig, char *description);
 static void AnnotateOrigin(FILE *consc,char *now,char *origin,char *name,char *gradient,char *state, char* level, double q, double E, double sig, double Et, double tsig, char *description);
-
-static void Gr(FILE *consc,char *from, int type, enum associations assoc, char *to);
-static void GrQ(FILE *consc,char *from, int type, enum associations assoc, double to);
 
 /****************************************************************/
 
@@ -1615,19 +1576,4 @@ static void AnnotateNumbers(FILE *consc,char *now,char *origin, char *name, char
  Gr(consc,buff,EXPRESSES,a_name,"mean time deviation");
 
 }
-
-/**********************************************************************/
-
-static void Gr(FILE *consc,char *from, int type, enum associations assoc, char *to)
-{
- fprintf(consc,"(%s,%d,%s,%s,%s)\n",from,type,A[assoc][F],A[assoc][B],to);
-}
-
-/**********************************************************************/
-
-static void GrQ(FILE *consc,char *from, int type, enum associations assoc, double to)
-{
- fprintf(consc,"(%s,%d,%s,%s,%.2lf)\n",from,type,A[assoc][F],A[assoc][B],to);
-}
-
 

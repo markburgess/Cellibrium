@@ -92,6 +92,7 @@ int NOWOPT = false;
 int EMBEDDED = false;
 int TIMESTAMPS = false;
 int LISTALL = false;
+int GRAPH = false;
 
 static double HISTOGRAM[CF_OBSERVABLES][7][CF_GRAINS] = { { { 0.0 } } };
 static double SMOOTHHISTOGRAM[CF_OBSERVABLES][7][CF_GRAINS] = { { { 0.0 } } };
@@ -121,7 +122,7 @@ static const char *const CF_REPORT_MANPAGE_LONG_DESCRIPTION =
     "cf-report is a simple data reporting tool for CFEngine. It extracts data from embedded databases "
     "and formats it as text for the console or as JSON for use by other tools";
 
-static const struct option OPTIONS[12] =
+static const struct option OPTIONS[13] =
 {
     {"help", no_argument, 0, 'h'},
     {"version", no_argument, 0, 'V'},
@@ -134,10 +135,11 @@ static const struct option OPTIONS[12] =
     {"no-error-bars", no_argument, 0, 'e'},
     {"by-name", required_argument, 0, 'n'},
     {"promise", optional_argument, 0, 'p'},
+    {"graph", no_argument, 0, 'g'},
     {NULL, 0, 0, '\0'}
 };
 
-static const char *HINTS[12] =
+static const char *HINTS[13] =
 {
     "Print the help message",
     "Output the version of the software",
@@ -150,6 +152,7 @@ static const char *HINTS[12] =
     "Do not add error bars to the printed graphs",
     "Report only on the named measurement",
     "Report on agent promises",
+    "Annotated graph of promises",
     NULL
 };
 
@@ -183,7 +186,7 @@ static GenericAgentConfig *CheckOpts(int argc, char **argv)
  int c;
  GenericAgentConfig *config = GenericAgentConfigNewDefault(AGENT_TYPE_REPORTER);
  
- while ((c = getopt_long(argc, argv, "MVf:lR:o:n:p:", OPTIONS, &optindex)) != EOF)
+ while ((c = getopt_long(argc, argv, "gMVf:lR:o:n:p:", OPTIONS, &optindex)) != EOF)
     {
     switch ((char) c)
        {
@@ -238,6 +241,10 @@ static GenericAgentConfig *CheckOpts(int argc, char **argv)
 
        case 'p':
            strncpy(BYPROMISE, optarg, CF_BUFSIZE-1);
+           break;
+
+       case 'g':
+           GRAPH = true;
            break;
            
        case 'N':
@@ -296,7 +303,11 @@ static void KeepReportsPromises()
 {
  char buf[CF_BUFSIZE];
 
- if (LISTALL)
+ if (GRAPH)
+    {
+    SyntaxToGr();
+    }
+ else if (LISTALL)
     {
     ReadAverages(false);
     ListAll();

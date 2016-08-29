@@ -90,6 +90,7 @@ libpromises_la_SOURCES = \
         files_names.c files_names.h \
         fncall.c fncall.h \
         generic_agent.c generic_agent.h \
+	graph.c \
         granules.c granules.h \
         instrumentation.c instrumentation.h \
         item_lib.c item_lib.h \
