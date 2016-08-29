@@ -1,0 +1,19 @@
+value1:0:0
+{
+value2:1:0
+    {
+    value2:2:1
+    } 
+value2:3:0
+    {
+    value 2:4:1
+    value 2:4:2
+        {
+        value2:4:3:1
+        }
+    value2:4:4
+    }
+value 2:5:0
+}
+value 3:0:0
+

@@ -1,0 +1,15 @@
+{
+"kind": "Service",
+
+"metadata": {
+            "name": "myagent"
+            },
+
+"spec":     {
+            "ports": [ 8765, 9376 ],
+            "selector": {
+                        "agent": "example"
+                        },
+            "type": "LoadBalancer"
+            }
+}

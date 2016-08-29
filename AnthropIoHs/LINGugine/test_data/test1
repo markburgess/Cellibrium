@@ -1,0 +1,15 @@
+
+<document>
+
+  <section name="one">
+     This is some text from section 1 (no kidding)!
+  </section>
+  <section name="two">
+      "Section two is going to have more meat."
+
+     <alpha> A  </alpha>
+     <beta> B  </beta>
+
+  </section>
+
+</document>
