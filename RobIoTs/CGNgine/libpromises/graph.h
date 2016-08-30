@@ -21,6 +21,7 @@ enum associations
     a_hasfunction,
     a_hasconstraint,
     a_alias,
+    a_interpreted,
     a_ass_dim
 };
 

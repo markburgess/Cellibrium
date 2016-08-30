@@ -39,13 +39,14 @@ char *A[a_ass_dim+1][2] =
     {"is the source of","originates from"},
     {"has attribute","is an attribute of"},
     {"has value","is the value of"},
-    {"has instance","is an instance of"},
+    {"has a specific instance","is a specific instance of"},
     {"is approximately","is approximately"},
     {"maintains as proxy","is maintained by"},
     {"depends on","partly determines"},
     {"has function","is the function of"},
     {"has constraint","constrains"},
     {"also known as","also known as"},
+    {"has interpretation","is interpreted from"},
     {NULL, NULL},
 };
 
@@ -81,9 +82,9 @@ void GenerateSemanticsGraph(Policy *policy)
  Gr(consc,"constraint",EXPRESSES,a_hasattr,"rval");
  Gr(consc,"rval", CONTAINS, a_contains, "compound rval");
  Gr(consc,"compound rval", NEAR, a_alias, "body group");
- Gr(consc,"compound rval", NEAR, a_alias, "constraint body");
- Gr(consc,"constraint body",EXPRESSES,a_hasattr,"lval");
- Gr(consc,"constraint body",EXPRESSES,a_hasattr,"rval");
+ Gr(consc,"compound rval", NEAR, a_alias, "constraints body");
+ Gr(consc,"constraints body",EXPRESSES,a_hasattr,"lval");
+ Gr(consc,"constraints body",EXPRESSES,a_hasattr,"rval");
 
  for (size_t i = 0; i < SeqLength(policy->bundles); i++)
     {
@@ -99,8 +100,8 @@ void GenerateSemanticsGraph(Policy *policy)
        {
        Gr(consc,bundle->source_path,EXPRESSES,a_hasattr,bundle->name);
        Gr(consc,bundle->source_path,CONTAINS,a_contains,bundle->name);
-       Gr(consc,bundle->source_path,EXPRESSES,a_hasattr,"file");
-       Gr(consc,bundle->source_path,EXPRESSES,a_hasattr,"where");
+       Gr(consc,bundle->source_path,EXPRESSES,a_interpreted,"file");
+       Gr(consc,bundle->source_path,EXPRESSES,a_interpreted,"where");
        }
 
     Rlist *argp = NULL;
@@ -136,7 +137,7 @@ void GenerateSemanticsGraph(Policy *policy)
           Gr(consc,bundle->name,CONTAINS,a_contains, promise->promiser);
           Gr(consc,bundle->name,FOLLOWS,a_depends, promise->promiser);
 
-          Gr(consc,promise->promiser,EXPRESSES,a_hasattr,"what");
+          Gr(consc,promise->promiser,EXPRESSES,a_interpreted,"what");
 
           if (promise->comment)
              {
@@ -164,76 +165,56 @@ void GenerateSemanticsGraph(Policy *policy)
 
           // Class activation
           Gr(consc,handle,FOLLOWS,a_depends, promise->classes);
+          Gr(consc,promise->classes, EXPRESSES, a_interpreted,"context");
 
           for (size_t cpi = 0; cpi < SeqLength(promise->conlist); cpi++)
              {
              Constraint *constraint = SeqAt(promise->conlist, cpi);
-
-             Gr(consc,handle,EXPRESSES,a_hasconstraint,constraint->lval);
-             Gr(consc,handle,EXPRESSES,a_hasconstraint,constraint->lval);
-
-/* Naming of constraint clusters by matroid (verb/noun)
-
-   When we talk about the state of something and determining the state, verb reprents its outcome, rather than relative
-   so the semantics are noun = absolute, verb = relative or indeterminate change
-
-                                      / lval1 = rval      (verb -> adjective) we interpret state -> action (verb = noun)!
-        promise ---> constraint matroid
-                                      \ lval2 = (cluster name) -> members
-
-             MakeUniqueClusterName(lval,rval,rvaltype)/Sort ->NAME
-                 NAME contains verb (schema)
-                 verb expresses value1,value2...
-
-                 The schema has to be the generalization of all constraints of the same type,
-                 so need an instance name and a generalized strutcure as superagents
-
-
-      mode  -- instances of mode
-files/      -- meaning of mode    (lift rule)
-     \owner -- instance owner
-
- */
 
              switch (constraint->rval.type)
                 {
                 case RVAL_TYPE_SCALAR:
                     MakeUniqueClusterName(constraint->lval,constraint->rval.item,RVAL_TYPE_SCALAR,umbrella);
                     Gr(consc,handle,EXPRESSES,a_hasconstraint,umbrella);
-                    Gr(consc,umbrella,EXPRESSES,a_hasconstraint,constraint->lval);
-                    Gr(consc,"lval",EXPRESSES,a_hasattr,constraint->lval);
+                    Gr(consc,umbrella,EXPRESSES,a_hasattr,constraint->lval);
                     Gr(consc,umbrella,EXPRESSES,a_hasattr,constraint->rval.item);
-                    Gr(consc,"rval",EXPRESSES,a_hasattr,constraint->rval.item);
+                    Gr(consc,constraint->lval, EXPRESSES, a_interpreted, "lval");
+                    Gr(consc,constraint->rval.item, EXPRESSES, a_interpreted, "rval");
                     break;
 
                 case RVAL_TYPE_LIST:
-                    // A list is not a cluster, per se, but an aggregation that is already linked by the lval
-                    Gr(consc,handle,EXPRESSES,a_hasattr,constraint->lval);
-                    Gr(consc,"lval",EXPRESSES,a_hasattr,constraint->lval);
+                    MakeUniqueClusterName(constraint->lval,constraint->rval.item,RVAL_TYPE_LIST,umbrella);
+                    Gr(consc,handle,EXPRESSES,a_hasconstraint,umbrella);
+                    Gr(consc,umbrella,EXPRESSES,a_hasattr,constraint->lval);
+                    Gr(consc,constraint->lval, EXPRESSES, a_interpreted, "lval");
+
                     for (Rlist *rp = (Rlist *)constraint->rval.item; rp != NULL; rp=rp->next)
                        {
-                       Gr(consc,constraint->lval,EXPRESSES,a_hasattr,RlistScalarValue(rp));
-                       Gr(consc,"rval",EXPRESSES,a_hasattr,RlistScalarValue(rp));
+                       Gr(consc,umbrella,EXPRESSES,a_hasattr,RlistScalarValue(rp));
+                       Gr(consc,RlistScalarValue(rp), EXPRESSES, a_interpreted, "rval");
                        }
                     break;
 
                 case RVAL_TYPE_FNCALL:
                     {
                     FnCall *fp = (FnCall *)(constraint->rval).item;
-                    Gr(consc,fp->name,EXPRESSES,a_hasattr,"compound rval");
-                    Gr(consc,fp->name,EXPRESSES,a_hasattr,"constraint body");
+                    MakeUniqueClusterName(fp->name,fp->args,RVAL_TYPE_LIST,umbrella);
+                    Gr(consc,handle,EXPRESSES,a_hasconstraint,umbrella);
+                    Gr(consc,constraint->lval, EXPRESSES, a_interpreted, "lval");
+                    Gr(consc,fp->name, EXPRESSES, a_interpreted, "rval");
 
-//                    Rlist *sorted = AlphaSortRListNames(argp);
-                    MakeUniqueClusterName(constraint->lval,argp,RVAL_TYPE_LIST,umbrella);
-                    Gr(consc,fp->name,EXPRESSES,a_hasattr,"constraint body");
-                    Gr(consc,"constraint body",CONTAINS,a_hasinstance,fp->name);
-                    Gr(consc,"constraint body",CONTAINS,a_hasinstance,umbrella);
+                    Gr(consc,handle,FOLLOWS,a_depends,umbrella);
+                    Gr(consc,umbrella,FOLLOWS,a_depends,fp->name);
+
+                    Gr(consc,promise->promiser,FOLLOWS,a_depends,umbrella);
+                    Gr(consc,"functions",CONTAINS,a_hasinstance,fp->name);
                     Gr(consc,fp->name,CONTAINS,a_hasinstance,umbrella);
-
+                    Gr(consc,umbrella,EXPRESSES,a_hasattr,constraint->lval);
+                       
                     for (Rlist *argp = fp->args; argp != NULL; argp = argp->next)
                        {
-                       Gr(consc,umbrella,EXPRESSES,a_hasattr,RlistScalarValue(argp));
-                       Gr(consc,RlistScalarValue(argp), EXPRESSES, a_hasattr, "argument");
+                       Gr(consc,umbrella,FOLLOWS,a_depends,RlistScalarValue(argp));
+                       Gr(consc,RlistScalarValue(argp), EXPRESSES, a_interpreted, "argument");
                        }
                     }
                     break;
@@ -257,8 +238,8 @@ files/      -- meaning of mode    (lift rule)
     Gr(consc,umbrella,EXPRESSES,a_hasattr,body->type);
     Gr(consc,body->type,EXPRESSES,a_hasattr,"what");
 
-    Gr(consc,"constraint body",CONTAINS,a_contains,body->name);
-    Gr(consc,"constraint body",CONTAINS,a_contains,umbrella);
+    Gr(consc,"constraints body",CONTAINS,a_contains,body->name);
+    Gr(consc,"constraints body",CONTAINS,a_contains,umbrella);
 
     Gr(consc,body->ns,CONTAINS|EXPRESSES,a_hasattr,body->name);
     Gr(consc,body->ns,EXPRESSES,a_hasattr,"CGNgine namespace");

@@ -97,14 +97,14 @@ static const char *GetDefaultDir_helper(char dir[MAX_WORKDIR_LENGTH], const char
 
             if ( append_dir == NULL )
             {
-                if (snprintf(dir, MAX_WORKDIR_LENGTH, "%s/.cfagent", mpw->pw_dir) >= MAX_WORKDIR_LENGTH)
+                if (snprintf(dir, MAX_WORKDIR_LENGTH, "%s/.CGNgine", mpw->pw_dir) >= MAX_WORKDIR_LENGTH)
                 {
                     return NULL;
                 }
             }
             else
             {
-                if (snprintf(dir, MAX_WORKDIR_LENGTH, "%s/.cfagent/%s", mpw->pw_dir, append_dir) >= MAX_WORKDIR_LENGTH)
+                if (snprintf(dir, MAX_WORKDIR_LENGTH, "%s/.CGNine/%s", mpw->pw_dir, append_dir) >= MAX_WORKDIR_LENGTH)
                 {
                     return NULL;
                 }
