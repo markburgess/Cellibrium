@@ -1,0 +1,18 @@
+
+From the CGNgine directory
+
+ cgn-promises/cgn-promises -gf ../CGNgineExample/promises.cf
+
+
+Or from this directory
+
+ ../CGNgine/cgn-promises/cgn-promises -gf ./promises.cf 
+ ../CGNgine/cgn-monitord/cgn-monitord -f ./promises.cf
+ cat ~/.CGNgine/policy_graph
+ cat ~/.CGNgine/state/env_graph
+
+
+
+ 
+
+

@@ -1,0 +1,92 @@
+######################################################
+#
+# Example input file for CGNgine - inputs directory
+#
+######################################################
+
+bundle agent main
+{
+vars:
+
+  "mylist" slist => { "one", "two", "three" };
+
+labels: # classes:
+
+  "local_probe" expression => fileexists("/etc/passwd");
+
+reports:
+
+  "Print $(mylist)"
+    handle => "mylostlist";
+
+processes:
+
+  "cgn-monitord"
+     handle => "sensory_input",
+     restart_class => "machine_learning";
+
+  "cgn-execd"
+     handle => "policy_maintenance",
+     restart_class => "promise_keeping";
+
+commands:
+
+  machine_learning::
+
+    "/var/cfengine/bin/cf-monitord";
+
+  promise_keeping::
+
+    "/var/cfengine/bin/cf-execd";
+
+}
+
+######################################################
+
+bundle monitor sensor_cognition
+{
+measurements:
+
+ linux.localprobe::
+
+  "/proc/meminfo" -> "big fat promisee"
+
+      handle => "free_memory_watch",
+      stream_type => "file",
+      data_type => "int",
+      history_type => "weekly",
+      units => "kB",
+      match_value => free_memory;
+
+
+  "/proc/sys/kernel/random/entropy_avail" -> { "stakeholder one", "stakeholder two"}
+
+      handle => "entropy_source",
+      stream_type => "file",
+      data_type => "int",
+      match_value => single_value,
+      action => sample_rate(2);
+
+}
+
+######################################################
+# Constraint bodies
+######################################################
+
+constraints action sample_rate(x)
+{
+ifelapsed => "$(x)";
+expireafter => "10";
+}
+
+constraints match_value free_memory
+{
+select_line_matching => "MemFree:.*";
+extraction_regex => "MemFree:\s+([0-9]+).*";
+}
+
+constraints match_value single_value
+{
+select_line_matching => ".*";
+extraction_regex => "([0-9]+)";
+}
