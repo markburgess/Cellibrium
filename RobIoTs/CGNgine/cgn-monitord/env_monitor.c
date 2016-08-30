@@ -645,7 +645,7 @@ static void BuildConsciousState(EvalContext *ctx, Averages av, Timescales t)
  UpdateTimeClasses(ctx, nowt);
 
  unlink(GRAPHFILE_NEW);
- FILE *consc = fopen(GRAPHFILE_NEW, "a");
+ FILE *consc = fopen(GRAPHFILE_NEW, "w");
 
  // Device source
 

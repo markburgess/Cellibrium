@@ -429,6 +429,8 @@ const Policy *PolicyFromPromise(const Promise *promise)
     return bundle->parent_policy;
 }
 
+/*************************************************************************/
+
 char *BundleQualifiedName(const Bundle *bundle)
 {
     assert(bundle);
@@ -445,6 +447,8 @@ char *BundleQualifiedName(const Bundle *bundle)
 
     return NULL;
 }
+
+/*******************************************************************/
 
 static bool RvalTypeCheckDataType(RvalType rval_type, DataType expected_datatype)
 {
@@ -619,6 +623,8 @@ static bool PolicyCheckBundle(const Bundle *bundle, Seq *errors)
     return success;
 }
 
+/*******************************************************************/
+
 static bool PolicyCheckBody(const Body *body, Seq *errors)
 {
     bool success = true;
@@ -736,6 +742,8 @@ static const char *RvalFullSymbol(const Rval *rval)
     }
 }
 
+/*************************************************************************/
+
 /**
  * @return A copy of the namespace compoent of an Rval, or NULL. e.g. "foo:bar""foo"
  */
@@ -754,6 +762,8 @@ char *QualifiedNameNamespaceComponent(const char *qualified_name)
     }
 }
 
+/*******************************************************************/
+
 /**
  * @return A copy of the symbol compoent of an Rval, or NULL. e.g. "foo:bar""bar"
  */
@@ -769,6 +779,8 @@ char *QualifiedNameScopeComponent(const char *qualified_name)
         return xstrdup(qualified_name);
     }
 }
+
+/*******************************************************************/
 
 static bool PolicyCheckUndefinedBodies(const Policy *policy, Seq *errors)
 {
@@ -814,6 +826,8 @@ static bool PolicyCheckUndefinedBodies(const Policy *policy, Seq *errors)
 
     return success;
 }
+
+/*******************************************************************/
 
 static bool PolicyCheckUndefinedBundles(const Policy *policy, Seq *errors)
 {
@@ -873,6 +887,8 @@ static bool PolicyCheckUndefinedBundles(const Policy *policy, Seq *errors)
 
     return success;
 }
+
+/*******************************************************************/
 
 static bool PolicyCheckRequiredComments(const EvalContext *ctx, const Policy *policy, Seq *errors)
 {
@@ -1002,6 +1018,8 @@ bool PolicyCheckRunnable(const EvalContext *ctx, const Policy *policy, Seq *erro
 
     return success;
 }
+
+/*******************************************************************/
 
 bool PolicyCheckPartial(const Policy *policy, Seq *errors)
 {
@@ -1216,6 +1234,8 @@ void PolicyErrorWrite(Writer *writer, const PolicyError *error)
     WriterWriteF(writer, "%s:%zu:%zu: error: %s\n", path, offset.line, (size_t)0, error->message);
 }
 
+/*******************************************************************/
+
 static char *PolicyErrorToString(const PolicyError *error)
 {
     SourceOffset offset = PolicyElementSourceOffset(error->type, error->subject);
@@ -1256,6 +1276,8 @@ void PromiseTypeDestroy(PromiseType *promise_type)
         free(promise_type);
     }
 }
+
+/*******************************************************************/
 
 Bundle *PolicyAppendBundle(Policy *policy,
                            const char *ns, const char *name, const char *type,
@@ -1307,6 +1329,8 @@ Body *PolicyAppendBody(Policy *policy, const char *ns, const char *name, const c
     return body;
 }
 
+/*******************************************************************/
+
 PromiseType *BundleAppendPromiseType(Bundle *bundle, const char *name)
 {
     if (bundle == NULL)
@@ -1341,6 +1365,8 @@ Promise *PromiseTypeAppendPromise(PromiseType *type, const char *promiser, Rval 
 {
  assert(promiser && "Missing promiser");
  assert(type && "Missing promise type");
+
+// promisee?
  
  Promise *pp = xcalloc(1, sizeof(Promise));
  
@@ -1373,6 +1399,8 @@ Promise *PromiseTypeAppendPromise(PromiseType *type, const char *promiser, Rval 
  return pp;
 }
 
+/*******************************************************************/
+
 static void BundleDestroy(Bundle *bundle)
 {
     if (bundle)
@@ -1387,6 +1415,8 @@ static void BundleDestroy(Bundle *bundle)
         free(bundle);
     }
 }
+
+/*******************************************************************/
 
 static void BodyDestroy(Body *body)
 {
@@ -1403,6 +1433,7 @@ static void BodyDestroy(Body *body)
     }
 }
 
+/*******************************************************************/
 
 void PromiseDestroy(Promise *pp)
 {
@@ -1439,6 +1470,8 @@ static Constraint *ConstraintNew(const char *lval, Rval rval, const char *classe
     return cp;
 }
 
+/*******************************************************************/
+
 Constraint *PromiseAppendConstraint(Promise *pp, const char *lval, Rval rval, bool references_body)
 {
     Constraint *cp = ConstraintNew(lval, rval, "any", references_body);
@@ -1458,6 +1491,8 @@ Constraint *PromiseAppendConstraint(Promise *pp, const char *lval, Rval rval, bo
     SeqAppend(pp->conlist, cp);
     return cp;
 }
+
+/*******************************************************************/
 
 Constraint *BodyAppendConstraint(Body *body, const char *lval, Rval rval, const char *classes,
                                  bool references_body)

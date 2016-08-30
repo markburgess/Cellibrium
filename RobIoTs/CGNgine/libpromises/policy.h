@@ -139,7 +139,6 @@ struct Constraint_
 };
 
 const char *NamespaceDefault(void);
-
 Policy *PolicyNew(void);
 int PolicyCompare(const void *a, const void *b);
 void PolicyDestroy(Policy *policy);

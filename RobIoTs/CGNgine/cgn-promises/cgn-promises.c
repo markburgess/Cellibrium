@@ -34,7 +34,7 @@
 #include <bootstrap.h>
 #include <string_lib.h>
 #include <loading.h>
-
+#include <graph.h>
 #include <time.h>
 
 static GenericAgentConfig *CheckOpts(int argc, char **argv);
@@ -150,11 +150,6 @@ int main(int argc, char *argv[])
         }
     }
 
-    if (SHOWREPORTS)
-    {
-        ShowPromises(policy->bundles, policy->bodies);
-    }
-
     switch (config->agent_specific.common.policy_output_format)
     {
     case GENERIC_AGENT_CONFIG_COMMON_POLICY_OUTPUT_FORMAT_CF:
@@ -197,6 +192,11 @@ int main(int argc, char *argv[])
         ShowVariablesFormatted(ctx);
     }
 
+    if (GRAPH)
+       {
+       GenerateSemanticsGraph(policy);
+       }
+    
     PolicyDestroy(policy);
     GenericAgentFinalize(ctx, config);
 }

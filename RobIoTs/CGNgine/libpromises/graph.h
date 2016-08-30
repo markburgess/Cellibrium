@@ -16,11 +16,17 @@ enum associations
     a_hasvalue,
     a_hasinstance,
     a_approx,
+    a_maintains,
+    a_depends,
+    a_hasfunction,
+    a_hasconstraint,
+    a_alias,
     a_ass_dim
 };
 
 void Gr(FILE *consc,char *from, int type, enum associations assoc, char *to);
 void GrQ(FILE *consc,char *from, int type, enum associations assoc, double to);
+void GenerateSemanticsGraph(Policy *policy);
 
 /*****************************************************************************/
 
