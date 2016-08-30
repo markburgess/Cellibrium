@@ -1,8 +1,4 @@
 dnl
-dnl  Copyright (C) CFEngine AS
-dnl
-dnl  This file is part of CFEngine 3 - written and maintained by CFEngine AS.
-dnl
 dnl  This program is free software; you can redistribute it and/or modify it
 dnl  under the terms of the GNU General Public License as published by the
 dnl  Free Software Foundation; version 3.
@@ -16,14 +12,9 @@ dnl You should have received a copy of the GNU General Public License
 dnl along with this program; if not, write to the Free Software
 dnl Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA
 dnl
-dnl To the extent this program is licensed as part of the Enterprise
-dnl versions of CFEngine, the applicable Commercial Open Source License
-dnl (COSL) may apply to this file if you as a licensee so wish it. See
-dnl included file COSL.txt.
-dnl
 dnl ##########################################################################
 dnl #
-dnl # Build CFEngine
+dnl # Build CGNgine
 dnl #
 dnl # Run ./autogen.sh to build configure script
 dnl #
@@ -117,7 +108,7 @@ if test "x$with_pthreads" != x && test "x$with_pthreads" != "xyes" && test "x$wi
 fi
 
 ACX_PTHREAD([],
-            [AC_MSG_ERROR(pthread-compatible library is required to build CFEngine)])
+            [AC_MSG_ERROR(pthread-compatible library is required to build CGNgine)])
 
 CC="$PTHREAD_CC"
 CFLAGS="$PTHREAD_CFLAGS $CFLAGS"
@@ -145,7 +136,7 @@ dnl Configure files layout
 dnl ######################################################################
 
 AC_ARG_ENABLE([fhs],
-        [AS_HELP_STRING([--enable-fhs], [Enable FHS compliance. Defaults to custom CFEngine files layout])])
+        [AS_HELP_STRING([--enable-fhs], [Enable FHS compliance. Defaults to custom CGNgine files layout])])
 
 #
 # pkglibdir/pkgdatadir are not overridable, so use our own invention instead.
@@ -408,7 +399,7 @@ if test $WITH_LMDB = 1; then
 fi
 
 if test $WITH_QDBM -eq 0 && test $WITH_TOKYO -eq 0 && test $WITH_LMDB -eq 0; then
-   AC_MSG_ERROR(Either Tokyo Cabinet, LMDB, or QDBM must be selected to compile CFEngine)
+   AC_MSG_ERROR(Either Tokyo Cabinet, LMDB, or QDBM must be selected to compile CGNgine)
 fi
 
 dnl
@@ -420,7 +411,7 @@ AC_ARG_WITH(openssl,
     [Specify OpenSSL path])], [], [with_openssl=yes])
 
 if test x"$with_openssl" = xno ; then
-    AC_MSG_ERROR([This release of CFEngine requires OpenSSL >= 0.9.7])
+    AC_MSG_ERROR([This release of CGNgine requires OpenSSL >= 0.9.7])
 fi
 
 CF3_WITH_LIBRARY(openssl, [
@@ -437,7 +428,7 @@ CF3_WITH_LIBRARY(openssl, [
    #if OPENSSL_VERSION_NUMBER < 0x0090602fL
    #This OpenSSL is too old
    #endif
-   ]])],[AC_MSG_RESULT(OK)],[AC_MSG_ERROR(This release of CFEngine requires OpenSSL >= 0.9.7)])
+   ]])],[AC_MSG_RESULT(OK)],[AC_MSG_ERROR(This release of CGNgine requires OpenSSL >= 0.9.7)])
 
    if test "x$ac_cv_lib_crypto_RSA_generate_key_ex" = "xyes" ; then
       AC_DEFINE(OPENSSL_NO_DEPRECATED, 1, [Define if non deprecated API is available.])
@@ -1353,8 +1344,8 @@ dnl #####################################################################
 
 AC_PATH_PROG(HOSTNAME, hostname, "", $PATH)
 
-AC_DEFINE_UNQUOTED(AUTOCONF_HOSTNAME, "`$HOSTNAME`", [Special CFEngine symbol])
-AC_DEFINE_UNQUOTED(AUTOCONF_SYSNAME, "$target_os", [Speial CFEngine symbol])
+AC_DEFINE_UNQUOTED(AUTOCONF_HOSTNAME, "`$HOSTNAME`", [Special CGNgine symbol])
+AC_DEFINE_UNQUOTED(AUTOCONF_SYSNAME, "$target_os", [Speial CGNgine symbol])
 
 
 dnl #####################################################################
@@ -1553,4 +1544,4 @@ AC_CONFIG_FILES([Makefile
 
 AC_OUTPUT
 
-AC_MSG_RESULT(DONE: Configuration done. Run make/gmake to build CFEngine Community.)
+AC_MSG_RESULT(DONE: Configuration done. Run make/gmake to build CGNgine.)

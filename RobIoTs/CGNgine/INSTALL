@@ -1,7 +1,7 @@
 PREREQUISITES
 -------------
 
-In order to build CFEngine you need the following tools and libraries installed:
+In order to build CGNgine you need the following tools and libraries installed:
 
 * C compiler supporting C90 + selected C99 constructs:
     - _Bool type
@@ -24,7 +24,7 @@ In order to build CFEngine you need the following tools and libraries installed:
 * PostgreSQL client library (optional)
 * libacl library (optional)
 
-In order to build CFEngine cloned from git, you will need the
+In order to build CGNgine cloned from git, you will need the
 following additional tools:
 
 * GNU Automake >= 1.10.1
@@ -38,7 +38,8 @@ Latest stable versions of the tools and libraries are generally advised.
 OPERATING SYSTEMS
 -----------------
 
-CFEngine is regularly built and tested on the following operating systems:
+CGNgine is derived from CFEngine 3.  CFEngine is regularly built and
+tested on the following operating systems:
 
 * GNU/Linux (many distributions)
 * Solaris
@@ -47,7 +48,8 @@ CFEngine is regularly built and tested on the following operating systems:
 HARDWARE PLATFORMS
 ------------------
 
-CFEngine is regularly built and tested on the following CPU architectures:
+CGNgine is derived from CFEngine 3.  CFEngine is regularly built and
+tested on the following CPU architectures:
 
 * x86
 * x86-64

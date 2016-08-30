@@ -1,8 +1,4 @@
 #
-#  Copyright (C) CFEngine AS
-#
-#  This file is part of CFEngine 3 - written and maintained by CFEngine AS.
-#
 #  This program is free software; you can redistribute it and/or modify it
 #  under the terms of the GNU General Public License as published by the
 #  Free Software Foundation; version 3.

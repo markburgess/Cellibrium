@@ -1,4 +1,4 @@
-# KM-CFEngine 
+# CGNgine
 
 This code is experimental research, using a software agent based on
 CFEngine 3, a popular open source configuration management system,
@@ -16,11 +16,11 @@ to do so as long as the code is considered experimental.
 
 ## Relationship to CFEngine 2 and 3
 
-KM-CFEngine is *not* a drop-in upgrade for CFEngine 2 installations.
+CGNgine is *not* a drop-in upgrade for CFEngine 2 installations.
 It is incompatible with the CFEngine 2 policy language.
 
-KM-CFEngine is a drop-in replacement for some versions of CFEngine 3,
-but diverges from the CFEngine core at around version 3.6.
-
+CGNgine is an approximate drop-in replacement for some versions of
+CFEngine 3, but diverges from the CFEngine core at around version 3.6.
+No suitability or compatability is promised.
 
 MB, August 2016
