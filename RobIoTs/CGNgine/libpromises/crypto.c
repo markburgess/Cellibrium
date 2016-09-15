@@ -95,13 +95,13 @@ void CryptoDeInitialize()
          * and we have enough entropy to do so. If RAND_write_File
          * returns a bad value, delete the poor seed.
          */
-        if (access(randfile, R_OK) && errno == ENOENT && RAND_write_file(randfile) != 1024)
-        {
-            Log(LOG_LEVEL_WARNING,
-                "Could not write randomness to '%s'", randfile);
-            unlink(randfile); /* do not reuse entropy */
-        }
 
+        if (access(randfile, R_OK) && errno == ENOENT && RAND_write_file(randfile) != 1024)
+           {
+           //Log(LOG_LEVEL_VERBOSE,  "Could not write randomness to '%s'", randfile);
+           unlink(randfile); /* do not reuse entropy */
+           }
+        
         chmod(randfile, 0600);
         EVP_cleanup();
         CleanupOpenSSLThreadLocks();
@@ -169,7 +169,7 @@ bool LoadSecretKeys(void)
         if (!fp)
         {
             Log(CryptoGetMissingKeyLogLevel(),
-                "Couldn't find a private key at '%s', use cf-key to get one. (fopen: %s)",
+                "Couldn't find a private key at '%s', use cgn-key to get one. (fopen: %s)",
                 privkeyfile, GetErrorStr());
             free(privkeyfile);
             return false;
@@ -178,8 +178,7 @@ bool LoadSecretKeys(void)
         PRIVKEY = PEM_read_RSAPrivateKey(fp, NULL, NULL, (void*) priv_passphrase);
         if (PRIVKEY == NULL)
         {
-            Log(LOG_LEVEL_ERR,
-                "Error reading private key. (PEM_read_RSAPrivateKey: %s)",
+            Log(LOG_LEVEL_VERBOSE, "Error reading private key. (PEM_read_RSAPrivateKey: %s)",
                 CryptoLastErrorString());
             PRIVKEY = NULL;
             fclose(fp);
@@ -197,7 +196,7 @@ bool LoadSecretKeys(void)
         if (!fp)
         {
             Log(CryptoGetMissingKeyLogLevel(),
-                "Couldn't find a public key at '%s', use cf-key to get one (fopen: %s)",
+                "Couldn't find a public key at '%s', use cgn-key to get one (fopen: %s)",
                 pubkeyfile, GetErrorStr());
             free(pubkeyfile);
             return false;

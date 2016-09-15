@@ -11,8 +11,9 @@ and Artificial Reasoning, which builds on the CFEngine legacy.
 Because the refactored development of CFEngine has tied concepts,
 methods, and libraries together in a complex mesh, it is difficult to
 disentangle the new from the old at this stage, so I will not attempt
-to do so as long as the code is considered experimental.
-
+to do so as long as the code is considered experimental. Many areas
+seem in urgent need of simplification, but this is currently beyond my
+capacity.
 
 ## Relationship to CFEngine 2 and 3
 

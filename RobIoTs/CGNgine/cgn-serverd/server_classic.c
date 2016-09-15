@@ -154,7 +154,7 @@ static int AccessControl(EvalContext *ctx, const char *req_path, ServerConnectio
     char transpath[CF_BUFSIZE];
 
 /*
- * /var/cfengine -> $workdir translation.
+ * /var/CGNgine -> $workdir translation.
  */
     TranslatePath(translated_req_path, req_path);
 

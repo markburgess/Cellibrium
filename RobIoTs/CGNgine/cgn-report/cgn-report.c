@@ -78,6 +78,11 @@ static void OutputWeeklyJSON(int slot, char *name, char *desc);
 static void ListAll(void);
 static void WriteAgentPromises(void);
 static void OutputPromises(char *name);
+static void HandleURI(char *uri);
+static void HandleAgentHandle(char *handle, char *element);
+static void HandleMeasurementHandle(char *handle, char *element);
+static void ListAgentHandles(void);
+static void ListMeasurementHandles(void);
 
 /*******************************************************************/
 /* GLOBAL VARIABLES                                                */
@@ -103,6 +108,8 @@ static Averages MAX, MIN;
 char OUTPUTDIR[CF_BUFSIZE];
 char BYNAME[CF_BUFSIZE] = {0};
 char BYPROMISE[CF_BUFSIZE] = {0};
+char URI[CF_BUFSIZE] = {0};
+char OVERRIDE[CF_BUFSIZE] = {0};
 
 FILE *FPE[CF_OBSERVABLES], *FPQ[CF_OBSERVABLES];
 FILE *FPM[CF_OBSERVABLES];
@@ -115,13 +122,13 @@ static const double ticksperhr = (double) SECONDS_PER_HOUR;
 /*******************************************************************/
 
 static const char *const CF_REPORT_SHORT_DESCRIPTION =
-    "output machine learned data collected by CFEngine";
+    "output machine learned data collected by CGNgine";
 
 static const char *const CF_REPORT_MANPAGE_LONG_DESCRIPTION =
     "cgn-report is a simple data reporting tool for CGNngine. It extracts data from embedded databases "
     "and formats it as text for the console or as JSON for use by other tools";
 
-static const struct option OPTIONS[12] =
+static const struct option OPTIONS[14] =
 {
     {"help", no_argument, 0, 'h'},
     {"version", no_argument, 0, 'V'},
@@ -134,10 +141,12 @@ static const struct option OPTIONS[12] =
     {"no-error-bars", no_argument, 0, 'e'},
     {"by-name", required_argument, 0, 'n'},
     {"promise", optional_argument, 0, 'p'},
+    {"uri", required_argument, 0, 'u'},
+    {"override_dir", required_argument, 0, 'd'},
     {NULL, 0, 0, '\0'}
 };
 
-static const char *HINTS[12] =
+static const char *HINTS[14] =
 {
     "Print the help message",
     "Output the version of the software",
@@ -150,6 +159,8 @@ static const char *HINTS[12] =
     "Do not add error bars to the printed graphs",
     "Report only on the named measurement",
     "Report on agent promises",
+    "Report on URI",
+    "Override input master directory",
     NULL
 };
 
@@ -158,12 +169,13 @@ static const char *HINTS[12] =
 int main(int argc, char *argv[])
 {
  GenericAgentConfig *config = CheckOpts(argc, argv);
+
  EvalContext *ctx = EvalContextNew();
+ strcpy(CFWORKDIR, OVERRIDE);
  GenericAgentConfigApply(ctx, config);
- 
  GenericAgentDiscoverContext(ctx, config);
  Policy *policy = LoadPolicy(ctx, config);
- 
+  
  ThisAgentInit();
  KeepReportsPromises();
  
@@ -183,7 +195,7 @@ static GenericAgentConfig *CheckOpts(int argc, char **argv)
  int c;
  GenericAgentConfig *config = GenericAgentConfigNewDefault(AGENT_TYPE_REPORTER);
  
- while ((c = getopt_long(argc, argv, "MVf:lR:o:n:p:", OPTIONS, &optindex)) != EOF)
+ while ((c = getopt_long(argc, argv, "MVf:lR:o:n:p:u:d:", OPTIONS, &optindex)) != EOF)
     {
     switch ((char) c)
        {
@@ -243,6 +255,15 @@ static GenericAgentConfig *CheckOpts(int argc, char **argv)
        case 'N':
            NOWOPT = true;
            break;
+
+       case 'u':
+           strncpy(URI, optarg, CF_BUFSIZE-1);
+           break;
+
+       case 'd':
+           snprintf(OVERRIDE,CF_BUFSIZE-1,"CFENGINE_TEST_OVERRIDE_WORKDIR=%s", optarg);
+           putenv(OVERRIDE);
+           break;
            
        default:
        {
@@ -286,7 +307,7 @@ static void ThisAgentInit(void)
        snprintf(OUTPUTDIR, CF_BUFSIZE, "cgn-reports-%s", CanonifyName(VFQNAME));
        }
     }
- 
+
  umask(077);   
 }
 
@@ -296,7 +317,12 @@ static void KeepReportsPromises()
 {
  char buf[CF_BUFSIZE];
 
- if (LISTALL)
+ if (strlen(URI) > 0)
+    {
+    ReadAverages(false);
+    HandleURI(URI);
+    }
+ else if (LISTALL)
     {
     ReadAverages(false);
     ListAll();
@@ -1127,6 +1153,141 @@ static void WriteAgentPromises()
  DeleteDBCursor(dbcp);
  CloseDB(dbp);
 }
+
+
+/**********************************************************************************************/
+/* This part is for the REST API - if this gets productized, should design this tool better   */
+/**********************************************************************************************/
+
+static void HandleURI(char *uri)
+
+{
+ char prefix[CF_MAXVARSIZE] = {0};
+ char agent[CF_MAXVARSIZE] = {0};
+ char handle[CF_MAXVARSIZE] = {0};
+ char element[CF_MAXVARSIZE] = {0};
+
+ sscanf(URI, "/%[^/]/%[^/]/%[^/]/%s",prefix,agent,handle,element);
+
+ if (strcmp(prefix,"cgn") != 0)
+    {
+    return;
+    }
+
+ if (strcmp(agent,"agent") == 0)
+    {
+    if (handle[0] != '\0')
+       {
+       HandleAgentHandle(handle,element);
+       }
+    else
+       {
+       ListAgentHandles();
+       }
+    }
+
+ if (strcmp(agent,"monitor") == 0)
+    {
+    if (handle[0] != '\0')
+       {
+       HandleMeasurementHandle(handle,element);
+       }
+    else
+       {
+       ListMeasurementHandles();
+       }
+    }
+
+
+}
+
+/**********************************************************************************************/
+
+static void HandleAgentHandle(char *handle, char *element)
+
+{
+ printf("HANDLE handle\n");
+
+ printf("JSON AGENT/%s/%s\n", handle,element);
+}
+
+
+/**********************************************************************************************/
+
+static void HandleMeasurementHandle(char *handle, char *element)
+
+{
+ printf("HANDLE mon handle\n");
+        
+ printf("JSON MONITOR/%s/%s\n", handle,element);
+}
+
+
+/**********************************************************************************************/
+
+static void ListAgentHandles()
+
+{
+ CF_DB *dbp;
+ CF_DBC *dbcp;
+ char eventname[CF_MAXVARSIZE];
+ Event entry;
+ char *key;
+ void *stored;
+ int ksize, vsize;
+
+ if (!RO_OpenDB(&dbp, dbid_promises))
+    {
+    printf("Failed to open\n");
+    perror("open");
+    return;
+    }
+
+ if (!NewDBCursor(dbp, &dbcp))
+    {
+    CloseDB(dbp);
+    return;
+    }
+
+ memset(&entry, 0, sizeof(entry));
+ JsonElement *json = JsonObjectCreate(1);
+ JsonElement *jsonarray = JsonArrayCreate(200);
+
+ while (NextDB(dbcp, &key, &ksize, &stored, &vsize))
+    {
+    if (stored != NULL)
+       {
+       if (sizeof(entry) < vsize)
+          {
+          Log(LOG_LEVEL_ERR, "Invalid entry in measurements database. Expected size: %zu, actual size: %d", sizeof(entry), vsize);
+          continue;
+          }
+       
+       strcpy(eventname, (char *) key);          
+       JsonArrayAppendString(jsonarray, eventname);
+       }
+    }
+
+ JsonObjectAppendArray(json, "promises", jsonarray);
+ Writer *writer = FileWriter(stdout);
+ JsonWrite(writer, json, 0);
+ WriterClose(writer);
+ JsonDestroy(json);          
+ DeleteDBCursor(dbcp);
+ RO_CloseDB(dbp);
+}
+
+
+/**********************************************************************************************/
+
+static void ListMeasurementHandles()
+
+{
+ ListAll();
+}
+
+
+/**********************************************************************************************/
 
 
 /* EOF */

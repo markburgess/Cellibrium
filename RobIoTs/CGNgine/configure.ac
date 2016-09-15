@@ -22,7 +22,7 @@ dnl ##########################################################################
 
 AC_PREREQ(2.59)
 
-AC_INIT
+AC_INIT([CGNgine],[0.1])
 AC_CONFIG_SRCDIR([libpromises/generic_agent.c])
 AC_CANONICAL_TARGET
 
@@ -39,7 +39,7 @@ dnl The version in the next line is the only one to set
 dnl
 
 _AM_SET_OPTION([tar-ustar])
-AM_INIT_AUTOMAKE(CGNgine, 3.7+RobAIoT)
+AM_INIT_AUTOMAKE
 AM_MAINTAINER_MODE([enable])
 
 AC_DEFINE(BUILD_YEAR, esyscmd([date +%Y | tr -d '\n']), "Software build year")
@@ -143,41 +143,41 @@ AC_ARG_ENABLE([fhs],
 #
 
 AS_IF([test x"$enable_fhs" = xyes], [
-  projlibdir='${libdir}/cfengine'
-  datadir='${exec_prefix}/share/cfengine'
-  WORKDIR='${localstatedir}/lib/cfengine'
+  projlibdir='${libdir}/CGNgine'
+  datadir='${exec_prefix}/share/CGNgine'
+  WORKDIR='${localstatedir}/lib/CGNgine'
   MASTERDIR='default'
   INPUTDIR='default'
-  LOGDIR='${localstatedir}/lib/cfengine'
-  PIDDIR='${localstatedir}/lib/cfengine'
+  LOGDIR='${localstatedir}/lib/CGNgine'
+  PIDDIR='${localstatedir}/lib/CGNgine'
 ], [
-  if test x"$prefix" = xNONE || test x"$prefix" = x/var/cfengine; then
-    prefix=/var/cfengine
+  if test x"$prefix" = xNONE || test x"$prefix" = x/var/CGNgine; then
+    prefix=/var/CGNgine
     case "$target_os" in
       mingw*)
-        WORKDIR=$(cmd /c "echo %PROGRAMFILES%\\Cfengine" | sed 's/\\/\\\\/g')
+        WORKDIR=$(cmd /c "echo %PROGRAMFILES%\\CGNgine" | sed 's/\\/\\\\/g')
         MASTERDIR=default
         INPUTDIR=default
-        LOGDIR=$(cmd /c "echo %PROGRAMFILES%\\Cfengine" | sed 's/\\/\\\\/g')
-        PIDDIR=$(cmd /c "echo %PROGRAMFILES%\\Cfengine" | sed 's/\\/\\\\/g')
+        LOGDIR=$(cmd /c "echo %PROGRAMFILES%\\CGNgine" | sed 's/\\/\\\\/g')
+        PIDDIR=$(cmd /c "echo %PROGRAMFILES%\\CGNgine" | sed 's/\\/\\\\/g')
       ;;
       *)
-        WORKDIR=/var/cfengine
+        WORKDIR=/var/CGNgine
         MASTERDIR=default
         INPUTDIR=default
-        LOGDIR=/var/cfengine
-        PIDDIR=/var/cfengine
+        LOGDIR=/var/CGNgine
+        PIDDIR=/var/CGNgine
       ;;
     esac
   else
-    WORKDIR="${localstatedir}/cfengine"
+    WORKDIR="${localstatedir}/CGNgine"
     MASTERDIR="default"
     INPUTDIR="default"
-    LOGDIR="${localstatedir}/cfengine"
-    PIDDIR="${localstatedir}/cfengine"
+    LOGDIR="${localstatedir}/CGNgine"
+    PIDDIR="${localstatedir}/CGNgine"
   fi
 
-  sbindir='${exec_prefix}/bin' # /var/cfengine/bin despite being sbin_?
+  sbindir='${exec_prefix}/bin' # /var/CGNgine/bin despite being sbin_?
   projlibdir='${exec_prefix}/lib'
   mandir='${exec_prefix}/share/man'
 ])
@@ -522,9 +522,9 @@ then
             LIBXML2_CPPFLAGS="$xml2_include_dir"
         fi
     else                # xml2-config not found
-        # if a path, e.g. /var/cfengine was given, then we
+        # if a path, e.g. /var/CGNgine was given, then we
         # must take into account that libxml2 includes are in
-        # /var/cfengine/include/libxml2
+        # /var/CGNgine/include/libxml2
         LIBXML2_CPPFLAGS=-I$with_libxml2/include/libxml2
     fi
 
@@ -1314,7 +1314,7 @@ AC_ARG_WITH(init-script, AS_HELP_STRING([--with-init-script=PATH],
             INIT_D_PATH="$withval"
         fi
         AC_SUBST([INIT_D_PATH])
-        AC_CONFIG_FILES([misc/init.d/cfengine3])
+        AC_CONFIG_FILES([misc/init.d/CGNgine3])
     fi
 ])
 AM_CONDITIONAL([WITH_INIT_D_SCRIPT], [test -n "$INIT_D_PATH"])
@@ -1333,7 +1333,7 @@ AC_ARG_WITH(systemd-service, AS_HELP_STRING([--with-systemd-service=PATH],
             SYSTEMD_SERVICE_PATH="$withval"
         fi
         AC_SUBST([SYSTEMD_SERVICE_PATH])
-        AC_CONFIG_FILES([misc/systemd/cfengine3-web.service])
+        AC_CONFIG_FILES([misc/systemd/CGNgine3-web.service])
     fi
 ])
 AM_CONDITIONAL([WITH_SYSTEMD_SERVICE], [test -n "$SYSTEMD_SERVICE_PATH"])

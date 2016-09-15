@@ -496,13 +496,13 @@ bool GenericAgentArePromisesValid(const GenericAgentConfig *config)
     Log(LOG_LEVEL_VERBOSE, "Verifying the syntax of the inputs...");
     {
         char cfpromises[CF_MAXVARSIZE];
-        snprintf(cfpromises, sizeof(cfpromises), "%s%cbin%ccf-promises%s", CFWORKDIR, FILE_SEPARATOR, FILE_SEPARATOR,
+        snprintf(cfpromises, sizeof(cfpromises), "%s%cbin%ccgn-promises%s", CFWORKDIR, FILE_SEPARATOR, FILE_SEPARATOR,
                  EXEC_SUFFIX);
 
         struct stat sb;
         if (stat(cfpromises, &sb) == -1)
         {
-            Log(LOG_LEVEL_ERR, "cf-promises%s needs to be installed in %s%cbin for pre-validation of full configuration",
+            Log(LOG_LEVEL_ERR, "cgn-promises%s needs to be installed in %s%cbin for pre-validation of full configuration",
                   EXEC_SUFFIX, CFWORKDIR, FILE_SEPARATOR);
             return false;
         }
@@ -590,135 +590,137 @@ void GenericAgentInitialize(EvalContext *ctx, GenericAgentConfig *config)
     EvalContextClassPutHard(ctx, "any", "source=agent");
 
     GenericAgentAddEditionClasses(ctx);
-
+    
 /* Define trusted directories */
+    
+    const char *workdir = GetWorkDir();
 
-    {
-        const char *workdir = GetWorkDir();
-        if (!workdir)
-        {
-            FatalError(ctx, "Error determining working directory");
-        }
+    if (!workdir)
+       {
+       FatalError(ctx, "Error determining working directory");
+       }
+    
+    strcpy(CFWORKDIR, workdir);
+    MapName(CFWORKDIR);
 
-        strcpy(CFWORKDIR, workdir);
-        MapName(CFWORKDIR);
-    }
-
-    OpenLog(LOG_USER);
-    SetSyslogFacility(LOG_USER);
-
-    Log(LOG_LEVEL_VERBOSE, "Work directory is %s", CFWORKDIR);
-
-    snprintf(vbuff, CF_BUFSIZE, "%s%cupdate.conf", GetInputDir(), FILE_SEPARATOR);
-    MakeParentDirectory(vbuff, force);
-    snprintf(vbuff, CF_BUFSIZE, "%s%cbin%ccf-agent -D from_cfexecd", CFWORKDIR, FILE_SEPARATOR, FILE_SEPARATOR);
-    MakeParentDirectory(vbuff, force);
-    snprintf(vbuff, CF_BUFSIZE, "%s%coutputs%cspooled_reports", CFWORKDIR, FILE_SEPARATOR, FILE_SEPARATOR);
-    MakeParentDirectory(vbuff, force);
-    snprintf(vbuff, CF_BUFSIZE, "%s%clastseen%cintermittencies", CFWORKDIR, FILE_SEPARATOR, FILE_SEPARATOR);
-    MakeParentDirectory(vbuff, force);
-    snprintf(vbuff, CF_BUFSIZE, "%s%creports%cvarious", CFWORKDIR, FILE_SEPARATOR, FILE_SEPARATOR);
-    MakeParentDirectory(vbuff, force);
-
-    MakeParentDirectory(GetLogDir(), force);
-
-    snprintf(vbuff, CF_BUFSIZE, "%s", GetInputDir());
-
-    if (stat(vbuff, &sb) == -1)
-    {
-        FatalError(ctx, " No access to WORKSPACE/inputs dir");
-    }
-
-    /* ensure WORKSPACE/inputs directory has all user bits set (u+rwx) */
-    if ((sb.st_mode & 0700) != 0700)
-    {
-        chmod(vbuff, sb.st_mode | 0700);
-    }
-
-    snprintf(vbuff, CF_BUFSIZE, "%s%coutputs", CFWORKDIR, FILE_SEPARATOR);
-
-    if (stat(vbuff, &sb) == -1)
-    {
-        FatalError(ctx, " No access to WORKSPACE/outputs dir");
-    }
-
-    /* ensure WORKSPACE/outputs directory has all user bits set (u+rwx) */
-    if ((sb.st_mode & 0700) != 0700)
-    {
-        chmod(vbuff, sb.st_mode | 0700);
-    }
-
-    snprintf(ebuff, sizeof(ebuff), "%s%cstate%ccf_procs",
-             CFWORKDIR, FILE_SEPARATOR, FILE_SEPARATOR);
-    MakeParentDirectory(ebuff, force);
-
-    if (stat(ebuff, &statbuf) == -1)
-    {
-        CreateEmptyFile(ebuff);
-    }
-
-    snprintf(ebuff, sizeof(ebuff), "%s%cstate%ccf_rootprocs",
-             CFWORKDIR, FILE_SEPARATOR, FILE_SEPARATOR);
-
-    if (stat(ebuff, &statbuf) == -1)
-    {
-        CreateEmptyFile(ebuff);
-    }
-
-    snprintf(ebuff, sizeof(ebuff), "%s%cstate%ccf_otherprocs",
-             CFWORKDIR, FILE_SEPARATOR, FILE_SEPARATOR);
-
-    if (stat(ebuff, &statbuf) == -1)
-    {
-        CreateEmptyFile(ebuff);
-    }
-
-    snprintf(ebuff, sizeof(ebuff), "%s%cstate%cprevious_state%c",
-             CFWORKDIR, FILE_SEPARATOR, FILE_SEPARATOR, FILE_SEPARATOR);
-    MakeParentDirectory(ebuff, force);
-
-    snprintf(ebuff, sizeof(ebuff), "%s%cstate%cdiff%c",
-             CFWORKDIR, FILE_SEPARATOR, FILE_SEPARATOR, FILE_SEPARATOR);
-    MakeParentDirectory(ebuff, force);
-
-    snprintf(ebuff, sizeof(ebuff), "%s%cstate%cuntracked%c",
-            CFWORKDIR, FILE_SEPARATOR, FILE_SEPARATOR, FILE_SEPARATOR);
-    MakeParentDirectory(ebuff, force);
-
-    OpenNetwork();
-    CryptoInitialize();
-
-    CheckWorkingDirectories(ctx);
-
-    /* Initialize keys and networking. cf-key, doesn't need keys. In fact it
+    if (config->agent_type != AGENT_TYPE_REPORTER)
+       {
+       OpenLog(LOG_USER);
+       SetSyslogFacility(LOG_USER);
+       
+       Log(LOG_LEVEL_VERBOSE, "Work directory is %s", CFWORKDIR);
+       
+       snprintf(vbuff, CF_BUFSIZE, "%s%cupdate.conf", GetInputDir(), FILE_SEPARATOR);
+       MakeParentDirectory(vbuff, force);
+       snprintf(vbuff, CF_BUFSIZE, "%s%cbin%ccgn-agent -D from_cfexecd", CFWORKDIR, FILE_SEPARATOR, FILE_SEPARATOR);
+       MakeParentDirectory(vbuff, force);
+       snprintf(vbuff, CF_BUFSIZE, "%s%coutputs%cspooled_reports", CFWORKDIR, FILE_SEPARATOR, FILE_SEPARATOR);
+       MakeParentDirectory(vbuff, force);
+       snprintf(vbuff, CF_BUFSIZE, "%s%clastseen%cintermittencies", CFWORKDIR, FILE_SEPARATOR, FILE_SEPARATOR);
+       MakeParentDirectory(vbuff, force);
+       snprintf(vbuff, CF_BUFSIZE, "%s%creports%cvarious", CFWORKDIR, FILE_SEPARATOR, FILE_SEPARATOR);
+       MakeParentDirectory(vbuff, force);
+       
+       MakeParentDirectory(GetLogDir(), force);
+       
+       snprintf(vbuff, CF_BUFSIZE, "%s", GetInputDir());
+       
+       if (stat(vbuff, &sb) == -1)
+          {
+          FatalError(ctx, " No access to WORKSPACE/inputs dir");
+          }
+       
+       /* ensure WORKSPACE/inputs directory has all user bits set (u+rwx) */
+       if ((sb.st_mode & 0700) != 0700)
+          {
+          chmod(vbuff, sb.st_mode | 0700);
+          }
+       
+       snprintf(vbuff, CF_BUFSIZE, "%s%coutputs", CFWORKDIR, FILE_SEPARATOR);
+       
+       if (stat(vbuff, &sb) == -1)
+          {
+          FatalError(ctx, " No access to WORKSPACE/outputs dir");
+          }
+       
+       /* ensure WORKSPACE/outputs directory has all user bits set (u+rwx) */
+       if ((sb.st_mode & 0700) != 0700)
+          {
+          chmod(vbuff, sb.st_mode | 0700);
+          }
+       
+       snprintf(ebuff, sizeof(ebuff), "%s%cstate%ccf_procs",
+                CFWORKDIR, FILE_SEPARATOR, FILE_SEPARATOR);
+       MakeParentDirectory(ebuff, force);
+       
+       if (stat(ebuff, &statbuf) == -1)
+          {
+          CreateEmptyFile(ebuff);
+          }
+       
+       snprintf(ebuff, sizeof(ebuff), "%s%cstate%ccf_rootprocs",
+                CFWORKDIR, FILE_SEPARATOR, FILE_SEPARATOR);
+       
+       if (stat(ebuff, &statbuf) == -1)
+          {
+          CreateEmptyFile(ebuff);
+          }
+       
+       snprintf(ebuff, sizeof(ebuff), "%s%cstate%ccf_otherprocs",
+                CFWORKDIR, FILE_SEPARATOR, FILE_SEPARATOR);
+       
+       if (stat(ebuff, &statbuf) == -1)
+          {
+          CreateEmptyFile(ebuff);
+          }
+       
+       snprintf(ebuff, sizeof(ebuff), "%s%cstate%cprevious_state%c",
+                CFWORKDIR, FILE_SEPARATOR, FILE_SEPARATOR, FILE_SEPARATOR);
+       MakeParentDirectory(ebuff, force);
+       
+       snprintf(ebuff, sizeof(ebuff), "%s%cstate%cdiff%c",
+                CFWORKDIR, FILE_SEPARATOR, FILE_SEPARATOR, FILE_SEPARATOR);
+       MakeParentDirectory(ebuff, force);
+       
+       snprintf(ebuff, sizeof(ebuff), "%s%cstate%cuntracked%c",
+                CFWORKDIR, FILE_SEPARATOR, FILE_SEPARATOR, FILE_SEPARATOR);
+       MakeParentDirectory(ebuff, force);
+       
+       OpenNetwork();
+       CryptoInitialize();
+       
+       CheckWorkingDirectories(ctx);
+       }
+       
+    /* Initialize keys and networking. cgn-key, doesn't need keys. In fact it
        must function properly even without them, so that it generates them! */
     if (config->agent_type != AGENT_TYPE_KEYGEN)
-    {
-        LoadSecretKeys();
-        char *bootstrapped_policy_server = ReadPolicyServerFile(CFWORKDIR);
-        PolicyHubUpdateKeys(bootstrapped_policy_server);
-        free(bootstrapped_policy_server);
-        cfnet_init();
-    }
-
+       {
+       LoadSecretKeys();
+       char *bootstrapped_policy_server = ReadPolicyServerFile(CFWORKDIR);
+       PolicyHubUpdateKeys(bootstrapped_policy_server);
+       free(bootstrapped_policy_server);
+       cfnet_init();
+       }
+    
     size_t cwd_size = PATH_MAX;
     while (true)
-    {
-        char cwd[cwd_size];
-        if (!getcwd(cwd, cwd_size))
-        {
-            if (errno == ERANGE)
-            {
-                cwd_size *= 2;
-                continue;
-            }
-            Log(LOG_LEVEL_WARNING, "Could not determine current directory. (getcwd: '%s')", GetErrorStr());
-            break;
-        }
-        EvalContextSetLaunchDirectory(ctx, cwd);
-        break;
-    }
-
+       {
+       char cwd[cwd_size];
+       if (!getcwd(cwd, cwd_size))
+          {
+          if (errno == ERANGE)
+             {
+             cwd_size *= 2;
+             continue;
+             }
+          Log(LOG_LEVEL_WARNING, "Could not determine current directory. (getcwd: '%s')", GetErrorStr());
+          break;
+          }
+       EvalContextSetLaunchDirectory(ctx, cwd);
+          break;
+       }
+    
     if (!MINUSF)
     {
         GenericAgentConfigSetInputFile(config, GetInputDir(), "promises.cf");
@@ -748,6 +750,7 @@ void GenericAgentFinalize(EvalContext *ctx, GenericAgentConfig *config)
     {
         cfnet_shut();
     }
+
     CryptoDeInitialize();
     GenericAgentConfigDestroy(config);
     EvalContextDestroy(ctx);
@@ -1147,7 +1150,7 @@ static void CheckWorkingDirectories(EvalContext *ctx)
         {
             const char* error_reason = GetErrorStr();
 
-            Log(LOG_LEVEL_ERR, "Unable to set ownership on '%s' to '%ju.%ju'. (chown: %s)",
+            Log(LOG_LEVEL_VERBOSE, "Unable to set ownership on '%s' to '%ju.%ju'. (chown: %s)",
                 CFWORKDIR, (uintmax_t)getuid(), (uintmax_t)getgid(), error_reason);
         }
     }

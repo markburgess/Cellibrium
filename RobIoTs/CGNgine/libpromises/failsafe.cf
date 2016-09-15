@@ -1,8 +1,4 @@
 #
-#  Copyright (C) CFEngine AS
-#
-#  This file is part of CFEngine 3 - written and maintained by CFEngine AS.
-#
 #  This program is free software; you can redistribute it and/or modify it
 #  under the terms of the GNU General Public License as published by the
 #  Free Software Foundation; version 3.
@@ -16,19 +12,14 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA
 #
-# To the extent this program is licensed as part of the Enterprise
-# versions of CFEngine, the applicable Commercial Open Source License
-# (COSL) may apply to this file if you as a licensee so wish it. See
-# included file COSL.txt.
-#
 ################################################################################
-## CFEngine Bootstrap / Failsafe Policy ########################################
+## CGNgine Bootstrap / Failsafe Policy ########################################
 ################################################################################
 # THIS FILE REPRESENTS A FALL-BACK SOLUTION FOR THE PRIMARY FAILSAFE FILE.
 # IF THE PRIMARY FAILSAFE/UPDATE LOSES FUNCTIONALITY DUE TO MODIFICATIONS MADE
-# BY THE USER, CFENGINE WILL RECOVER BY USING THIS FALL-BACK BOOTSTRAPPED FILE.
+# BY THE USER, CGNGINE WILL RECOVER BY USING THIS FALL-BACK BOOTSTRAPPED FILE.
 # NEVER EDIT THIS FILE, YOU WILL HAVE TO LOG ON TO EVERY NODE MANAGED BY
-# CFENGINE TO RECTIFY POTENTIAL ERRORS IF SOMETHING GOES WRONG.
+# CGNGINE TO RECTIFY POTENTIAL ERRORS IF SOMETHING GOES WRONG.
 ################################################################################
 
 body common control
@@ -93,7 +84,7 @@ bundle agent cfe_internal_update
 
       "$(sys.inputdir)"
       handle => "cfe_internal_bootstrap_update_files_sys_workdir_inputs_windows",
-      copy_from => u_scp("/var/cfengine/masterfiles"), # Not $(sys.masterdir) when referring to remote host.
+      copy_from => u_scp("/var/CGNgine/masterfiles"), # Not $(sys.masterdir) when referring to remote host.
       depth_search => u_recurse("inf"),
       classes => repaired("got_policy");
 
@@ -142,21 +133,9 @@ bundle agent cfe_internal_update
       # is running, even if cf-execd isn't, for example. Here we want to be
       # sure we relaunch everything.
 
-      "/bin/systemctl restart cfengine3"
+      "/bin/systemctl restart CGNgine3"
       handle => "cfe_internal_bootstrap_update_commands_systemd_cfe_start",
       classes => repaired_two("executor_started", "server_started");
-
-      #
-
-  services:
-
-    windows.got_policy::
-
-      "CfengineNovaExec"
-      handle => "cfe_internal_bootstrap_update_services_windows_executor",
-      service_policy => "start",
-      service_method => bootstart,
-      classes => repaired("executor_started");
 
       #
 

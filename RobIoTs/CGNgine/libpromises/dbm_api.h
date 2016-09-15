@@ -65,6 +65,9 @@ void DBSetMaximumConcurrentTransactions(int max_txn);
 bool OpenDB(CF_DB **dbp, dbid db);
 void CloseDB(CF_DB *dbp);
 
+bool RO_OpenDB(CF_DB **dbp, dbid db);
+void RO_CloseDB(CF_DB *dbp);
+
 bool HasKeyDB(CF_DB *dbp, const char *key, int key_size);
 int ValueSizeDB(CF_DB *dbp, const char *key, int key_size);
 bool ReadComplexKeyDB(CF_DB *dbp, const char *key, int key_size, void *dest, int destSz);

@@ -175,7 +175,7 @@ void CloseAllDBExit()
             /* If we exited because of timeout make sure we Log() it. */
             if (db_handles[i].refcount != 0)
             {
-                Log(LOG_LEVEL_ERR,
+                Log(LOG_LEVEL_VERBOSE,
                     "Database %s refcount is still not zero (%d), forcing CloseDB()!",
                     db_handles[i].filename, db_handles[i].refcount);
                 DBPrivCloseDB(db_handles[i].priv);
@@ -266,6 +266,8 @@ bool OpenDB(DBHandle **dbp, dbid id)
     return *dbp != NULL;
 }
 
+
+
 void CloseDB(DBHandle *handle)
 {
     ThreadLock(&handle->lock);
@@ -274,7 +276,7 @@ void CloseDB(DBHandle *handle)
 
     if (handle->refcount < 1)
     {
-        Log(LOG_LEVEL_ERR, "Trying to close database %s which is not open", handle->filename);
+        Log(LOG_LEVEL_VERBOSE, "Trying to close database %s which is not open", handle->filename);
     }
     else if (--handle->refcount == 0)
     {
@@ -283,6 +285,31 @@ void CloseDB(DBHandle *handle)
 
     ThreadUnlock(&handle->lock);
 }
+
+/*****************************************************************************/
+
+bool RO_OpenDB(DBHandle **dbp, dbid id)
+{
+    DBHandle *handle = DBHandleGet(id);
+    handle->priv = DBPrivOpenDB(handle->filename, id);
+
+    if (handle->priv)
+    {
+    *dbp = handle;
+    }
+    else
+       {
+       *dbp = NULL;
+       }
+    return *dbp != NULL;
+}
+
+
+void RO_CloseDB(DBHandle *handle)
+{
+DBPrivCloseDB(handle->priv);
+}
+
 
 /*****************************************************************************/
 
@@ -374,16 +401,16 @@ static int DBPathLock(const char *filename)
 
     int fd = open(filename_lock, O_CREAT | O_RDWR, 0666);
 
-    if(fd == -1)
-    {
-        Log(LOG_LEVEL_ERR, "Unable to open database lock file '%s'. (flock: %s)", filename_lock, GetErrorStr());
-        free(filename_lock);
-        return -1;
-    }
-
+    if (fd == -1)
+       {
+       //Log(LOG_LEVEL_VERBOSE, "Unable to open database lock file '%s'. (flock: %s)", filename_lock, GetErrorStr());
+       free(filename_lock);
+       return -1;
+       }
+    
     if (ExclusiveLockFile(fd) == -1)
     {
-        Log(LOG_LEVEL_ERR, "Unable to lock database lock file '%s'. (fcntl(F_SETLK): %s)", filename_lock, GetErrorStr());
+        Log(LOG_LEVEL_VERBOSE, "Unable to lock database lock file '%s'. (fcntl(F_SETLK): %s)", filename_lock, GetErrorStr());
         free(filename_lock);
         close(fd);
         return -1;
@@ -398,7 +425,7 @@ static void DBPathUnLock(int fd)
 {
     if(ExclusiveUnlockFile(fd) != 0)
     {
-        Log(LOG_LEVEL_ERR, "Could not close db lock-file. (close: %s)", GetErrorStr());
+        Log(LOG_LEVEL_VERBOSE, "Could not close db lock-file. (close: %s)", GetErrorStr());
     }
 }
 
@@ -412,7 +439,7 @@ static void DBPathMoveBroken(const char *filename)
 
     if(rename(filename, filename_broken) != 0)
     {
-        Log(LOG_LEVEL_ERR, "Failed moving broken db out of the way");
+        Log(LOG_LEVEL_VERBOSE, "Failed moving broken db out of the way");
     }
 
     free(filename_broken);
@@ -434,7 +461,7 @@ StringMap *LoadDatabaseToStringMap(dbid database_id)
 
     if (!NewDBCursor(db_conn, &db_cursor))
     {
-        Log(LOG_LEVEL_ERR, "Unable to scan db");
+        Log(LOG_LEVEL_VERBOSE, "Unable to scan db");
         CloseDB(db_conn);
         return NULL;
     }
