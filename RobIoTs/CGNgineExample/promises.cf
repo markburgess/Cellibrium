@@ -4,7 +4,7 @@
 #
 ######################################################
 
-bundle agent main
+bundle common defs
 {
 vars:
 
@@ -14,6 +14,10 @@ labels: # classes:
 
   "local_probe" expression => fileexists("/etc/passwd");
 
+}
+
+bundle agent main
+{
 reports:
 
   "Print $(mylist)"
@@ -33,11 +37,11 @@ commands:
 
   machine_learning::
 
-    "/var/cfengine/bin/cf-monitord";
+    "/var/CGNgine/bin/cgn-monitord";
 
   promise_keeping::
 
-    "/var/cfengine/bin/cf-execd";
+    "/var/CGNgine/bin/cgn-execd";
 
 }
 
@@ -47,7 +51,7 @@ bundle monitor sensor_cognition
 {
 measurements:
 
- linux.localprobe::
+ linux.local_probe::
 
   "/proc/meminfo" -> "big fat promisee"
 
