@@ -1,0 +1,100 @@
+
+Examples of outputs from a lighttpd server with the attached interface. Note that the
+cgn-report agent needs to be setuid root in order to access the normal root owned data.
+The interface is read only, in keeping with CFEngine principles.
+
+host$ curl http://127.0.0.1/cgn/agent/policy_maintenance
+{
+   "promises": [
+      {
+         "namespacepath": "/default/main/processes/'cgn-execd'",
+         "handle": "policy_maintenance",
+         "q": 1.0000,
+         "expect": 0.7344,
+         "var": 0.1479,
+         "utc_last_checked": 1473923600
+      }
+   ]
+}
+
+host$ curl http://127.0.0.1/cgn/agent
+{
+   "promises": [
+      "sensory_input",
+      "policy_maintenance",
+      "_var_cfengine_bin_cf_monitord_main_40",
+      "_var_cfengine_bin_cf_execd_main_44",
+      "_var_CGNgine_bin_cf_monitord_main_40",
+      "_var_CGNgine_bin_cf_execd_main_44",
+      "_var_CGNgine_bin_cgn_monitord_main_40",
+      "_var_CGNgine_bin_cgn_execd_main_44",
+      "entropy_source"
+   ]
+}
+
+host$ curl http://127.0.0.1/cgn/monitor
+{
+   "measurements": [
+      "users",
+      "rootprocs",
+      "otherprocs",
+      "diskfree",
+      "loadavg",
+      "smtp_in",
+      "www_in",
+      "messages",
+      "temp0",
+      "cpu",
+      "cpu0",
+      "cpu1",
+      "cpu2",
+      "cpu3",
+      "ipp_in",
+      "io_read",
+      "io_write",
+      "io_r_data",
+      "io_w_data",
+      "mem_total",
+      "mem_free",
+      "mem_cached",
+      "swap_alloc",
+      "swap_free",
+      "sensor_cognition:free_memory_watch",
+      "sensor_cognition:entropy_source"
+   ]
+
+}
+
+host$ curl http://127.0.0.1/cgn/monitor/cpu0
+{
+   "type": "weekly",
+   "name": "cpu0",
+   "description": "%CPU utilization 0",
+   "dataslot": 38,
+   "timeseries": [
+      {
+         "timeslot": 960,
+         "timekey": "Thu:Hr09:Min00_05",
+         "q": 4.7619,
+         "expect": 4.2256,
+         "var": 1.8191
+      },
+
+      {
+         "timeslot": 962,
+         "timekey": "Thu:Hr09:Min10_15",
+         "q": 3.8095,
+         "expect": 4.0336,
+         "var": 0.4232
+      },
+
+      {
+         "timeslot": 963,
+         "timekey": "Thu:Hr09:Min15_20",
+         "q": 2.8571,
+         "expect": 2.4369,
+         "var": 1.1040
+      }
+   ]
+}
+host$ 
