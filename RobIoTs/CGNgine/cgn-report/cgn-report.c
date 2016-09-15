@@ -464,7 +464,7 @@ static void OutputPromises(char *name)
        }
     }
 
- JsonObjectAppendArray(json, "compliance", jsonarray);
+ JsonObjectAppendArray(json, "promises", jsonarray);
  Writer *writer = FileWriter(stdout);
  JsonWrite(writer, json, 0);
  WriterClose(writer);
@@ -1206,9 +1206,14 @@ static void HandleURI(char *uri)
 static void HandleAgentHandle(char *handle, char *element)
 
 {
- printf("HANDLE handle\n");
-
- printf("JSON AGENT/%s/%s\n", handle,element);
+ if (element[0] == '\0')
+    {
+    OutputPromises(handle);
+    }
+ else
+    {
+    printf("JSON AGENT/%s/%s\n", handle,element);
+    }
 }
 
 
@@ -1217,9 +1222,14 @@ static void HandleAgentHandle(char *handle, char *element)
 static void HandleMeasurementHandle(char *handle, char *element)
 
 {
- printf("HANDLE mon handle\n");
-        
- printf("JSON MONITOR/%s/%s\n", handle,element);
+ if (element[0] == '\0')
+    {
+    OutputSingleMeasure(handle);
+    }
+ else
+    {
+    printf("JSON MONITOR/%s/%s\n", handle,element);    
+    }
 }
 
 
@@ -1230,7 +1240,7 @@ static void ListAgentHandles()
 {
  CF_DB *dbp;
  CF_DBC *dbcp;
- char eventname[CF_MAXVARSIZE];
+ char eventname[CF_MAXVARSIZE], handle[CF_MAXVARSIZE] = {0};
  Event entry;
  char *key;
  void *stored;
@@ -1263,8 +1273,9 @@ static void ListAgentHandles()
           continue;
           }
        
-       strcpy(eventname, (char *) key);          
-       JsonArrayAppendString(jsonarray, eventname);
+       strcpy(eventname, (char *) key);
+       sscanf(eventname, "%*[^,],%s", handle);
+       JsonArrayAppendString(jsonarray, handle);
        }
     }
 
