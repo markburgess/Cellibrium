@@ -25,10 +25,12 @@ enum associations
     a_ass_dim
 };
 
+#ifndef PERCOLATION
 void Gr(FILE *consc,char *from, int type, enum associations assoc, char *to);
 void IGr(FILE *consc,char *from, int type, enum associations assoc, char *to);
 void GrQ(FILE *consc,char *from, int type, enum associations assoc, double to);
 void GenerateSemanticsGraph(Policy *policy);
+#endif
 
 /*****************************************************************************/
 
