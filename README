@@ -10,7 +10,7 @@ from Computer Immunology to Semantic Spacetimes, and embeds a mostly
 compatible agent collection for users of CFEngine. Other agents will
 be added in the future.
 
-The CELLIBRIUM (CELLular equilIBRIUM cerebellum) supports a model of
+The CELLIBRIUM (CELLular equilIBRIUM (cerebellum)) supports a model of
 distributed embedded reasoning for use in IoT, Cloud, and Applications
 centric computing, including Smart Cities. It merges inputs from
 automated RobIoTs and from Anthropods of humans! It supports workspaces,
