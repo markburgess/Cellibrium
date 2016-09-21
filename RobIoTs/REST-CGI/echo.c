@@ -42,8 +42,6 @@ int main(void)
 
  while (FCGI_Accept() >= 0)
     {
-    printf("Content-type: application/json\r\n\r\n");
-    
     if (v = getenv("REQUEST_URI"))
        {
        char cmd[2000];

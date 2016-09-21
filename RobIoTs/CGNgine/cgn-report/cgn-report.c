@@ -1,10 +1,8 @@
 /*
 
-   Copyright (C) Cfengine AS
+  Mark Burgess is the copyright owner of this code
 
-   This file is part of Cfengine 3 - written and maintained by Cfengine AS.
-
-   This program is free software; you can redistribute it and/or modify it
+  This program is free software; you can redistribute it and/or modify it
    under the terms of the GNU General Public License as published by the
    Free Software Foundation; version 3.
 
@@ -83,6 +81,8 @@ static void HandleAgentHandle(char *handle, char *element);
 static void HandleMeasurementHandle(char *handle, char *element);
 static void ListAgentHandles(void);
 static void ListMeasurementHandles(void);
+static void HandleAgentGraph(char *element);
+static void HandleMeasurementGraph(char *element);
 
 /*******************************************************************/
 /* GLOBAL VARIABLES                                                */
@@ -114,6 +114,9 @@ char OVERRIDE[CF_BUFSIZE] = {0};
 FILE *FPE[CF_OBSERVABLES], *FPQ[CF_OBSERVABLES];
 FILE *FPM[CF_OBSERVABLES];
 int HAVE_DATA[CF_OBSERVABLES];
+
+static char AGENTGRAPHFILE[CF_BUFSIZE] = "";
+static char MONGRAPHFILE[CF_BUFSIZE] = "";
 
 static const double ticksperhr = (double) SECONDS_PER_HOUR;
 
@@ -308,6 +311,10 @@ static void ThisAgentInit(void)
        }
     }
 
+ snprintf(MONGRAPHFILE, CF_BUFSIZE, "%s/state/env_graph", CFWORKDIR);
+ MapName(MONGRAPHFILE);
+ snprintf(AGENTGRAPHFILE, CF_BUFSIZE, "%s/policy_graph", CFWORKDIR);
+ MapName(AGENTGRAPHFILE);
  umask(077);   
 }
 
@@ -1197,8 +1204,6 @@ static void HandleURI(char *uri)
        ListMeasurementHandles();
        }
     }
-
-
 }
 
 /**********************************************************************************************/
@@ -1206,13 +1211,19 @@ static void HandleURI(char *uri)
 static void HandleAgentHandle(char *handle, char *element)
 
 {
- if (element[0] == '\0')
+ if (strcmp(handle,"graph") == 0)
     {
+    HandleAgentGraph(element);
+    }
+ else if (element[0] == '\0')
+    {
+    printf("Content-type: application/json\r\n\r\n");
     OutputPromises(handle);
     }
  else
     {
-    printf("JSON AGENT/%s/%s\n", handle,element);
+    printf("Content-type: text/plain\r\n\r\n");
+    printf("ERROR AGENT/%s/%s\n", handle,element);
     }
 }
 
@@ -1222,13 +1233,19 @@ static void HandleAgentHandle(char *handle, char *element)
 static void HandleMeasurementHandle(char *handle, char *element)
 
 {
- if (element[0] == '\0')
+ if (strcmp(handle,"graph") == 0)
     {
+    HandleMeasurementGraph(element);
+    }
+ else if (element[0] == '\0')
+    {
+    printf("Content-type: application/json\r\n\r\n");
     OutputSingleMeasure(handle);
     }
  else
     {
-    printf("JSON MONITOR/%s/%s\n", handle,element);    
+    printf("Content-type: text/plain\r\n\r\n");
+    printf("ERROR MONITOR/%s/%s\n", handle,element);    
     }
 }
 
@@ -1299,6 +1316,52 @@ static void ListMeasurementHandles()
 
 
 /**********************************************************************************************/
+
+static void HandleMeasurementGraph(char *element)
+{
+ FILE *fp;
+ char line[CF_BUFSIZE];
+
+ printf("Content-type: text/plain\r\n\r\n");
+ 
+ if ((fp = fopen(MONGRAPHFILE, "r")) == NULL)
+    {
+    printf("ERROR MONITOR/graph/%s\n",element);    
+    return;
+    }
+
+ while (!feof(fp))
+    {
+    fgets(line, CF_BUFSIZE-1, fp);
+    puts(line);
+    }
+ 
+ fclose(fp);
+}
+
+/**********************************************************************************************/
+
+static void HandleAgentGraph(char *element)
+{
+ FILE *fp;
+ char line[CF_BUFSIZE];
+ 
+ printf("Content-type: text/plain\r\n\r\n");
+ 
+ if ((fp = fopen(AGENTGRAPHFILE, "r")) == NULL)
+    {
+    printf("ERROR MONITOR/graph/%s\n", element);    
+    return;
+    }
+
+ while (!feof(fp))
+    {
+    fgets(line, CF_BUFSIZE-1, fp);
+    puts(line);
+    }
+ 
+ fclose(fp);
+}
 
 
 /* EOF */
