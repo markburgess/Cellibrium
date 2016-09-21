@@ -652,7 +652,10 @@ static void BuildConsciousState(EvalContext *ctx, Averages av, Timescales t)
  if (consc)
     {
     Gr(consc,VUQNAME,EXPRESSES,a_name,"host device");
-    Gr(consc,VDOMAIN,EXPRESSES,a_name,"DNS domain or Workspace");
+    if (VDOMAIN[0] != '\0')
+       {
+       Gr(consc,VDOMAIN,EXPRESSES,a_name,"DNS domain or Workspace");
+       }
     AnnotateContext(ctx, consc, now);
     }
 
@@ -1468,6 +1471,8 @@ if (consc == NULL)
 char here_and_now[CF_BUFSIZE];
 char buff[CF_BUFSIZE];
 
+Gr(consc,"sample times",CONTAINS,a_contains,now);
+
  // The name/context is a semantic coordinate for the instances (like an array index)
 
 snprintf(here_and_now, CF_BUFSIZE, "%s:%s",VFQNAME,now);
@@ -1482,7 +1487,6 @@ int i = 0;
 while ((cls = ClassTableIteratorNext(iter)))
    {
    Gr(consc,here_and_now,EXPRESSES,a_hasattr,cls->name);
-   Gr(consc,cls->name,CONTAINS,a_contains,here_and_now);
    }
  
 ClassTableIteratorDestroy(iter);
@@ -1497,7 +1501,6 @@ static void AnnotateCoactivation(FILE *consc,char *now,char *origin, char *name,
 
  // The name is a semantic coordinate for the instance
  snprintf(here_and_now, CF_BUFSIZE, "%s:%s",VFQNAME,now);
- Gr(consc,now,CONTAINS,a_contains,here_and_now);
  
  // anchor basis for "here and now" context cluster to a unique but temporary key
  Gr(consc,now,EXPRESSES,a_hasattr,here_and_now);
@@ -1517,7 +1520,6 @@ static void AnnotateOrigin(FILE *consc,char *now,char *origin,char *name,char *g
  snprintf(here_and_now, CF_BUFSIZE, "%s:%s:%s",VFQNAME,now,name);
 
  Gr(consc,name,CONTAINS,a_contains,here_and_now);
- Gr(consc,VFQNAME,CONTAINS,a_contains,here_and_now);
   
  // anchor basis of measurment to a system region/interpretation (sensor type)
  Gr(consc,origin,CONTAINS|EXPRESSES,a_contains,name);
@@ -1565,15 +1567,15 @@ static void AnnotateNumbers(FILE *consc,char *now,char *origin, char *name, char
 
  // attach number meanings
  snprintf(buff,CF_BUFSIZE,"%s:q",here_and_now);
- Gr(consc,buff,EXPRESSES,a_name,"current value");
+ IGr(consc,buff,EXPRESSES,a_name,"a current value");
  snprintf(buff,CF_BUFSIZE,"%s:E",here_and_now);
- Gr(consc,buff,EXPRESSES,a_name,"mean value");
+ IGr(consc,buff,EXPRESSES,a_name,"a mean value");
  snprintf(buff,CF_BUFSIZE,"%s:sig",here_and_now);
- Gr(consc,buff,EXPRESSES,a_name,"std deviation");
+ IGr(consc,buff,EXPRESSES,a_name,"a std deviation");
  snprintf(buff,CF_BUFSIZE,"%s:Et",here_and_now);
- Gr(consc,buff,EXPRESSES,a_name,"mean time to change");
+ IGr(consc,buff,EXPRESSES,a_name,"a mean time to change");
  snprintf(buff,CF_BUFSIZE,"%s:tsig",here_and_now);
- Gr(consc,buff,EXPRESSES,a_name,"mean time deviation");
+ IGr(consc,buff,EXPRESSES,a_name,"a mean time deviation");
 
 }
 
