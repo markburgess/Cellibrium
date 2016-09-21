@@ -14,10 +14,9 @@ const int NEAR      = 8;
 const int F = 0;
 const int B = 1;
 
-
 char *A[a_ass_dim+1][2] =
 {
-    {"seen concurrent with","seen concurrent with"},
+    {"seen concurrently with","seen concurrently with"},
     {"contains","belongs to"},
     {"is a name for","is called"},
     {"is the source of","originates from"},
