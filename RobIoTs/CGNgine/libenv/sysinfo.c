@@ -1,7 +1,5 @@
 /*
-   Copyright (C) CFEngine AS
-
-   This file is part of CFEngine 3 - written and maintained by CFEngine AS.
+   Part of this code were Copyright (C) CFEngine AS
 
    This program is free software; you can redistribute it and/or modify it
    under the terms of the GNU General Public License as published by the
@@ -23,7 +21,6 @@
 */
 
 #include <platform.h>
-
 #include <sysinfo.h>
 #include <sysinfo_priv.h>
 #include <cf3.extern.h>
@@ -353,7 +350,7 @@ void DetectDomainName(EvalContext *ctx, const char *orig_nodename)
 
     do
     {
-        EvalContextClassPutHard(ctx, ptr, "inventory,attribute_name=none,source=agent,derived-from=sys.fqhost");
+        EvalContextClassPutHard(ctx, ptr, "host,attribute_name=fully qualified name,source=system,derived-from=sys.fqhost");
 
         ptr = strchr(ptr, '.');
         if (ptr != NULL)
@@ -362,13 +359,13 @@ void DetectDomainName(EvalContext *ctx, const char *orig_nodename)
         }
     } while (ptr != NULL);
 
-    EvalContextClassPutHard(ctx, VUQNAME, "source=agent,derived-from=sys.uqhost");
-    EvalContextClassPutHard(ctx, VDOMAIN, "source=agent,derived-from=sys.domain");
+    EvalContextClassPutHard(ctx, VUQNAME, "host,attribute_name=unqualified hostname,source=system,derived-from=sys.uqhost");
+    EvalContextClassPutHard(ctx, VDOMAIN, "host,attribute_name=domain name,source=system,derived-from=sys.domain");
 
-    EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "host", nodename, CF_DATA_TYPE_STRING, "inventory,source=agent,attribute_name=none");
-    EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "uqhost", VUQNAME, CF_DATA_TYPE_STRING, "inventory,source=agent,attribute_name=none");
-    EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "fqhost", VFQNAME, CF_DATA_TYPE_STRING, "inventory,source=agent,attribute_name=Host name");
-    EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "domain", VDOMAIN, CF_DATA_TYPE_STRING, "source=agent");
+    EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "host", nodename, CF_DATA_TYPE_STRING, "host,source=system,attribute_name=hostname");
+    EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "uqhost", VUQNAME, CF_DATA_TYPE_STRING, "host,source=system,attribute_name=unqualified hostname");
+    EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "fqhost", VFQNAME, CF_DATA_TYPE_STRING, "host,source=system,attribute_name=fully qualified hostname");
+    EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "domain", VDOMAIN, CF_DATA_TYPE_STRING, "source=system");
 }
 
 /*******************************************************************/
@@ -383,24 +380,24 @@ void DiscoverVersion(EvalContext *ctx)
     char workbuf[CF_BUFSIZE];
     
     snprintf(workbuf, CF_MAXVARSIZE, "%d", major);
-    EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "cf_version_major", workbuf, CF_DATA_TYPE_STRING, "source=agent");
+    EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "cf_version_major", workbuf, CF_DATA_TYPE_STRING, "source=system");
     snprintf(workbuf, CF_MAXVARSIZE, "%d", minor);
-    EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "cf_version_minor", workbuf, CF_DATA_TYPE_STRING, "source=agent");
+    EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "cf_version_minor", workbuf, CF_DATA_TYPE_STRING, "source=system");
     snprintf(workbuf, CF_MAXVARSIZE, "%d", patch);
-    EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "cf_version_patch", workbuf, CF_DATA_TYPE_STRING, "source=agent");
+    EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "cf_version_patch", workbuf, CF_DATA_TYPE_STRING, "source=system");
     
     snprintf(workbuf,CF_BUFSIZE,"%s%cinputs%clib%c%d.%d",CFWORKDIR,FILE_SEPARATOR,FILE_SEPARATOR,FILE_SEPARATOR,major,minor);
-    EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS,"libdir",workbuf,CF_DATA_TYPE_STRING,"source=agent");
+    EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS,"libdir",workbuf,CF_DATA_TYPE_STRING,"source=system");
     
     snprintf(workbuf, CF_BUFSIZE, "lib%c%d.%d", FILE_SEPARATOR, major, minor);
-    EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "local_libdir", workbuf, CF_DATA_TYPE_STRING, "source=agent");
+    EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "local_libdir", workbuf, CF_DATA_TYPE_STRING, "source=system");
     }
  else
     {
-    EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "cf_version_major", "BAD VERSION " VERSION, CF_DATA_TYPE_STRING, "source=agent");
-    EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "cf_version_minor", "BAD VERSION " VERSION, CF_DATA_TYPE_STRING, "source=agent");
-    EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "cf_version_patch", "BAD VERSION " VERSION, CF_DATA_TYPE_STRING, "source=agent");
-    EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "libdir", CFWORKDIR, CF_DATA_TYPE_STRING, "source=agent");
+    EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "cf_version_major", "BAD VERSION " VERSION, CF_DATA_TYPE_STRING, "source=system");
+    EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "cf_version_minor", "BAD VERSION " VERSION, CF_DATA_TYPE_STRING, "source=system");
+    EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "cf_version_patch", "BAD VERSION " VERSION, CF_DATA_TYPE_STRING, "source=system");
+    EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "libdir", CFWORKDIR, CF_DATA_TYPE_STRING, "source=system");
     }
 }
 
@@ -481,7 +478,7 @@ static void GetNameInfo3(EvalContext *ctx)
 #ifdef __sun
  if (strcmp(VSYSNAME.machine, "i86pc") == 0)
     {
-    EvalContextClassPutHard(ctx, "solarisx86", "inventory,attribute_name=none,source=agent");
+    EvalContextClassPutHard(ctx, "solarisx86", "host,attribute_name=operating system,source=system");
     }
 #endif
  
@@ -494,14 +491,14 @@ static void GetNameInfo3(EvalContext *ctx)
  else
     {
     snprintf(workbuf, CF_BUFSIZE, "%jd", (intmax_t) tloc);
-    EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "systime", workbuf, CF_DATA_TYPE_INT, "time_based,source=agent");
+    EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "systime", workbuf, CF_DATA_TYPE_INT, "time,source=system");
     snprintf(workbuf, CF_BUFSIZE, "%jd", (intmax_t) tloc / SECONDS_PER_DAY);
-    EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "sysday", workbuf, CF_DATA_TYPE_INT, "time_based,source=agent");
+    EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "sysday", workbuf, CF_DATA_TYPE_INT, "time,source=system");
     i = GetUptimeMinutes(tloc);
     if (i != -1)
        {
        snprintf(workbuf, CF_BUFSIZE, "%d", i);
-       EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "uptime", workbuf, CF_DATA_TYPE_INT, "inventory,time_based,source=agent,attribute_name=Uptime minutes");
+       EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "uptime", workbuf, CF_DATA_TYPE_INT, "host,time,source=system,attribute_name=Uptime minutes");
        }
     }
  
@@ -521,13 +518,13 @@ static void GetNameInfo3(EvalContext *ctx)
           if (!strcmp(CLASSATTRIBUTES[i][2], VSYSNAME.release)
               || StringMatchFull(CLASSATTRIBUTES[i][2], VSYSNAME.release))
              {
-             EvalContextClassPutHard(ctx, CLASSTEXT[i], "inventory,attribute_name=none,source=agent,derived-from=sys.class");
+             EvalContextClassPutHard(ctx, CLASSTEXT[i], "host,attribute_name=operating system type,source=system,derived-from=sys.class");
              
              found = true;
              
              VSYSTEMHARDCLASS = (PlatformContext) i;
              VPSHARDCLASS = (PlatformContext) i; /* this one can be overriden at vz detection */
-             EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "class", CLASSTEXT[i], CF_DATA_TYPE_STRING, "inventory,source=agent,attribute_name=OS type");
+             EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "class", CLASSTEXT[i], CF_DATA_TYPE_STRING, "host,source=system,attribute_name=operating system type");
              break;
              }
           }
@@ -559,33 +556,33 @@ static void GetNameInfo3(EvalContext *ctx)
  snprintf(workbuf, CF_MAXVARSIZE, "%s", ctime(&tloc));
  Chop(workbuf, CF_EXPANDSIZE);
  
- EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "date", workbuf, CF_DATA_TYPE_STRING, "time_based,source=agent");
- EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "cdate", CanonifyName(workbuf), CF_DATA_TYPE_STRING, "time_based,source=agent");
- EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "os", VSYSNAME.sysname, CF_DATA_TYPE_STRING, "source=agent");
- EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "release", VSYSNAME.release, CF_DATA_TYPE_STRING, "inventory,source=agent,attribute_name=OS kernel");
- EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "version", VSYSNAME.version, CF_DATA_TYPE_STRING, "source=agent");
- EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "arch", VSYSNAME.machine, CF_DATA_TYPE_STRING, "inventory,source=agent,attribute_name=Architecture");
- EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "workdir", CFWORKDIR, CF_DATA_TYPE_STRING, "source=agent");
- EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "fstab", VFSTAB[VSYSTEMHARDCLASS], CF_DATA_TYPE_STRING, "source=agent");
- EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "resolv", VRESOLVCONF[VSYSTEMHARDCLASS], CF_DATA_TYPE_STRING, "source=agent");
- EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "maildir", VMAILDIR[VSYSTEMHARDCLASS], CF_DATA_TYPE_STRING, "source=agent");
- EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "exports", VEXPORTS[VSYSTEMHARDCLASS], CF_DATA_TYPE_STRING, "source=agent");
- EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "logdir", GetLogDir(), CF_DATA_TYPE_STRING, "source=agent");
- EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "piddir", GetPidDir(), CF_DATA_TYPE_STRING, "source=agent");
- EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "masterdir", GetMasterDir(), CF_DATA_TYPE_STRING, "source=agent");
- EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "inputdir", GetInputDir(), CF_DATA_TYPE_STRING, "source=agent");
+ EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "date", workbuf, CF_DATA_TYPE_STRING, "time,source=system");
+ EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "cdate", CanonifyName(workbuf), CF_DATA_TYPE_STRING, "time,source=system");
+ EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "os", VSYSNAME.sysname, CF_DATA_TYPE_STRING, "source=system");
+ EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "release", VSYSNAME.release, CF_DATA_TYPE_STRING, "host,source=system,attribute_name=OS kernel");
+ EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "version", VSYSNAME.version, CF_DATA_TYPE_STRING, "source=system");
+ EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "arch", VSYSNAME.machine, CF_DATA_TYPE_STRING, "host,source=system,attribute_name=Architecture");
+ EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "workdir", CFWORKDIR, CF_DATA_TYPE_STRING, "source=system");
+ EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "fstab", VFSTAB[VSYSTEMHARDCLASS], CF_DATA_TYPE_STRING, "source=system");
+ EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "resolv", VRESOLVCONF[VSYSTEMHARDCLASS], CF_DATA_TYPE_STRING, "source=system");
+ EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "maildir", VMAILDIR[VSYSTEMHARDCLASS], CF_DATA_TYPE_STRING, "source=system");
+ EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "exports", VEXPORTS[VSYSTEMHARDCLASS], CF_DATA_TYPE_STRING, "source=system");
+ EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "logdir", GetLogDir(), CF_DATA_TYPE_STRING, "source=system");
+ EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "piddir", GetPidDir(), CF_DATA_TYPE_STRING, "source=system");
+ EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "masterdir", GetMasterDir(), CF_DATA_TYPE_STRING, "source=system");
+ EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "inputdir", GetInputDir(), CF_DATA_TYPE_STRING, "source=system");
  
  snprintf(workbuf, CF_BUFSIZE, "%s%cbin", CFWORKDIR, FILE_SEPARATOR);
- EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "bindir", workbuf, CF_DATA_TYPE_STRING, "source=agent");
+ EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "bindir", workbuf, CF_DATA_TYPE_STRING, "source=system");
  
  snprintf(workbuf, CF_BUFSIZE, "%s%cfailsafe.cf", GetInputDir(), FILE_SEPARATOR);
- EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "failsafe_policy_path", workbuf, CF_DATA_TYPE_STRING, "source=agent");
+ EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "failsafe_policy_path", workbuf, CF_DATA_TYPE_STRING, "source=system");
  
  snprintf(workbuf, CF_BUFSIZE, "%s%cupdate.cf", GetInputDir(), FILE_SEPARATOR);
- EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "update_policy_path", workbuf, CF_DATA_TYPE_STRING, "source=agent");
+ EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "update_policy_path", workbuf, CF_DATA_TYPE_STRING, "source=system");
  
 /* FIXME: type conversion */
- EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "cf_version", (char *) Version(), CF_DATA_TYPE_STRING, "inventory,source=agent,attribute_name=CFEngine version");
+ EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "cf_version", (char *) Version(), CF_DATA_TYPE_STRING, "host,source=system,attribute_name=CFEngine version");
  
  DiscoverVersion(ctx);
  
@@ -596,11 +593,11 @@ static void GetNameInfo3(EvalContext *ctx)
     HashPubKey(PUBKEY, digest, CF_DEFAULT_DIGEST);
     HashPrintSafe(pubkey_digest, sizeof(pubkey_digest), digest, CF_DEFAULT_DIGEST, true);
     
-    EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "key_digest", pubkey_digest, CF_DATA_TYPE_STRING, "inventory,source=agent,attribute_name=CFEngine ID");
+    EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "key_digest", pubkey_digest, CF_DATA_TYPE_STRING, "host,source=system,attribute_name=CFEngine ID");
     
     snprintf(workbuf, CF_MAXVARSIZE - 1, "PK_%s", pubkey_digest);
     CanonifyNameInPlace(workbuf);
-    EvalContextClassPutHard(ctx, workbuf, "inventory,attribute_name=none,source=agent,derived-from=sys.key_digest");
+    EvalContextClassPutHard(ctx, workbuf, "host,attribute_name=public key,source=system,derived-from=sys.key_digest");
     }
  
  for (i = 0; components[i] != NULL; i++)
@@ -626,7 +623,7 @@ static void GetNameInfo3(EvalContext *ctx)
     if (stat(name, &sb) != -1)
        {
        snprintf(quoteName, sizeof(quoteName), "\"%s\"", name);
-       EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, shortname, quoteName, CF_DATA_TYPE_STRING, "cfe_internal,source=agent");
+       EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, shortname, quoteName, CF_DATA_TYPE_STRING, "cfe_internal,source=system");
        have_component[i] = true;
        }
     }
@@ -647,7 +644,7 @@ static void GetNameInfo3(EvalContext *ctx)
     if (stat(name, &sb) != -1)
        {
        snprintf(quoteName, sizeof(quoteName), "\"%s\"", name);
-       EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, shortname, quoteName, CF_DATA_TYPE_STRING, "cfe_internal,source=agent");
+       EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, shortname, quoteName, CF_DATA_TYPE_STRING, "cfe_internal,source=system");
        }
     }
  
@@ -656,19 +653,19 @@ static void GetNameInfo3(EvalContext *ctx)
 #ifdef __MINGW32__
  if (NovaWin_GetWinDir(workbuf, sizeof(workbuf)))
     {
-    EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "windir", workbuf, CF_DATA_TYPE_STRING, "source=agent");
+    EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "windir", workbuf, CF_DATA_TYPE_STRING, "source=system");
     }
  
  if (NovaWin_GetSysDir(workbuf, sizeof(workbuf)))
     {
-    EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "winsysdir", workbuf, CF_DATA_TYPE_STRING, "source=agent");
+    EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "winsysdir", workbuf, CF_DATA_TYPE_STRING, "source=system");
     
     char filename[CF_BUFSIZE];
     if (snprintf(filename, sizeof(filename), "%s%s", workbuf, "\\WindowsPowerShell\\v1.0\\powershell.exe") < sizeof(filename))
        {
        if (NovaWin_FileExists(filename))
           {
-          EvalContextClassPutHard(ctx, "powershell", "inventory,attribute_name=none,source=agent");
+          EvalContextClassPutHard(ctx, "powershell", "host,attribute_name=shell type,source=system");
           Log(LOG_LEVEL_VERBOSE, "Additional hard class defined as: %s", "powershell");
           }
        }
@@ -676,19 +673,19 @@ static void GetNameInfo3(EvalContext *ctx)
  
  if (NovaWin_GetProgDir(workbuf, sizeof(workbuf)))
     {
-    EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "winprogdir", workbuf, CF_DATA_TYPE_STRING, "source=agent");
+    EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "winprogdir", workbuf, CF_DATA_TYPE_STRING, "source=system");
     }
  
 # ifdef _WIN64
 // only available on 64 bit windows systems
  if (NovaWin_GetEnv("PROGRAMFILES(x86)", workbuf, sizeof(workbuf)))
     {
-    EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "winprogdir86", workbuf, CF_DATA_TYPE_STRING, "source=agent");
+    EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "winprogdir86", workbuf, CF_DATA_TYPE_STRING, "source=system");
     }
  
 # else/* NOT _WIN64 */
  
- EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "winprogdir86", "", CF_DATA_TYPE_STRING, "source=agent");
+ EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "winprogdir86", "", CF_DATA_TYPE_STRING, "source=system");
  
 # endif
 #endif /* !__MINGW32__ */
@@ -696,21 +693,21 @@ static void GetNameInfo3(EvalContext *ctx)
  EnterpriseContext(ctx);
  
  snprintf(workbuf, sizeof(workbuf), "%u_bit", (unsigned) sizeof(void*) * 8);
- EvalContextClassPutHard(ctx, workbuf, "source=agent");
+ EvalContextClassPutHard(ctx, workbuf, "host,attribute_name=word size,source=system");
  Log(LOG_LEVEL_VERBOSE, "Additional hard class defined as: %s", CanonifyName(workbuf));
  
  snprintf(workbuf, CF_BUFSIZE, "%s_%s", VSYSNAME.sysname, VSYSNAME.release);
- EvalContextClassPutHard(ctx, workbuf, "source=agent,derived-from=sys.sysname,derived-from=sys.release");
+ EvalContextClassPutHard(ctx, workbuf, "host,attribute_name=operating system type,source=system,derived-from=sys.sysname,derived-from=sys.release");
  
- EvalContextClassPutHard(ctx, VSYSNAME.machine, "source=agent,derived-from=sys.machine");
+ EvalContextClassPutHard(ctx, VSYSNAME.machine, "host,attribute_name=operating system type,source=system,derived-from=sys.machine");
  Log(LOG_LEVEL_VERBOSE, "Additional hard class defined as: %s", CanonifyName(workbuf));
  
  snprintf(workbuf, CF_BUFSIZE, "%s_%s", VSYSNAME.sysname, VSYSNAME.machine);
- EvalContextClassPutHard(ctx, workbuf, "source=agent,derived-from=sys.sysname,derived-from=sys.machine");
+ EvalContextClassPutHard(ctx, workbuf, "host,attribute_name=operating system type,source=system,derived-from=sys.sysname,derived-from=sys.machine");
  Log(LOG_LEVEL_VERBOSE, "Additional hard class defined as: %s", CanonifyName(workbuf));
  
  snprintf(workbuf, CF_BUFSIZE, "%s_%s_%s", VSYSNAME.sysname, VSYSNAME.machine, VSYSNAME.release);
- EvalContextClassPutHard(ctx, workbuf, "source=agent,derived-from=sys.sysname,derived-from=sys.machine,derived-from=sys.release");
+ EvalContextClassPutHard(ctx, workbuf, "host,attribute_name=operating system type,source=system,derived-from=sys.sysname,derived-from=sys.machine,derived-from=sys.release");
  Log(LOG_LEVEL_VERBOSE, "Additional hard class defined as: %s", CanonifyName(workbuf));
  
 #ifdef HAVE_SYSINFO
@@ -722,7 +719,7 @@ static void GetNameInfo3(EvalContext *ctx)
     }
  else
     {
-    EvalContextClassPutHard(ctx, workbuf, "inventory,attribute_name=none,source=agent");
+    EvalContextClassPutHard(ctx, workbuf, "host,attribute_name=host architecture,source=system");
     Log(LOG_LEVEL_VERBOSE, "Additional hard class defined as: %s", workbuf);
     }
 # endif
@@ -734,7 +731,7 @@ static void GetNameInfo3(EvalContext *ctx)
     }
  else
     {
-    EvalContextClassPutHard(ctx, workbuf, "inventory,attribute_name=none,source=agent");
+    EvalContextClassPutHard(ctx, workbuf, "host,attribute_name=host platform,source=system");
     Log(LOG_LEVEL_VERBOSE, "Additional hard class defined as: %s", workbuf);
     }
 # endif
@@ -748,25 +745,20 @@ static void GetNameInfo3(EvalContext *ctx)
     }
  
  sp = xstrdup(CanonifyName(workbuf));
- EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "long_arch", sp, CF_DATA_TYPE_STRING, "source=agent");
- EvalContextClassPutHard(ctx, sp, "source=agent,derived-from=sys.long_arch");
+ EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "long_arch", sp, CF_DATA_TYPE_STRING, "source=system");
+ EvalContextClassPutHard(ctx, sp, "host,attribute_name=long architrecture,source=system,derived-from=sys.long_arch");
  free(sp);
  
  snprintf(workbuf, CF_BUFSIZE, "%s_%s", VSYSNAME.sysname, VSYSNAME.machine);
  sp = xstrdup(CanonifyName(workbuf));
- EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "ostype", sp, CF_DATA_TYPE_STRING, "source=agent");
- EvalContextClassPutHard(ctx, sp, "inventory,attribute_name=none,source=agent,derived-from=sys.ostype");
+ EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "ostype", sp, CF_DATA_TYPE_STRING, "source=system");
+ EvalContextClassPutHard(ctx, sp, "host,attribute_name=operating system type,source=system,derived-from=sys.ostype");
  free(sp);
  
  if (!found)
     {
     Log(LOG_LEVEL_ERR, "I don't understand what architecture this is");
     }
- 
- strcpy(workbuf, "compiled_on_");
- strcat(workbuf, CanonifyName(AUTOCONF_SYSNAME));
- EvalContextClassPutHard(ctx, workbuf, "source=agent");
- Log(LOG_LEVEL_VERBOSE, "GNU autoconf class from compile time: %s", workbuf);
  
 /* Get IP address from nameserver */
  
@@ -785,7 +777,7 @@ static void GetNameInfo3(EvalContext *ctx)
     for (i = 0; hp->h_aliases[i] != NULL; i++)
        {
        Log(LOG_LEVEL_DEBUG, "Adding alias '%s'", hp->h_aliases[i]);
-       EvalContextClassPutHard(ctx, hp->h_aliases[i], "inventory,attribute_name=none,source=agent,based-on=sys.fqhost");
+       EvalContextClassPutHard(ctx, hp->h_aliases[i], "host,attribute_name=host alias,source=system,based-on=sys.fqhost");
        }
     }
  
@@ -797,17 +789,17 @@ static void GetNameInfo3(EvalContext *ctx)
  zid = getzoneid();
  getzonenamebyid(zid, zone, ZONENAME_MAX);
  
- EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "zone", zone, CF_DATA_TYPE_STRING, "inventory,source=agent,attribute_name=Solaris zone");
+ EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "zone", zone, CF_DATA_TYPE_STRING, "host,source=system,attribute_name=solaris zone");
  snprintf(vbuff, CF_BUFSIZE - 1, "zone_%s", zone);
- EvalContextClassPutHard(ctx, vbuff, "source=agent,derived-from=sys.zone");
+ EvalContextClassPutHard(ctx, vbuff, "host,source=system,attribute_name=zone identity,derived-from=sys.zone");
  
  if (strcmp(zone, "global") == 0)
     {
-    Log(LOG_LEVEL_VERBOSE, "CFEngine seems to be running inside a global solaris zone of name '%s'", zone);
+    Log(LOG_LEVEL_VERBOSE, "CGNgine seems to be running inside a global solaris zone of name '%s'", zone);
     }
  else
     {
-    Log(LOG_LEVEL_VERBOSE, "CFEngine seems to be running inside a local solaris zone of name '%s'", zone);
+    Log(LOG_LEVEL_VERBOSE, "CGNngine seems to be running inside a local solaris zone of name '%s'", zone);
     }
 #endif
 }
@@ -844,7 +836,7 @@ static void Get3Environment(EvalContext *ctx)
     Log(LOG_LEVEL_ERR, "Chop was called on a string that seemed to have no terminator");
     }
  
- EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_MON, "env_time", value, CF_DATA_TYPE_STRING, "time_based,source=agent");
+ EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_MON, "env_time", value, CF_DATA_TYPE_STRING, "time,source=system");
  
  Log(LOG_LEVEL_VERBOSE, "Loading environment...");
  
@@ -934,10 +926,10 @@ static void BuiltinClasses(EvalContext *ctx)
 {
  char vbuff[CF_BUFSIZE];
  
- EvalContextClassPutHard(ctx, "any", "source=agent");            /* This is a reserved word / wildcard */
+ EvalContextClassPutHard(ctx, "any", "universal,source=system");            /* This is a reserved word / wildcard */
  
- snprintf(vbuff, CF_BUFSIZE, "cfengine_%s", CanonifyName(Version()));
- CreateHardClassesFromCanonification(ctx, vbuff, "inventory,attribute_name=none,source=agent");
+ snprintf(vbuff, CF_BUFSIZE, "CGNgine_%s", CanonifyName(Version()));
+ CreateHardClassesFromCanonification(ctx, vbuff, "CGNgine,attribute_name=software_version,source=system");
 }
 
 /*******************************************************************/
@@ -963,9 +955,9 @@ void CreateHardClassesFromCanonification(EvalContext *ctx, const char *canonifie
 
 static void SetFlavour(EvalContext *ctx, const char *flavour)
 {
- EvalContextClassPutHard(ctx, flavour, "inventory,attribute_name=none,source=agent,derived-from=sys.flavor");
- EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "flavour", flavour, CF_DATA_TYPE_STRING, "source=agent");
- EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "flavor", flavour, CF_DATA_TYPE_STRING, "inventory,source=agent,attribute_name=none");
+ EvalContextClassPutHard(ctx, flavour, "host,attribute_name=flavour,source=system,derived-from=sys.flavor");
+ EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "flavour", flavour, CF_DATA_TYPE_STRING, "host,attribute_name=flavour,source=system,derived-from=sys.flavor");
+ EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "flavor", flavour, CF_DATA_TYPE_STRING, "host,attribute_name=flavour,source=system,derived-from=sys.flavor");
 }
 
 /*******************************************************************/
@@ -991,11 +983,9 @@ static void OSClasses(EvalContext *ctx)
        }
     while (next_p);
     
-    if (p != NULL &&
-        p[strlen("/systemd")] == '\0')
+    if (p != NULL && p[strlen("/systemd")] == '\0')
        {
-       EvalContextClassPutHard(ctx, "systemd",
-                               "inventory,attribute_name=none,source=agent");
+       EvalContextClassPutHard(ctx, "systemd", "host,attribute_name=existence,source=system");
        }
     }
  }
@@ -1069,7 +1059,7 @@ static void OSClasses(EvalContext *ctx)
  if (stat("/usr/bin/aptitude", &statbuf) != -1)
     {
     Log(LOG_LEVEL_VERBOSE, "This system seems to have the aptitude package system");
-    EvalContextClassPutHard(ctx, "have_aptitude", "inventory,attribute_name=none,source=agent");
+    EvalContextClassPutHard(ctx, "have_aptitude", "probe,attribute_name=package_manager,source=system");
     }
  
  if (stat("/etc/UnitedLinux-release", &statbuf) != -1)
@@ -1130,8 +1120,8 @@ static void OSClasses(EvalContext *ctx)
  else if (Xen_Hv_Check())
     {
     Log(LOG_LEVEL_VERBOSE, "This appears to be a xen hv system.");
-    EvalContextClassPutHard(ctx, "xen", "inventory,attribute_name=Virtual host,source=agent");
-    EvalContextClassPutHard(ctx, "xen_domu_hv", "source=agent");
+    EvalContextClassPutHard(ctx, "xen", "host,attribute_name=virtual host,source=system");
+    EvalContextClassPutHard(ctx, "xen_domu_hv", "host,attribute_name=virtual host,source=system");
     }
 #endif
  
@@ -1167,59 +1157,59 @@ static void OSClasses(EvalContext *ctx)
        if (strncmp(sp, "5.0", 3) == 0)
           {
           Log(LOG_LEVEL_VERBOSE, "This appears to be Windows 2000");
-          EvalContextClassPutHard(ctx, "Win2000", "inventory,attribute_name=none,source=agent");
+          EvalContextClassPutHard(ctx, "Win2000", "host,attribute_name=operating system,source=system");
           }
        
        if (strncmp(sp, "5.1", 3) == 0)
           {
           Log(LOG_LEVEL_VERBOSE, "This appears to be Windows XP");
-          EvalContextClassPutHard(ctx, "WinXP", "inventory,attribute_name=none,source=agent");
+          EvalContextClassPutHard(ctx, "WinXP", "host,attribute_name=operating system,source=system");
           }
        
        if (strncmp(sp, "5.2", 3) == 0)
           {
           Log(LOG_LEVEL_VERBOSE, "This appears to be Windows Server 2003");
-          EvalContextClassPutHard(ctx, "WinServer2003", "inventory,attribute_name=none,source=agent");
+          EvalContextClassPutHard(ctx, "WinServer2003", "host,attribute_name=operating system,source=system");
           }
        
        if (strncmp(sp, "6.1", 3) == 0)
           {
           Log(LOG_LEVEL_VERBOSE, "This appears to be Windows Vista");
-          EvalContextClassPutHard(ctx, "WinVista", "inventory,attribute_name=none,source=agent");
+          EvalContextClassPutHard(ctx, "WinVista", "host,attribute_name=operating system,source=system");
           }
        
        if (strncmp(sp, "6.3", 3) == 0)
           {
           Log(LOG_LEVEL_VERBOSE, "This appears to be Windows Server 2008");
-          EvalContextClassPutHard(ctx, "WinServer2008", "inventory,attribute_name=none,source=agent");
+          EvalContextClassPutHard(ctx, "WinServer2008", "host,attribute_name=operating system,source=system");
           }
        }
     }
  
- EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "crontab", "", CF_DATA_TYPE_STRING, "source=agent");
+ EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "crontab", "", CF_DATA_TYPE_STRING, "source=system");
  
 #endif /* __CYGWIN__ */
  
 #ifdef __MINGW32__
- EvalContextClassPutHard(ctx, VSYSNAME.release, "inventory,attribute_name=none,source=agent,derived-from=sys.release"); // code name - e.g. Windows Vista
- EvalContextClassPutHard(ctx, VSYSNAME.version, "inventory,attribute_name=none,source=agent,derived-from=sys.version"); // service pack number - e.g. Service Pack 3
+ EvalContextClassPutHard(ctx, VSYSNAME.release, "host,attribute_name=operating system release,source=system,derived-from=sys.release"); // code name - e.g. Windows Vista
+ EvalContextClassPutHard(ctx, VSYSNAME.version, "host,attribute_name=operating system version,source=system,derived-from=sys.version"); // service pack number - e.g. Service Pack 3
  
  if (strstr(VSYSNAME.sysname, "workstation"))
     {
-    EvalContextClassPutHard(ctx, "WinWorkstation", "inventory,attribute_name=Windows roles,source=agent,derived-from=sys.sysname");
+    EvalContextClassPutHard(ctx, "WinWorkstation", "host,attribute_name=Windows roles,source=system,derived-from=sys.sysname");
     }
  else if (strstr(VSYSNAME.sysname, "server"))
     {
-    EvalContextClassPutHard(ctx, "WinServer", "inventory,attribute_name=Windows roles,source=agent,derived-from=sys.sysname");
+    EvalContextClassPutHard(ctx, "WinServer", "host,attribute_name=Windows roles,source=system,derived-from=sys.sysname");
     }
  else if (strstr(VSYSNAME.sysname, "domain controller"))
     {
-    EvalContextClassPutHard(ctx, "DomainController", "inventory,attribute_name=Windows roles,source=agent,derived-from=sys.sysname");
-    EvalContextClassPutHard(ctx, "WinServer", "inventory,attribute_name=Windows roles,source=agent,derived-from=sys.sysname");
+    EvalContextClassPutHard(ctx, "DomainController", "host,attribute_name=Windows roles,source=system,derived-from=sys.sysname");
+    EvalContextClassPutHard(ctx, "WinServer", "host,attribute_name=Windows roles,source=system,derived-from=sys.sysname");
     }
  else
     {
-    EvalContextClassPutHard(ctx, "unknown_ostype", "source=agent,derived-from=sys.sysname");
+    EvalContextClassPutHard(ctx, "unknown_ostype", "host,attribute_name=operating system type,source=system,derived-from=sys.sysname");
     }
  
  SetFlavour(ctx, "windows");
@@ -1253,7 +1243,7 @@ static void OSClasses(EvalContext *ctx)
        snprintf(vbuff, CF_BUFSIZE, "/var/spool/cron/crontabs/%s", pw->pw_name);
        }
     
-    EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "crontab", vbuff, CF_DATA_TYPE_STRING, "source=agent");
+    EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "crontab", vbuff, CF_DATA_TYPE_STRING, "source=system");
     }
  
 #endif
@@ -1265,8 +1255,8 @@ static void OSClasses(EvalContext *ctx)
 #ifdef __sun
  if (StringMatchFull("joyent.*", VSYSNAME.version))
     {
-    EvalContextClassPutHard(ctx, "smartos", "inventory,attribute_name=none,source=agent,derived-from=sys.version");
-    EvalContextClassPutHard(ctx, "smartmachine", "source=agent,derived-from=sys.version");
+    EvalContextClassPutHard(ctx, "smartos", "host,attribute_name=operating system type,source=system,derived-from=sys.version");
+    EvalContextClassPutHard(ctx, "smartmachine", "host,attribute_name=operating sytem type,source=system,derived-from=sys.version");
     }
 #endif
  
@@ -1275,17 +1265,17 @@ static void OSClasses(EvalContext *ctx)
  
  if (EvalContextClassGet(ctx, NULL, "redhat"))
     {
-    EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "doc_root", "/var/www/html", CF_DATA_TYPE_STRING, "source=agent");
+    EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "doc_root", "/var/www/html", CF_DATA_TYPE_STRING, "source=system");
     }
  
  if (EvalContextClassGet(ctx, NULL, "SUSE"))
     {
-    EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "doc_root", "/srv/www/htdocs", CF_DATA_TYPE_STRING, "source=agent");
+    EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "doc_root", "/srv/www/htdocs", CF_DATA_TYPE_STRING, "source=system");
     }
  
  if (EvalContextClassGet(ctx, NULL, "debian"))
     {
-    EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "doc_root", "/var/www", CF_DATA_TYPE_STRING, "source=agent");
+    EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "doc_root", "/var/www", CF_DATA_TYPE_STRING, "source=system");
     }
 }
 
@@ -1303,8 +1293,8 @@ static void Linux_Oracle_VM_Server_Version(EvalContext *ctx)
 #define ORACLE_VM_SERVER_ID "Oracle VM server"
 
     Log(LOG_LEVEL_VERBOSE, "This appears to be Oracle VM Server");
-    EvalContextClassPutHard(ctx, "redhat", "inventory,attribute_name=none,source=agent");
-    EvalContextClassPutHard(ctx, "oraclevmserver", "inventory,attribute_name=Virtual host,source=agent");
+    EvalContextClassPutHard(ctx, "redhat", "host,attribute_name=operating system type,source=system");
+    EvalContextClassPutHard(ctx, "oraclevmserver", "host,attribute_name=Virtual host,source=system");
 
     if (!ReadLine(ORACLE_VM_SERVER_REL_FILENAME, relstring, sizeof(relstring)))
     {
@@ -1338,7 +1328,7 @@ static void Linux_Oracle_VM_Server_Version(EvalContext *ctx)
         char buf[CF_BUFSIZE];
 
         snprintf(buf, CF_BUFSIZE, "oraclevmserver_%d_%d", major, minor);
-        EvalContextClassPutHard(ctx, buf, "inventory,attribute_name=none,source=agent");
+        EvalContextClassPutHard(ctx, buf, "host,attribute_name=operating system type,source=system");
     }
 
     if (revcomps > 2)
@@ -1346,7 +1336,7 @@ static void Linux_Oracle_VM_Server_Version(EvalContext *ctx)
         char buf[CF_BUFSIZE];
 
         snprintf(buf, CF_BUFSIZE, "oraclevmserver_%d_%d_%d", major, minor, patch);
-        EvalContextClassPutHard(ctx, buf, "inventory,attribute_name=none,source=agent");
+        EvalContextClassPutHard(ctx, buf, "host,attribute_name=operating system type,source=system");
     }
 }
 
@@ -1362,7 +1352,7 @@ static void Linux_Oracle_Version(EvalContext *ctx)
 #define ORACLE_ID "Oracle Linux Server"
 
     Log(LOG_LEVEL_VERBOSE, "This appears to be Oracle Linux");
-    EvalContextClassPutHard(ctx, "oracle", "inventory,attribute_name=none,source=agent");
+    EvalContextClassPutHard(ctx, "oracle", "host,attribute_name=operating system type,source=system");
 
     if (!ReadLine(ORACLE_REL_FILENAME, relstring, sizeof(relstring)))
     {
@@ -1389,7 +1379,7 @@ static void Linux_Oracle_Version(EvalContext *ctx)
         SetFlavour(ctx, buf);
 
         snprintf(buf, CF_BUFSIZE, "oracle_%d_%d", major, minor);
-        EvalContextClassPutHard(ctx, buf, "inventory,attribute_name=none,source=agent");
+        EvalContextClassPutHard(ctx, buf, "host,attribute_name=operating system type,source=system");
     }
 }
 
@@ -1412,8 +1402,8 @@ static int Linux_Fedora_Version(EvalContext *ctx)
     char relstring[CF_MAXVARSIZE];
 
     Log(LOG_LEVEL_VERBOSE, "This appears to be a fedora system.");
-    EvalContextClassPutHard(ctx, "redhat", "inventory,attribute_name=none,source=agent");
-    EvalContextClassPutHard(ctx, "fedora", "inventory,attribute_name=none,source=agent");
+    EvalContextClassPutHard(ctx, "redhat", "host,attribute_name=operating system type,source=system");
+    EvalContextClassPutHard(ctx, "fedora", "host,attribute_name=operating system type,source=system");
 
 /* Grab the first line from the file and then close it. */
 
@@ -1463,7 +1453,7 @@ static int Linux_Fedora_Version(EvalContext *ctx)
         char classbuf[CF_MAXVARSIZE];
         classbuf[0] = '\0';
         strcat(classbuf, vendor);
-        EvalContextClassPutHard(ctx,classbuf, "inventory,attribute_name=none,source=agent");
+        EvalContextClassPutHard(ctx,classbuf, "host,attribute_name=operating system type,source=system");
         strcat(classbuf, "_");
         strcat(classbuf, strmajor);
         SetFlavour(ctx, classbuf);
@@ -1513,7 +1503,7 @@ static int Linux_Redhat_Version(EvalContext *ctx)
 #define RH_REL_FILENAME "/etc/redhat-release"
 
     Log(LOG_LEVEL_VERBOSE, "This appears to be a redhat (or redhat-based) system.");
-    EvalContextClassPutHard(ctx, "redhat", "inventory,attribute_name=none,source=agent");
+    EvalContextClassPutHard(ctx, "redhat", "host,attribute_name=operating system type,source=system");
 
     /* Grab the first line from the file and then close it. */
     char relstring[CF_MAXVARSIZE];
@@ -1658,24 +1648,24 @@ static int Linux_Redhat_Version(EvalContext *ctx)
     {
         classbuf[0] = '\0';
         strcat(classbuf, vendor);
-        EvalContextClassPutHard(ctx, classbuf, "inventory,attribute_name=none,source=agent");
+        EvalContextClassPutHard(ctx, classbuf, "host,attribute_name=operating system type,source=system");
         strcat(classbuf, "_");
 
         if (strcmp(edition, "") != 0)
         {
             strcat(classbuf, edition);
-            EvalContextClassPutHard(ctx, classbuf, "inventory,attribute_name=none,source=agent");
+            EvalContextClassPutHard(ctx, classbuf, "host,attribute_name=operating system type,source=system");
             strcat(classbuf, "_");
         }
 
         strcat(classbuf, strmajor);
-        EvalContextClassPutHard(ctx, classbuf, "inventory,attribute_name=none,source=agent");
+        EvalContextClassPutHard(ctx, classbuf, "host,attribute_name=operating system type,source=system");
 
         if (minor != -2)
         {
             strcat(classbuf, "_");
             strcat(classbuf, strminor);
-            EvalContextClassPutHard(ctx, classbuf, "inventory,attribute_name=none,source=agent");
+            EvalContextClassPutHard(ctx, classbuf, "host,attribute_name=operating system type,source=system");
         }
     }
 
@@ -1684,7 +1674,7 @@ static int Linux_Redhat_Version(EvalContext *ctx)
     {
         classbuf[0] = '\0';
         strcat(classbuf, vendor);
-        EvalContextClassPutHard(ctx, classbuf, "inventory,attribute_name=none,source=agent");
+        EvalContextClassPutHard(ctx, classbuf, "host,attribute_name=operating system type,source=system");
         strcat(classbuf, "_");
 
         strcat(classbuf, strmajor);
@@ -1695,7 +1685,7 @@ static int Linux_Redhat_Version(EvalContext *ctx)
         {
             strcat(classbuf, "_");
             strcat(classbuf, strminor);
-            EvalContextClassPutHard(ctx, classbuf, "inventory,attribute_name=none,source=agent");
+            EvalContextClassPutHard(ctx, classbuf, "host,attribute_name=operating system type,source=system");
         }
     }
 
@@ -1716,13 +1706,7 @@ static int Linux_Suse_Version(EvalContext *ctx)
     char classbuf[CF_MAXVARSIZE];
 
     Log(LOG_LEVEL_VERBOSE, "This appears to be a SUSE system.");
-    EvalContextClassPutHard(ctx, "SUSE", "inventory,attribute_name=none,source=agent");
-    EvalContextClassPutHard(ctx, "suse", "inventory,attribute_name=none,source=agent");
-
-    /* The correct spelling for SUSE is "SUSE" but CFEngine used to use "SuSE".
-     * Keep this for backwards compatibility until CFEngine 3.7
-     */
-    EvalContextClassPutHard(ctx, "SuSE", "inventory,attribute_name=none,source=agent");
+    EvalContextClassPutHard(ctx, "SUSE", "host,attribute_name=operating system type,source=system");
 
     /* Grab the first line from the SuSE-release file and then close it. */
     char relstring[CF_MAXVARSIZE];
@@ -1782,20 +1766,20 @@ static int Linux_Suse_Version(EvalContext *ctx)
     {
         classbuf[0] = '\0';
         strcat(classbuf, "SLES8");
-        EvalContextClassPutHard(ctx, classbuf, "inventory,attribute_name=none,source=agent");
+        EvalContextClassPutHard(ctx, classbuf, "host,attribute_name=operating system type,source=system");
     }
     else if (strncmp(relstring, "sles", 4) == 0)
     {
         Item *list, *ip;
 
         sscanf(relstring, "%[-_a-zA-Z0-9]", vbuf);
-        EvalContextClassPutHard(ctx, vbuf, "inventory,attribute_name=none,source=agent");
+        EvalContextClassPutHard(ctx, vbuf, "host,attribute_name=operating system type,source=system");
 
         list = SplitString(vbuf, '-');
 
         for (ip = list; ip != NULL; ip = ip->next)
         {
-            EvalContextClassPutHard(ctx, ip->name, "inventory,attribute_name=none,source=agent");
+            EvalContextClassPutHard(ctx, ip->name, "host,attribute_name=operating system type,source=system");
         }
 
         DeleteItemList(list);
@@ -1810,7 +1794,7 @@ static int Linux_Suse_Version(EvalContext *ctx)
             if (!strncmp(relstring, vbuf, strlen(vbuf)))
             {
                 snprintf(classbuf, CF_MAXVARSIZE, "SLES%d", version);
-                EvalContextClassPutHard(ctx, classbuf, "inventory,attribute_name=none,source=agent");
+                EvalContextClassPutHard(ctx, classbuf, "host,attribute_name=operating system type,source=system");
             }
             else
             {
@@ -1820,7 +1804,7 @@ static int Linux_Suse_Version(EvalContext *ctx)
                 if (!strncmp(relstring, vbuf, strlen(vbuf)))
                 {
                     snprintf(classbuf, CF_MAXVARSIZE, "SLED%d", version);
-                    EvalContextClassPutHard(ctx, classbuf, "inventory,attribute_name=none,source=agent");
+                    EvalContextClassPutHard(ctx, classbuf, "host,attribute_name=operating system type,source=system");
                 }
             }
         }
@@ -1859,25 +1843,13 @@ static int Linux_Suse_Version(EvalContext *ctx)
             if (major != -1 && minor != -1)
             {
                 strcpy(classbuf, "SUSE");
-                EvalContextClassPutHard(ctx, classbuf, "inventory,attribute_name=none,source=agent");
+                EvalContextClassPutHard(ctx, classbuf, "host,attribute_name=operating system type,source=system");
                 strcat(classbuf, "_");
                 strcat(classbuf, strmajor);
                 SetFlavour(ctx, classbuf);
                 strcat(classbuf, "_");
                 strcat(classbuf, strminor);
-                EvalContextClassPutHard(ctx, classbuf, "inventory,attribute_name=none,source=agent");
-
-                /* The correct spelling for SUSE is "SUSE" but CFEngine used to use "SuSE".
-                 * Keep this for backwards compatibility until CFEngine 3.7
-                 */
-                strcpy(classbuf, "SuSE");
-                EvalContextClassPutHard(ctx, classbuf, "inventory,attribute_name=none,source=agent");
-                strcat(classbuf, "_");
-                strcat(classbuf, strmajor);
-                EvalContextClassPutHard(ctx, classbuf, "inventory,attribute_name=none,source=agent");
-                strcat(classbuf, "_");
-                strcat(classbuf, strminor);
-                EvalContextClassPutHard(ctx, classbuf, "inventory,attribute_name=none,source=agent");
+                EvalContextClassPutHard(ctx, classbuf, "host,attribute_name=operating system type,source=system");
 
                 Log(LOG_LEVEL_VERBOSE, "Discovered SUSE version %s", classbuf);
                 return 0;
@@ -1891,22 +1863,17 @@ static int Linux_Suse_Version(EvalContext *ctx)
             if (major != -1 && minor != -1)
             {
                 strcpy(classbuf, "SLES");
-                EvalContextClassPutHard(ctx, classbuf, "inventory,attribute_name=none,source=agent");
+                EvalContextClassPutHard(ctx, classbuf, "host,attribute_name=operating system type,source=system");
                 strcat(classbuf, "_");
                 strcat(classbuf, strmajor);
-                EvalContextClassPutHard(ctx, classbuf, "inventory,attribute_name=none,source=agent");
+                EvalContextClassPutHard(ctx, classbuf, "host,attribute_name=operating system type,source=system");
                 strcat(classbuf, "_");
                 strcat(classbuf, strminor);
-                EvalContextClassPutHard(ctx, classbuf, "inventory,attribute_name=none,source=agent");
+                EvalContextClassPutHard(ctx, classbuf, "host,attribute_name=operating system type,source=system");
 
                 snprintf(classbuf, CF_MAXVARSIZE, "SUSE_%d", major);
                 SetFlavour(ctx, classbuf);
-
-                /* The correct spelling for SUSE is "SUSE" but CFEngine used to use "SuSE".
-                 * Keep this for backwards compatibility until CFEngine 3.7
-                 */
-                snprintf(classbuf, CF_MAXVARSIZE, "SuSE_%d", major);
-                EvalContextClassPutHard(ctx, classbuf, "source=agent");
+                EvalContextClassPutHard(ctx, classbuf, "host,attribute_name=operating system type,source=system");
 
                 Log(LOG_LEVEL_VERBOSE, "Discovered SUSE version %s", classbuf);
                 return 0;
@@ -1930,7 +1897,7 @@ static int Linux_Slackware_Version(EvalContext *ctx, char *filename)
     char buffer[CF_MAXVARSIZE];
 
     Log(LOG_LEVEL_VERBOSE, "This appears to be a slackware system.");
-    EvalContextClassPutHard(ctx, "slackware", "inventory,attribute_name=none,source=agent");
+    EvalContextClassPutHard(ctx, "slackware", "host,attribute_name=operating system type,source=system");
 
     if (!ReadLine(filename, buffer, sizeof(buffer)))
     {
@@ -1943,17 +1910,17 @@ static int Linux_Slackware_Version(EvalContext *ctx, char *filename)
     case 3:
         Log(LOG_LEVEL_VERBOSE, "This appears to be a Slackware %u.%u.%u system.", major, minor, release);
         snprintf(classname, CF_MAXVARSIZE, "slackware_%u_%u_%u", major, minor, release);
-        EvalContextClassPutHard(ctx, classname, "inventory,attribute_name=none,source=agent");
+        EvalContextClassPutHard(ctx, classname, "host,attribute_name=operating system type,source=system");
         /* Fall-through */
     case 2:
         Log(LOG_LEVEL_VERBOSE, "This appears to be a Slackware %u.%u system.", major, minor);
         snprintf(classname, CF_MAXVARSIZE, "slackware_%u_%u", major, minor);
-        EvalContextClassPutHard(ctx, classname, "inventory,attribute_name=none,source=agent");
+        EvalContextClassPutHard(ctx, classname, "host,attribute_name=operating system type,source=system");
         /* Fall-through */
     case 1:
         Log(LOG_LEVEL_VERBOSE, "This appears to be a Slackware %u system.", major);
         snprintf(classname, CF_MAXVARSIZE, "slackware_%u", major);
-        EvalContextClassPutHard(ctx, classname, "inventory,attribute_name=none,source=agent");
+        EvalContextClassPutHard(ctx, classname, "host,attribute_name=operating system type,source=system");
         break;
     case 0:
         Log(LOG_LEVEL_VERBOSE, "No Slackware version number found.");
@@ -2028,7 +1995,7 @@ static int Linux_Misc_Version(EvalContext *ctx)
 
             if (strstr(buffer, "Cumulus"))
             {
-                EvalContextClassPutHard(ctx, "cumulus", "inventory,attribute_name=none,source=agent");
+                EvalContextClassPutHard(ctx, "cumulus", "host,attribute_name=operating system type,source=system");
                 strcpy(os, "cumulus");
             }
 
@@ -2063,7 +2030,7 @@ static int Linux_Debian_Version(EvalContext *ctx)
     char classname[CF_MAXVARSIZE], buffer[CF_MAXVARSIZE], os[CF_MAXVARSIZE], version[CF_MAXVARSIZE];
 
     Log(LOG_LEVEL_VERBOSE, "This appears to be a debian system.");
-    EvalContextClassPutHard(ctx, "debian", "inventory,attribute_name=none,source=agent");
+    EvalContextClassPutHard(ctx, "debian", "host,attribute_name=operating system type,source=system");
 
     buffer[0] = classname[0] = '\0';
 
@@ -2081,7 +2048,7 @@ static int Linux_Debian_Version(EvalContext *ctx)
     case 2:
         Log(LOG_LEVEL_VERBOSE, "This appears to be a Debian %u.%u system.", major, release);
         snprintf(classname, CF_MAXVARSIZE, "debian_%u_%u", major, release);
-        EvalContextClassPutHard(ctx, classname, "inventory,attribute_name=none,source=agent");
+        EvalContextClassPutHard(ctx, classname, "host,attribute_name=operating system type,source=system");
         snprintf(classname, CF_MAXVARSIZE, "debian_%u", major);
         SetFlavour(ctx, classname);
         break;
@@ -2098,7 +2065,7 @@ static int Linux_Debian_Version(EvalContext *ctx)
         if (strlen(version) > 0)
         {
             snprintf(classname, CF_MAXVARSIZE, "debian_%s", version);
-            EvalContextClassPutHard(ctx, classname, "inventory,attribute_name=none,source=agent");
+            EvalContextClassPutHard(ctx, classname, "host,attribute_name=operating system type,source=system");
         }
         break;
     }
@@ -2116,7 +2083,7 @@ static int Linux_Debian_Version(EvalContext *ctx)
         LinuxDebianSanitizeIssue(buffer);
         sscanf(buffer, "%*s %*s %[^./]", version);
         snprintf(buffer, CF_MAXVARSIZE, "debian_%s", version);
-        EvalContextClassPutHard(ctx, "debian", "inventory,attribute_name=none,source=agent");
+        EvalContextClassPutHard(ctx, "debian", "host,attribute_name=operating system type,source=system");
         SetFlavour(ctx, buffer);
 
         FILE *fin = safe_fopen(DEBIAN_ISSUE_FILENAME, "rt");
@@ -2129,11 +2096,11 @@ static int Linux_Debian_Version(EvalContext *ctx)
               {
               if (strstr(line, "BeagleBoard") == 0)
                  {
-                 EvalContextClassPutHard(ctx, "beagle", "inventory,attribute_name=none,source=agent");
+                 EvalContextClassPutHard(ctx, "beagle", "host,attribute_name=operating system type,source=system");
                  }
               if (strstr(line, "BeagleBoneBlack") == 0)
                  {
-                 EvalContextClassPutHard(ctx, "beagleboneblack", "inventory,attribute_name=none,source=agent");
+                 EvalContextClassPutHard(ctx, "beagleboneblack", "host,attribute_name=operating system type,source=system");
                  }
               }
 
@@ -2147,11 +2114,11 @@ static int Linux_Debian_Version(EvalContext *ctx)
         sscanf(buffer, "%*s %[^.].%d", version, &release);
         snprintf(buffer, CF_MAXVARSIZE, "ubuntu_%s", version);
         SetFlavour(ctx, buffer);
-        EvalContextClassPutHard(ctx, "ubuntu", "inventory,attribute_name=none,source=agent");
+        EvalContextClassPutHard(ctx, "ubuntu", "host,attribute_name=operating system type,source=system");
         if (release >= 0)
         {
             snprintf(buffer, CF_MAXVARSIZE, "ubuntu_%s_%d", version, release);
-            EvalContextClassPutHard(ctx, buffer, "inventory,attribute_name=none,source=agent");
+            EvalContextClassPutHard(ctx, buffer, "host,attribute_name=operating system type,source=system");
         }
     }
 
@@ -2173,7 +2140,7 @@ static int Linux_Mandrake_Version(EvalContext *ctx)
     char *vendor = NULL;
 
     Log(LOG_LEVEL_VERBOSE, "This appears to be a mandrake system.");
-    EvalContextClassPutHard(ctx, "Mandrake", "inventory,attribute_name=none,source=agent");
+    EvalContextClassPutHard(ctx, "Mandrake", "host,attribute_name=operating system type,source=system");
 
     if (!ReadLine(MANDRAKE_REL_FILENAME, relstring, sizeof(relstring)))
     {
@@ -2219,8 +2186,8 @@ static int Linux_Mandriva_Version(EvalContext *ctx)
     char *vendor = NULL;
 
     Log(LOG_LEVEL_VERBOSE, "This appears to be a mandriva system.");
-    EvalContextClassPutHard(ctx, "Mandrake", "inventory,attribute_name=none,source=agent");
-    EvalContextClassPutHard(ctx, "Mandriva", "inventory,attribute_name=none,source=agent");
+    EvalContextClassPutHard(ctx, "Mandrake", "host,attribute_name=operating system type,source=system");
+    EvalContextClassPutHard(ctx, "Mandriva", "host,attribute_name=operating system type,source=system");
 
     if (!ReadLine(MANDRIVA_REL_FILENAME, relstring, sizeof(relstring)))
     {
@@ -2276,15 +2243,15 @@ static int Linux_Mandriva_Version_Real(EvalContext *ctx, char *filename, char *r
         char classbuf[CF_MAXVARSIZE];
         classbuf[0] = '\0';
         strcat(classbuf, vendor);
-        EvalContextClassPutHard(ctx, classbuf, "inventory,attribute_name=none,source=agent");
+        EvalContextClassPutHard(ctx, classbuf, "host,attribute_name=operating system type,source=system");
         strcat(classbuf, "_");
         strcat(classbuf, strmajor);
-        EvalContextClassPutHard(ctx, classbuf, "inventory,attribute_name=none,source=agent");
+        EvalContextClassPutHard(ctx, classbuf, "host,attribute_name=operating system type,source=system");
         if (minor != -2)
         {
             strcat(classbuf, "_");
             strcat(classbuf, strminor);
-            EvalContextClassPutHard(ctx, classbuf, "inventory,attribute_name=none,source=agent");
+            EvalContextClassPutHard(ctx, classbuf, "host,attribute_name=operating system type,source=system");
         }
     }
 
@@ -2305,13 +2272,13 @@ static int EOS_Version(EvalContext *ctx)
         if (strstr(buffer, "EOS"))
         {
             char version[CF_MAXVARSIZE], class[CF_MAXVARSIZE];
-            EvalContextClassPutHard(ctx, "eos", "inventory,attribute_name=none,source=agent");
-            EvalContextClassPutHard(ctx, "arista", "source=agent");
+            EvalContextClassPutHard(ctx, "eos", "host,attribute_name=operating system type,source=system");
+            EvalContextClassPutHard(ctx, "arista", "host,attribute_name=operating system type,source=system");
             version[0] = '\0';
             sscanf(buffer, "%*s %*s %*s %s", version);
             CanonifyNameInPlace(version);
             snprintf(class, CF_MAXVARSIZE, "eos_%s", version);
-            EvalContextClassPutHard(ctx, class, "inventory,attribute_name=none,source=agent");
+            EvalContextClassPutHard(ctx, class, "host,attribute_name=operating system type,source=system");
         }
     }
 
@@ -2331,14 +2298,14 @@ static int MiscOS(EvalContext *ctx)
        if (strstr(buffer, "BIG-IP"))
        {
            char version[CF_MAXVARSIZE], build[CF_MAXVARSIZE], class[CF_MAXVARSIZE];
-           EvalContextClassPutHard(ctx, "big_ip", "inventory,attribute_name=none,source=agent");
+           EvalContextClassPutHard(ctx, "big_ip", "host,attribute_name=operating system type,source=system");
            sscanf(buffer, "%*s %s %*s %s", version, build);
            CanonifyNameInPlace(version);
            CanonifyNameInPlace(build);
            snprintf(class, CF_MAXVARSIZE, "big_ip_%s", version);
-           EvalContextClassPutHard(ctx, class, "inventory,attribute_name=none,source=agent");
+           EvalContextClassPutHard(ctx, class, "host,attribute_name=operating system type,source=system");
            snprintf(class, CF_MAXVARSIZE, "big_ip_%s_%s", version, build);
-           EvalContextClassPutHard(ctx, class, "inventory,attribute_name=none,source=agent");
+           EvalContextClassPutHard(ctx, class, "host,attribute_name=operating system type,source=system");
            SetFlavour(ctx, "BIG-IP");
        }
     }
@@ -2355,7 +2322,7 @@ static int VM_Version(EvalContext *ctx)
     int sufficient = 0;
 
     Log(LOG_LEVEL_VERBOSE, "This appears to be a VMware Server ESX/xSX system.");
-    EvalContextClassPutHard(ctx, "VMware", "inventory,attribute_name=Virtual host,source=agent");
+    EvalContextClassPutHard(ctx, "VMware", "host,attribute_name=Virtual host,source=system");
 
 /* VMware Server ESX >= 3 has version info in /proc */
     if (ReadLine("/proc/vmware/version", buffer, sizeof(buffer)))
@@ -2363,17 +2330,17 @@ static int VM_Version(EvalContext *ctx)
         if (sscanf(buffer, "VMware ESX Server %d.%d.%d", &major, &minor, &bug) > 0)
         {
             snprintf(classbuf, CF_BUFSIZE, "VMware ESX Server %d", major);
-            EvalContextClassPutHard(ctx, classbuf, "inventory,attribute_name=none,source=agent");
+            EvalContextClassPutHard(ctx, classbuf, "host,attribute_name=operating system type,source=system");
             snprintf(classbuf, CF_BUFSIZE, "VMware ESX Server %d.%d", major, minor);
-            EvalContextClassPutHard(ctx, classbuf, "inventory,attribute_name=none,source=agent");
+            EvalContextClassPutHard(ctx, classbuf, "host,attribute_name=operating system type,source=system");
             snprintf(classbuf, CF_BUFSIZE, "VMware ESX Server %d.%d.%d", major, minor, bug);
-            EvalContextClassPutHard(ctx, classbuf, "inventory,attribute_name=none,source=agent");
+            EvalContextClassPutHard(ctx, classbuf, "host,attribute_name=operating system type,source=system");
             sufficient = 1;
         }
         else if (sscanf(buffer, "VMware ESX Server %s", version) > 0)
         {
             snprintf(classbuf, CF_BUFSIZE, "VMware ESX Server %s", version);
-            EvalContextClassPutHard(ctx, classbuf, "inventory,attribute_name=none,source=agent");
+            EvalContextClassPutHard(ctx, classbuf, "host,attribute_name=operating system type,source=system");
             sufficient = 1;
         }
     }
@@ -2383,14 +2350,14 @@ static int VM_Version(EvalContext *ctx)
     if (sufficient < 1 && (ReadLine("/etc/vmware-release", buffer, sizeof(buffer))
                            || ReadLine("/etc/issue", buffer, sizeof(buffer))))
     {
-        EvalContextClassPutHard(ctx, buffer, "inventory,attribute_name=none,source=agent");
+        EvalContextClassPutHard(ctx, buffer, "host,attribute_name=operating system type,source=system");
 
         /* Strip off the release code name e.g. "(Dali)" */
         if ((sp = strchr(buffer, '(')) != NULL)
         {
             *sp = 0;
             Chop(buffer, CF_EXPANDSIZE);
-            EvalContextClassPutHard(ctx, buffer, "inventory,attribute_name=none,source=agent");
+            EvalContextClassPutHard(ctx, buffer, "host,attribute_name=operating system type,source=system");
         }
         sufficient = 1;
     }
@@ -2405,7 +2372,7 @@ static int Xen_Domain(EvalContext *ctx)
     int sufficient = 0;
 
     Log(LOG_LEVEL_VERBOSE, "This appears to be a xen pv system.");
-    EvalContextClassPutHard(ctx, "xen", "inventory,attribute_name=Virtual host,source=agent");
+    EvalContextClassPutHard(ctx, "xen", "host,attribute_name=Virtual host,source=system");
 
 /* xen host will have "control_d" in /proc/xen/capabilities, xen guest will not */
 
@@ -2435,14 +2402,14 @@ static int Xen_Domain(EvalContext *ctx)
 
             if (strstr(buffer, "control_d"))
             {
-                EvalContextClassPutHard(ctx, "xen_dom0", "inventory,attribute_name=Virtual host,source=agent");
+                EvalContextClassPutHard(ctx, "xen_dom0", "host,attribute_name=Virtual host,source=system");
                 sufficient = 1;
             }
         }
 
         if (!sufficient)
         {
-            EvalContextClassPutHard(ctx, "xen_domu_pv", "inventory,attribute_name=Virtual host,source=agent");
+            EvalContextClassPutHard(ctx, "xen_domu_pv", "host,attribute_name=Virtual host,source=system");
             sufficient = 1;
         }
 
@@ -2471,11 +2438,11 @@ static void OpenVZ_Detect(EvalContext *ctx)
     if (stat(OPENVZ_HOST_FILENAME, &statbuf) != -1)
     {
         Log(LOG_LEVEL_VERBOSE, "This appears to be an OpenVZ/Virtuozzo/Parallels Cloud Server host system.\n");
-        EvalContextClassPutHard(ctx, "virt_host_vz", "inventory,attribute_name=Virtual host,source=agent");
+        EvalContextClassPutHard(ctx, "virt_host_vz", "host,attribute_name=Virtual host,source=system");
         /* if the file /bin/vzps is there, it is safe to use the processes promise type */
         if (stat(OPENVZ_VZPS_FILE, &statbuf) != -1)
         {
-            EvalContextClassPutHard(ctx, "virt_host_vz_vzps", "inventory,attribute_name=Virtual host,source=agent");
+            EvalContextClassPutHard(ctx, "virt_host_vz_vzps", "host,attribute_name=Virtual host,source=system");
             /* here we must redefine the value of VPSHARDCLASS */
             for (int i = 0; i < PLATFORM_CONTEXT_MAX; i++)
             {
@@ -2494,7 +2461,7 @@ static void OpenVZ_Detect(EvalContext *ctx)
     else if (stat(OPENVZ_GUEST_FILENAME, &statbuf) != -1)
     {
         Log(LOG_LEVEL_VERBOSE, "This appears to be an OpenVZ/Virtuozzo/Parallels Cloud Server guest system.\n");
-        EvalContextClassPutHard(ctx, "virt_guest_vz", "inventory,attribute_name=Virtual host,source=agent");
+        EvalContextClassPutHard(ctx, "virt_guest_vz", "host,attribute_name=Virtual host,source=system");
     }
 }
 
@@ -2637,15 +2604,15 @@ static void GetCPUInfo(EvalContext *ctx)
     char buf[CF_SMALLBUF] = "1_cpu";
     if (count == 1)
     {
-        EvalContextClassPutHard(ctx, buf, "source=agent,derived-from=sys.cpus");  // "1_cpu" from init - change if buf is ever used above
-        EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "cpus", "1", CF_DATA_TYPE_STRING, "inventory,source=agent,attribute_name=CPU logical cores");
+        EvalContextClassPutHard(ctx, buf, "host,attribute_name=single core,source=system,derived-from=sys.cpus");  // "1_cpu" from init - change if buf is ever used above
+        EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "cpus", "1", CF_DATA_TYPE_STRING, "host,source=system,attribute_name=CPU logical cores");
     }
     else
     {
         snprintf(buf, CF_SMALLBUF, "%d_cpus", count);
-        EvalContextClassPutHard(ctx, buf, "source=agent,derived-from=sys.cpus");
+        EvalContextClassPutHard(ctx, buf, "host,attribute_name=multi core,source=system,derived-from=sys.cpus");
         snprintf(buf, CF_SMALLBUF, "%d", count);
-        EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "cpus", buf, CF_DATA_TYPE_STRING, "inventory,source=agent,attribute_name=CPU logical cores");
+        EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, "cpus", buf, CF_DATA_TYPE_STRING, "host,source=system,attribute_name=CPU logical cores");
     }
 #endif /* MINGW || NT */
 }
@@ -2893,7 +2860,7 @@ void DiscoverDocker(EvalContext *ctx)
     {
         snprintf(name, CF_MAXVARSIZE, "docker_guest_ip[%s]", ps->name);
         snprintf(value, CF_MAXVARSIZE, "%s", ps->ip);
-        EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, name, value, CF_DATA_TYPE_STRING, "inventory,docker_container,source=agent");
+        EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, name, value, CF_DATA_TYPE_STRING, "host,docker_container,source=system");
     }
 
     DeleteDockerPS(active);

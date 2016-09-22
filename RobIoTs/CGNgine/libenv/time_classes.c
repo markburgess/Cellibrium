@@ -162,17 +162,17 @@ static void AddTimeClass(EvalContext *ctx, time_t time)
 /* Lifecycle */
     
     snprintf(buf, CF_BUFSIZE, "%sLcycle_%d", tz_prefix[tz], ((tz_parsed_time[tz].tm_year + 1900) % 3));
-    EvalContextClassPutHard(ctx, buf, "time_based,source=agent");
+    EvalContextClassPutHard(ctx, buf, "time,name=lifecycle,source=clock");
     
 /* Year */
     
     snprintf(buf, CF_BUFSIZE, "%sYr%04d", tz_prefix[tz], tz_parsed_time[tz].tm_year + 1900);
-    EvalContextClassPutHard(ctx, buf, "time_based,source=agent");
+    EvalContextClassPutHard(ctx, buf, "time,name=year,source=clock");
     
 /* Month */
     
     snprintf(buf, CF_BUFSIZE, "%s%s", tz_prefix[tz], MONTH_TEXT[tz_parsed_time[tz].tm_mon]);
-    EvalContextClassPutHard(ctx, buf, "time_based,source=agent");
+    EvalContextClassPutHard(ctx, buf, "time,name=month,source=clock");
     
 /* Day of week */
     
@@ -182,44 +182,44 @@ static void AddTimeClass(EvalContext *ctx, time_t time)
    Sunday  is 0 in tm_wday, 6 in DAY_TEXT */
     day_text_index = (tz_parsed_time[tz].tm_wday + 6) % 7;
     snprintf(buf, CF_BUFSIZE, "%s%s", tz_prefix[tz], DAY_TEXT[day_text_index]);
-    EvalContextClassPutHard(ctx, buf, "time_based,source=agent");
+    EvalContextClassPutHard(ctx, buf, "time,name=weekday,source=agent");
     
 /* Day */
     
     snprintf(buf, CF_BUFSIZE, "%sDay%d", tz_prefix[tz], tz_parsed_time[tz].tm_mday);
-    EvalContextClassPutHard(ctx, buf, "time_based,source=agent");
+    EvalContextClassPutHard(ctx, buf, "time,name=monthday,source=clock");
     
 /* Shift */
     
     snprintf(buf, CF_BUFSIZE, "%s%s", tz_prefix[tz], SHIFT_TEXT[tz_parsed_time[tz].tm_hour / 6]);
-    EvalContextClassPutHard(ctx, buf, "time_based,source=agent");
+    EvalContextClassPutHard(ctx, buf, "time,name=dayshift,source=clock");
     
 /* Hour */
     
     snprintf(buf, CF_BUFSIZE, "%sHr%02d", tz_prefix[tz], tz_parsed_time[tz].tm_hour);
-    EvalContextClassPutHard(ctx, buf, "time_based,source=agent");
+    EvalContextClassPutHard(ctx, buf, "time,name=hour2,source=clock");
     snprintf(buf, CF_BUFSIZE, "%sHr%d", tz_prefix[tz], tz_parsed_time[tz].tm_hour);
-    EvalContextClassPutHard(ctx, buf, "time_based,source=agent");
+    EvalContextClassPutHard(ctx, buf, "time,name=hour,source=clock");
     
 /* Quarter */
     
     quarter = tz_parsed_time[tz].tm_min / 15 + 1;
-    
+
     snprintf(buf, CF_BUFSIZE, "%sQ%d", tz_prefix[tz], quarter);
-    EvalContextClassPutHard(ctx, buf, "time_based,source=agent");
+    EvalContextClassPutHard(ctx, buf, "time,name=hourquarter,source=clock");
     snprintf(buf, CF_BUFSIZE, "%sHr%02d_Q%d", tz_prefix[tz], tz_parsed_time[tz].tm_hour, quarter);
-    EvalContextClassPutHard(ctx, buf, "time_based,source=agent");
+    EvalContextClassPutHard(ctx, buf, "time,name=quarterhour,source=clock");
     
 /* Minute */
     
     snprintf(buf, CF_BUFSIZE, "%sMin%02d", tz_prefix[tz], tz_parsed_time[tz].tm_min);
-    EvalContextClassPutHard(ctx, buf, "time_based,source=agent");
+    EvalContextClassPutHard(ctx, buf, "time,name=mins,source=clock");
     
     interval_start = (tz_parsed_time[tz].tm_min / 5) * 5;
     interval_end = (interval_start + 5) % 60;
     
     snprintf(buf, CF_BUFSIZE, "%sMin%02d_%02d", tz_prefix[tz], interval_start, interval_end);
-    EvalContextClassPutHard(ctx, buf, "time_based,source=agent");
+    EvalContextClassPutHard(ctx, buf, "time,name=minrange,source=clock");
     }
 }
 

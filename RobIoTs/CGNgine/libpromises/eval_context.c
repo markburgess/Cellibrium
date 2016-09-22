@@ -604,7 +604,7 @@ void EvalContextHeapPersistentLoadAll(EvalContext *ctx)
        StringSet *tag_set = EvalContextClassTags(ctx, ref.ns, ref.name);
        assert(tag_set);
        
-       StringSetAdd(tag_set, xstrdup("source=persistent"));
+       StringSetAdd(tag_set, xstrdup("recent,type=persistent"));
        
        ClassRefDestroy(ref);
        }
@@ -1186,16 +1186,16 @@ void EvalContextStackPushPromiseFrame(EvalContext *ctx, const Promise *owner, bo
        strlcpy(path, PromiseGetBundle(owner)->source_path, CF_BUFSIZE);
        }
     
-    EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_THIS, "promise_filename", path, CF_DATA_TYPE_STRING, "source=promise");
+    EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_THIS, "promise_filename", path, CF_DATA_TYPE_STRING, "label,source=promise");
     
     // We now make path just the directory name!
     DeleteSlash(path);
     ChopLastNode(path);
     
-    EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_THIS, "promise_dirname", path, CF_DATA_TYPE_STRING, "source=promise");
+    EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_THIS, "promise_dirname", path, CF_DATA_TYPE_STRING, "label,source=promise");
     char number[PRINTSIZE(uintmax_t)];
     xsnprintf(number, CF_SMALLBUF, "%ju", (uintmax_t) owner->offset.line);
-    EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_THIS, "promise_linenumber", number, CF_DATA_TYPE_STRING, "source=promise");
+    EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_THIS, "promise_linenumber", number, CF_DATA_TYPE_STRING, "label,source=promise");
     }
  
  char v[PRINTSIZE(int)];
@@ -2197,7 +2197,6 @@ static bool IsPromiseValuableForLogging(const Promise *pp)
 static void AddAllClasses(EvalContext *ctx, const Rlist *list, unsigned int persistence_ttl,
                           PersistentClassPolicy policy, ContextScope context_scope)
 {
- 
  if (list)
     {
     Log(LOG_LEVEL_VERBOSE, "\n");
@@ -2227,8 +2226,8 @@ static void AddAllClasses(EvalContext *ctx, const Rlist *list, unsigned int pers
           }
        
        Log(LOG_LEVEL_VERBOSE, "C:    + persistent set label/class '%s'", classname);
-       EvalContextHeapPersistentSave(ctx, classname, persistence_ttl, policy, "");
-       EvalContextClassPutSoft(ctx, classname, CONTEXT_SCOPE_NAMESPACE, "");
+       EvalContextHeapPersistentSave(ctx, classname, persistence_ttl, policy, "promise outcome");
+       EvalContextClassPutSoft(ctx, classname, CONTEXT_SCOPE_NAMESPACE, "promise outcome");
        }
     else
        {

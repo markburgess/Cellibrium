@@ -1484,9 +1484,20 @@ ClassTableIterator *iter = EvalContextClassTableIteratorNewGlobal(ctx, NULL, tru
 Class *cls = NULL;
 int i = 0;
 
+// cls->ns, cls->name
+//  StringSet *tagset = EvalContextClassTags(ctx, cls->ns, cls->name);
+
 while ((cls = ClassTableIteratorNext(iter)))
    {
    Gr(consc,here_and_now,EXPRESSES,a_hasattr,cls->name);
+   printf("GOT: %s, %s\n",cls->ns, cls->name);
+   StringSet *tagset = EvalContextClassTags(ctx, cls->ns, cls->name);
+   StringSetIterator iter = StringSetIteratorInit(tagset);
+   const char *name = NULL;
+   while ((name = StringSetIteratorNext(&iter)))
+      {
+      printf(" -- %s\n", name);
+      }
    }
  
 ClassTableIteratorDestroy(iter);

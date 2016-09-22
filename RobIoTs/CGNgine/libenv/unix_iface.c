@@ -160,7 +160,7 @@ static void GetMacAddress(EvalContext *ctx, int fd, struct ifreq *ifr, struct if
     RlistAppend(interfaces, ifp->ifr_name, RVAL_TYPE_SCALAR);
 
     snprintf(name, sizeof(name), "mac_%s", CanonifyName(hw_mac));
-    EvalContextClassPutHard(ctx, name, "inventory,attribute_name=none,source=agent");
+    EvalContextClassPutHard(ctx, name, "network,attribute_name=MAC address,source=system");
 
 # elif defined(HAVE_GETIFADDRS) && !defined(__sun)
     char hw_mac[CF_MAXVARSIZE];
@@ -220,7 +220,7 @@ static void GetMacAddress(EvalContext *ctx, int fd, struct ifreq *ifr, struct if
         RlistAppend(interfaces, ifp->ifr_name, RVAL_TYPE_SCALAR);
 
         snprintf(name, CF_MAXVARSIZE, "mac_%s", CanonifyName(hw_mac));
-        EvalContextClassPutHard(ctx, name, "inventory,attribute_name=none,source=agent");
+        EvalContextClassPutHard(ctx, name, "network,attribute_name=MAC address,source=agent");
     }
     else
     {
@@ -259,7 +259,7 @@ static void GetMacAddress(EvalContext *ctx, int fd, struct ifreq *ifr, struct if
     RlistAppend(interfaces, ifp->ifr_name, RVAL_TYPE_SCALAR);
 
     snprintf(name, sizeof(name), "mac_%s", CanonifyName(hw_mac));
-    EvalContextClassPutHard(ctx, name, "inventory,attribute_name=none,source=agent");
+    EvalContextClassPutHard(ctx, name, "network,attribute_name=MAC address,source=agent");
 
 # else
     EvalContextVariablePutSpecial(ctx, SPECIAL_SCOPE_SYS, name, "mac_unknown", CF_DATA_TYPE_STRING, "source=agent");
@@ -397,7 +397,7 @@ void GetInterfacesInfo(EvalContext *ctx)
         }
 
         snprintf(workbuf, sizeof(workbuf), "net_iface_%s", CanonifyName(ifp->ifr_name));
-        EvalContextClassPutHard(ctx, workbuf, "source=agent");
+        EvalContextClassPutHard(ctx, workbuf, "network,attribute_name=interface,source=agent");
 
         /* TODO IPv6 should be handled transparently */
         if (ifp->ifr_addr.sa_family == AF_INET)
@@ -433,7 +433,7 @@ void GetInterfacesInfo(EvalContext *ctx)
                             NULL, 0, NI_NUMERICHOST);
 
                 Log(LOG_LEVEL_DEBUG, "Adding hostip '%s'", txtaddr);
-                EvalContextClassPutHard(ctx, txtaddr, "inventory,attribute_name=none,source=agent");
+                EvalContextClassPutHard(ctx, txtaddr, "network,attribute_name=interface IP address,source=system");
 
                 if ((hp = gethostbyaddr((char *) &(sin->sin_addr.s_addr),
                                         sizeof(sin->sin_addr.s_addr), AF_INET))
@@ -447,7 +447,7 @@ void GetInterfacesInfo(EvalContext *ctx)
                     if (hp->h_name != NULL)
                     {
                         Log(LOG_LEVEL_DEBUG, "Adding hostname '%s'", hp->h_name);
-                        EvalContextClassPutHard(ctx, hp->h_name, "inventory,attribute_name=none,source=agent");
+                        EvalContextClassPutHard(ctx, hp->h_name, "host,attribute_name=host alias,source=system");
 
                         if (hp->h_aliases != NULL)
                         {
@@ -455,7 +455,7 @@ void GetInterfacesInfo(EvalContext *ctx)
                             {
                                 Log(LOG_LEVEL_DEBUG, "Adding alias '%s'",
                                     hp->h_aliases[i]);
-                                EvalContextClassPutHard(ctx, hp->h_aliases[i], "inventory,attribute_name=none,source=agent");
+                                EvalContextClassPutHard(ctx, hp->h_aliases[i], "host,attribute_name=host alias,source=system");
                             }
                         }
                     }
@@ -477,7 +477,7 @@ void GetInterfacesInfo(EvalContext *ctx)
                         if (*sp == '.')
                         {
                             *sp = '\0';
-                            EvalContextClassPutHard(ctx, ip, "inventory,attribute_name=none,source=agent");
+                            EvalContextClassPutHard(ctx, ip, "network,attribute_name=interface ipv4 address,source=system");
                         }
                     }
 
@@ -499,7 +499,7 @@ void GetInterfacesInfo(EvalContext *ctx)
                 assert(sizeof(ip) >= sizeof(txtaddr) + sizeof("ipv4_"));
                 strcpy(ip, "ipv4_");
                 strcat(ip, txtaddr);
-                EvalContextClassPutHard(ctx, ip, "inventory,attribute_name=none,source=agent");
+                EvalContextClassPutHard(ctx, ip, "network,attribute_name=interface ipv4 address,source=system");
 
                 /* VIPADDRESS has already been set to the DNS address of
                  * VFQNAME by GetNameInfo3() during initialisation. Here we
@@ -523,7 +523,7 @@ void GetInterfacesInfo(EvalContext *ctx)
                     if (*sp == '.')
                     {
                         *sp = '\0';
-                        EvalContextClassPutHard(ctx, ip, "inventory,attribute_name=none,source=agent");
+                        EvalContextClassPutHard(ctx, ip, "network,attribute_name=interface ipv4 octet prefix,source=agent");
                     }
                 }
 

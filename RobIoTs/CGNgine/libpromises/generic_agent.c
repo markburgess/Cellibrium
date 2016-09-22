@@ -127,9 +127,8 @@ void GenericAgentDiscoverContext(EvalContext *ctx, GenericAgentConfig *config)
     SanitizeEnvironment();
 
     THIS_AGENT_TYPE = config->agent_type;
-    LoggingSetAgentType(CF_AGENTTYPES[config->agent_type],
-                        config->agent_type == AGENT_TYPE_AGENT);
-    EvalContextClassPutHard(ctx, CF_AGENTTYPES[config->agent_type], "cfe_internal,source=agent");
+    LoggingSetAgentType(CF_AGENTTYPES[config->agent_type],config->agent_type == AGENT_TYPE_AGENT);
+    EvalContextClassPutHard(ctx, CF_AGENTTYPES[config->agent_type], "CGNgine,attribute_name=component name,source=agent");
 
     DetectEnvironment(ctx);
 
@@ -587,7 +586,7 @@ void GenericAgentInitialize(EvalContext *ctx, GenericAgentConfig *config)
 
     DetermineCfenginePort();
 
-    EvalContextClassPutHard(ctx, "any", "source=agent");
+    EvalContextClassPutHard(ctx, "any", "universal,source=system");
 
     GenericAgentAddEditionClasses(ctx);
     
@@ -1521,14 +1520,14 @@ void GenericAgentConfigApply(EvalContext *ctx, const GenericAgentConfig *config)
     switch (LogGetGlobalLevel())
     {
     case LOG_LEVEL_DEBUG:
-        EvalContextClassPutHard(ctx, "debug_mode", "cfe_internal,source=agent");
-        EvalContextClassPutHard(ctx, "opt_debug", "cfe_internal,source=agent");
+        EvalContextClassPutHard(ctx, "debug_mode", "operational_mode,source=agent");
+        EvalContextClassPutHard(ctx, "opt_debug", "operational_mode,source=agent");
         // intentional fall
     case LOG_LEVEL_VERBOSE:
-        EvalContextClassPutHard(ctx, "verbose_mode", "cfe_internal,source=agent");
+        EvalContextClassPutHard(ctx, "verbose_mode", "operational_mode,source=agent");
         // intentional fall
     case LOG_LEVEL_INFO:
-        EvalContextClassPutHard(ctx, "inform_mode", "cfe_internal,source=agent");
+        EvalContextClassPutHard(ctx, "inform_mode", "operational_mode,source=agent");
         break;
     default:
         break;
@@ -1560,7 +1559,7 @@ void GenericAgentConfigApply(EvalContext *ctx, const GenericAgentConfig *config)
 
     if (DONTDO)
     {
-        EvalContextClassPutHard(ctx, "opt_dry_run", "cfe_internal,source=environment");
+        EvalContextClassPutHard(ctx, "opt_dry_run", "operational_mode,source=environment");
     }
 }
 

@@ -2984,7 +2984,7 @@ static PromiseResult VerifyFileIntegrity(EvalContext *ctx, const char *file, Att
     if (changed)
     {
         EvalContextHeapPersistentSave(ctx, "checksum_alerts", CF_PERSISTENCE, CONTEXT_STATE_POLICY_PRESERVE, "");
-        EvalContextClassPutSoft(ctx, "checksum_alerts", CONTEXT_SCOPE_NAMESPACE, "");
+        EvalContextClassPutSoft(ctx, "files promise,attribute_name=checksum_alerts", CONTEXT_SCOPE_NAMESPACE, "");
         FileChangesLogChange(file, FILE_STATE_CONTENT_CHANGED, "Content changed", pp);
     }
 
@@ -3090,7 +3090,7 @@ static void FileAutoDefine(EvalContext *ctx, char *destfile)
     char context[CF_MAXVARSIZE];
 
     snprintf(context, CF_MAXVARSIZE, "auto_%s", CanonifyName(destfile));
-    EvalContextClassPutSoft(ctx, context, CONTEXT_SCOPE_NAMESPACE, "source=promise");
+    EvalContextClassPutSoft(ctx, context, CONTEXT_SCOPE_NAMESPACE, "files promise,attribute_name=change warning,source=promise");
     Log(LOG_LEVEL_INFO, "Auto defining class '%s'", context);
 }
 

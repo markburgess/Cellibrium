@@ -88,7 +88,7 @@ PromiseResult VerifyClassPromise(EvalContext *ctx, const Promise *pp, ARG_UNUSED
             char *tags = NULL;
             {
                 Buffer *tag_buffer = BufferNew();
-                BufferAppendString(tag_buffer, "source=promise");
+                BufferAppendString(tag_buffer, "classes promise,attribute_name=label,source=promise");
 
                 for (const Rlist *rp = PromiseGetConstraintAsList(ctx, "meta", pp); rp; rp = rp->next)
                 {

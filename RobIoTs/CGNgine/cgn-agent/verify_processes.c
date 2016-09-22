@@ -153,7 +153,7 @@ static PromiseResult VerifyProcessOp(EvalContext *ctx, Item *procdata, Attribute
             for (const Rlist *rp = a.process_count.out_of_range_define; rp != NULL; rp = rp->next)
             {
                 ClassRef ref = ClassRefParse(RlistScalarValue(rp));
-                EvalContextClassPutSoft(ctx, RlistScalarValue(rp), CONTEXT_SCOPE_NAMESPACE, "source=promise");
+                EvalContextClassPutSoft(ctx, RlistScalarValue(rp), CONTEXT_SCOPE_NAMESPACE, "processes promise,attribute_name=restart label,source=promise");
                 ClassRefDestroy(ref);
             }
             out_of_range = true;
@@ -163,7 +163,7 @@ static PromiseResult VerifyProcessOp(EvalContext *ctx, Item *procdata, Attribute
             for (const Rlist *rp = a.process_count.in_range_define; rp != NULL; rp = rp->next)
             {
                 ClassRef ref = ClassRefParse(RlistScalarValue(rp));
-                EvalContextClassPutSoft(ctx, RlistScalarValue(rp), CONTEXT_SCOPE_NAMESPACE, "source=promise");
+                EvalContextClassPutSoft(ctx, RlistScalarValue(rp), CONTEXT_SCOPE_NAMESPACE, "processes promise,attribute_name=restart label,source=promise");
                 ClassRefDestroy(ref);
             }
             cfPS(ctx, LOG_LEVEL_VERBOSE, PROMISE_RESULT_NOOP, pp, a, "Process promise for '%s' is kept", pp->promiser);
@@ -247,7 +247,7 @@ static PromiseResult VerifyProcessOp(EvalContext *ctx, Item *procdata, Attribute
         {
             cfPS(ctx, LOG_LEVEL_INFO, PROMISE_RESULT_CHANGE, pp, a, "Making a one-time restart promise for '%s'", pp->promiser);
             result = PromiseResultUpdate(result, PROMISE_RESULT_CHANGE);
-            EvalContextClassPutSoft(ctx, a.restart_class, CONTEXT_SCOPE_NAMESPACE, "source=promise");
+            EvalContextClassPutSoft(ctx, a.restart_class, CONTEXT_SCOPE_NAMESPACE, "processes promise,attribute_name=restart label,source=promise");
         }
     }
 
