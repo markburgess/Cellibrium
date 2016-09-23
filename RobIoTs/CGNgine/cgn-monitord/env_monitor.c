@@ -1471,8 +1471,6 @@ if (consc == NULL)
 char here_and_now[CF_BUFSIZE];
 char buff[CF_BUFSIZE];
 
-printf("Current promise?????\n");
-
 Gr(consc,"sample times",a_contains,now);
 
  // The name/context is a semantic coordinate for the instances (like an array index)
