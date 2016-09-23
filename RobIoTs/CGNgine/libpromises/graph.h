@@ -8,40 +8,47 @@
 
 enum associations
 {
-    a_concurrent,
     a_contains,
-    a_name,
+    a_generalizes,
     a_origin,
-    a_hasattr,
-    a_hasvalue,
-    a_hasinstance,
-    a_approx,
-    a_maintains,
+    a_maintainedby,
     a_depends,
+    a_name,
+    a_hasattr,  // avoid this, it says nothing unambiguously
+    a_hasvalue,
+    a_hasrole,     // what is its function/object type? e.g. file,process..
     a_hasfunction,
     a_hasconstraint,
-    a_alias,
     a_interpreted,
+    a_concurrent,
+    a_alias,
+    a_approx,
+    a_related_to,
     a_ass_dim
 };
 
+typedef struct
+{
+   int type;
+   char *fwd;
+   char *bwd;
+}
+Association;
+
 #ifndef PERCOLATION
-void Gr(FILE *consc,char *from, int type, enum associations assoc, char *to);
-void IGr(FILE *consc,char *from, int type, enum associations assoc, char *to);
-void GrQ(FILE *consc,char *from, int type, enum associations assoc, double to);
+void Gr(FILE *consc,char *from, enum associations assoc, char *to);
+void IGr(FILE *consc,char *from, enum associations assoc, char *to);
+void GrQ(FILE *consc,char *from, enum associations assoc, double to);
 void GenerateSemanticsGraph(Policy *policy);
 #endif
 
 /*****************************************************************************/
 
 #ifndef GRAPH
-extern const int CONTAINS;
-extern const int FOLLOWS;
-extern const int EXPRESSES;
-extern const int NEAR;
+extern Association A[a_ass_dim+1];
 
-extern const int F;
-extern const int B1;
-extern char *A[a_ass_dim+1][2];
-
+#define GR_CONTAINS  1 
+#define GR_FOLLOWS   2 // i.e. influenced by
+#define GR_EXPRESSES 4 // represents, etc
+#define GR_NEAR      8 // approx like
 #endif

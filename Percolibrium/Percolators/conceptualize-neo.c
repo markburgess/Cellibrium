@@ -44,7 +44,7 @@ main(int argc, char **argv)
     assoctype = 0;
     
     fgets(line, 1023, fp);
-    sscanf(line, "(%[^,],%d,%[^,],%[^,],%[^)])",from,&assoctype,fwd,bwd,to);
+    sscanf(line, "(%[^,],%d,%[^,],%[^,],%[^)])",from,&assoctype,fwd,to,bwd);
 
     printf("CREATE (:concept {description:'%s'}),  (:concept {description:'%s'}),\n",from,to);
     printf("(%s)-[:'%s' {type: %d, b:'%s'}]->(%s);\n",from,fwd,assoctype,bwd,to);

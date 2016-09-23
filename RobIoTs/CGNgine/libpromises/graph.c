@@ -43,44 +43,37 @@ void GenerateSemanticsGraph(Policy *policy)
     return;
     }
 
- Gr(consc,"system policy",EXPRESSES|CONTAINS,a_hasattr,"promise bundle");
- Gr(consc,"system policy",CONTAINS,a_contains,"namespace");
-
- Gr(consc,"promise bundle",CONTAINS,a_contains,"promise");
- Gr(consc,"promise",EXPRESSES,a_hasattr,"promise type");
- Gr(consc,"promise",EXPRESSES,a_hasattr,"constraint");
- Gr(consc,"promise",EXPRESSES,a_hasattr,"promisee");
- Gr(consc,"constraint",EXPRESSES,a_hasattr,"lval");
- Gr(consc,"constraint",EXPRESSES,a_hasattr,"rval");
- Gr(consc,"rval", CONTAINS, a_contains, "compound rval");
- Gr(consc,"compound rval", NEAR, a_alias, "body group");
- Gr(consc,"compound rval", NEAR, a_alias, "constraints body");
- Gr(consc,"constraints body",EXPRESSES,a_hasattr,"lval");
- Gr(consc,"constraints body",EXPRESSES,a_hasattr,"rval");
+ Gr(consc,"system policy", a_contains,"promise bundle");
+ Gr(consc,"system policy", a_contains,"namespace");
+ Gr(consc,"promise bundle", a_contains,"promise");
+ Gr(consc,"promise", a_contains,"promise type");
+ Gr(consc,"promise", a_contains,"constraint");
+ Gr(consc,"promise", a_contains,"promisee");
+ Gr(consc,"constraint", a_contains,"lval");
+ Gr(consc,"constraint", a_contains,"rval");
+ Gr(consc,"rval", a_hasrole, "compound rval");
+ Gr(consc,"compound rval", a_alias, "body group");
+ Gr(consc,"compound rval", a_alias, "constraints body");
 
  for (size_t i = 0; i < SeqLength(policy->bundles); i++)
     {
     const Bundle *bundle = SeqAt(policy->bundles, i);
-    Gr(consc,"promise bundle",CONTAINS,a_contains,bundle->name);
-    Gr(consc,bundle->ns,EXPRESSES,a_hasattr,bundle->name);
-    Gr(consc,bundle->ns,CONTAINS,a_contains,bundle->name);
-    Gr(consc,bundle->ns,EXPRESSES,a_hasattr,"namespace");
-    Gr(consc,bundle->name,EXPRESSES,a_hasattr,"promise bundle");
-    Gr(consc,bundle->type,FOLLOWS,a_maintains,bundle->name);
+    Gr(consc,bundle->ns,a_contains,bundle->name);
+    Gr(consc,bundle->ns,a_hasrole,"namespace");
+    Gr(consc,bundle->name,a_hasrole,"promise bundle");
+    Gr(consc,bundle->type,a_maintainedby,bundle->name);
 
     if (bundle->source_path)
        {
-       Gr(consc,bundle->source_path,EXPRESSES,a_hasattr,bundle->name);
-       Gr(consc,bundle->source_path,CONTAINS,a_contains,bundle->name);
-       Gr(consc,bundle->source_path,EXPRESSES,a_interpreted,"file");
-       Gr(consc,bundle->source_path,EXPRESSES,a_interpreted,"where");
+       Gr(consc,bundle->source_path,a_contains,bundle->name);
+       Gr(consc,bundle->source_path,a_hasrole,"file");
        }
 
     Rlist *argp = NULL;
 
     for (argp = bundle->args; argp != NULL; argp = argp->next)
        {
-       Gr(consc,bundle->name,FOLLOWS,a_depends,RlistScalarValue(argp));
+       Gr(consc,bundle->name,a_depends,RlistScalarValue(argp));
        }
 
     for (size_t i = 0; i < SeqLength(bundle->promise_types); i++)
@@ -99,35 +92,37 @@ void GenerateSemanticsGraph(Policy *policy)
              }
 
           // Promise type
-          Gr(consc,handle,EXPRESSES,a_hasfunction,type->name);
+          Gr(consc,handle,a_hasfunction,type->name);
+          Gr(consc,handle,a_contains,promise->promiser);
+          Gr(consc,promise->promiser,a_maintainedby,bundle->type);
+          Gr(consc,promise->promiser,a_hasrole,"promiser");
 
+          Gr(consc,bundle->name,a_contains,handle);          
+          Gr(consc,handle,a_maintainedby,bundle->type);
+          Gr(consc,handle,a_hasrole,"promise handle");
+          Gr(consc,handle,a_hasfunction,"promise");
 
-          Gr(consc,bundle->type,EXPRESSES,a_maintains,promise->promiser);
-          Gr(consc,bundle->type,EXPRESSES,a_maintains,handle);
-          Gr(consc,bundle->name,EXPRESSES,a_hasattr,handle);
-          Gr(consc,bundle->name,CONTAINS,a_contains,handle);
-          Gr(consc,bundle->name,CONTAINS,a_contains, promise->promiser);
-          Gr(consc,bundle->name,FOLLOWS,a_depends, promise->promiser);
-
-          Gr(consc,promise->promiser,EXPRESSES,a_interpreted,"what");
+          Gr(consc,promise->promiser,a_interpreted,"what");
 
           if (promise->comment)
              {
-             Gr(consc,handle,EXPRESSES,a_hasattr,promise->comment);
+             Gr(consc,handle,a_hasattr,promise->comment);
              }
 
           switch (promise->promisee.type)
              {
              case RVAL_TYPE_SCALAR:
-                 Gr(consc,(char *)promise->promisee.item,FOLLOWS,a_depends, promise->promiser);
-                 Gr(consc,(char *)promise->promisee.item,FOLLOWS,a_depends, handle);
+                 Gr(consc,handle,a_contains,promise->promisee.item);
+                 Gr(consc,(char *)promise->promisee.item,a_depends,promise->promiser);
+                 Gr(consc,(char *)promise->promisee.item,a_depends,handle);
                  break;
 
              case RVAL_TYPE_LIST:
                  for (const Rlist *rp = promise->promisee.item; rp; rp = rp->next)
                     {
-                    Gr(consc,RlistScalarValue(rp),FOLLOWS,a_depends, promise->promiser);
-                    Gr(consc,RlistScalarValue(rp),FOLLOWS,a_depends, handle);
+                    Gr(consc,handle,a_contains,RlistScalarValue(rp));
+                    Gr(consc,RlistScalarValue(rp),a_depends, promise->promiser);
+                    Gr(consc,RlistScalarValue(rp),a_depends, handle);
                     }
                  break;
 
@@ -136,8 +131,8 @@ void GenerateSemanticsGraph(Policy *policy)
              }
 
           // Class activation
-          Gr(consc,handle,FOLLOWS,a_depends, promise->classes);
-          Gr(consc,promise->classes, EXPRESSES, a_interpreted,"context");
+          Gr(consc,handle,a_depends,promise->classes);
+          Gr(consc,promise->classes,a_hasrole,"context label");
 
           for (size_t cpi = 0; cpi < SeqLength(promise->conlist); cpi++)
              {
@@ -147,23 +142,25 @@ void GenerateSemanticsGraph(Policy *policy)
                 {
                 case RVAL_TYPE_SCALAR:
                     MakeUniqueClusterName(constraint->lval,constraint->rval.item,RVAL_TYPE_SCALAR,umbrella);
-                    Gr(consc,handle,EXPRESSES,a_hasconstraint,umbrella);
-                    Gr(consc,umbrella,EXPRESSES,a_hasattr,constraint->lval);
-                    Gr(consc,umbrella,EXPRESSES,a_hasattr,constraint->rval.item);
-                    Gr(consc,constraint->lval, EXPRESSES, a_interpreted, "lval");
-                    Gr(consc,constraint->rval.item, EXPRESSES, a_interpreted, "rval");
+                    Gr(consc,handle,a_hasconstraint,umbrella);
+                    Gr(consc,umbrella,a_hasrole,"promise body constraint");
+                    Gr(consc,umbrella,a_hasattr,constraint->lval);
+                    Gr(consc,umbrella,a_hasattr,constraint->rval.item);
+                    Gr(consc,constraint->lval, a_hasrole, "lval");
+                    Gr(consc,constraint->rval.item, a_hasrole, "rval");
                     break;
 
                 case RVAL_TYPE_LIST:
                     MakeUniqueClusterName(constraint->lval,constraint->rval.item,RVAL_TYPE_LIST,umbrella);
-                    Gr(consc,handle,EXPRESSES,a_hasconstraint,umbrella);
-                    Gr(consc,umbrella,EXPRESSES,a_hasattr,constraint->lval);
-                    Gr(consc,constraint->lval, EXPRESSES, a_interpreted, "lval");
+                    Gr(consc,handle,a_hasconstraint,umbrella);
+                    Gr(consc,umbrella,a_hasrole,"promise body constraint");
+                    Gr(consc,umbrella,a_hasattr,constraint->lval);
+                    Gr(consc,constraint->lval, a_hasrole, "lval");
 
                     for (Rlist *rp = (Rlist *)constraint->rval.item; rp != NULL; rp=rp->next)
                        {
-                       Gr(consc,umbrella,EXPRESSES,a_hasattr,RlistScalarValue(rp));
-                       Gr(consc,RlistScalarValue(rp), EXPRESSES, a_interpreted, "rval");
+                       Gr(consc,umbrella,a_hasattr,RlistScalarValue(rp));
+                       Gr(consc,RlistScalarValue(rp), a_hasrole, "rval");
                        }
                     break;
 
@@ -171,22 +168,21 @@ void GenerateSemanticsGraph(Policy *policy)
                     {
                     FnCall *fp = (FnCall *)(constraint->rval).item;
                     MakeUniqueClusterName(fp->name,fp->args,RVAL_TYPE_LIST,umbrella);
-                    Gr(consc,handle,EXPRESSES,a_hasconstraint,umbrella);
-                    Gr(consc,constraint->lval, EXPRESSES, a_interpreted, "lval");
-                    Gr(consc,fp->name, EXPRESSES, a_interpreted, "rval");
+                    Gr(consc,handle,a_hasconstraint,umbrella);
+                    Gr(consc,constraint->lval, a_hasrole, "lval");
+                    Gr(consc,fp->name, a_hasrole, "rval");
+                    Gr(consc,handle,a_depends,umbrella);
+                    Gr(consc,umbrella,a_depends,fp->name);
 
-                    Gr(consc,handle,FOLLOWS,a_depends,umbrella);
-                    Gr(consc,umbrella,FOLLOWS,a_depends,fp->name);
-
-                    Gr(consc,promise->promiser,FOLLOWS,a_depends,umbrella);
-                    Gr(consc,"functions",CONTAINS,a_hasinstance,fp->name);
-                    Gr(consc,fp->name,CONTAINS,a_hasinstance,umbrella);
-                    Gr(consc,umbrella,EXPRESSES,a_hasattr,constraint->lval);
+                    Gr(consc,promise->promiser,a_depends,umbrella);
+                    Gr(consc,fp->name, a_hasrole,"function");
+                    Gr(consc,fp->name,a_generalizes,umbrella);
+                    Gr(consc,umbrella,a_hasattr,constraint->lval);
                        
                     for (Rlist *argp = fp->args; argp != NULL; argp = argp->next)
                        {
-                       Gr(consc,umbrella,FOLLOWS,a_depends,RlistScalarValue(argp));
-                       Gr(consc,RlistScalarValue(argp), EXPRESSES, a_interpreted, "argument");
+                       Gr(consc,umbrella,a_depends,RlistScalarValue(argp));
+                       Gr(consc,RlistScalarValue(argp),a_hasrole,"parameter/argument");
                        }
                     }
                     break;
@@ -206,30 +202,27 @@ void GenerateSemanticsGraph(Policy *policy)
 
     MakeUniqueClusterName(body->name,body->args,RVAL_TYPE_LIST,umbrella);
 
-    Gr(consc,body->name,EXPRESSES,a_hasattr,body->type);
-    Gr(consc,umbrella,EXPRESSES,a_hasattr,body->type);
-    Gr(consc,body->type,EXPRESSES,a_hasattr,"what");
+    Gr(consc,body->name,a_hasrole,body->type);
+    Gr(consc,umbrella,a_hasrole,body->type);
+    Gr(consc,body->type,a_interpreted,"what");
 
-    Gr(consc,"constraints body",CONTAINS,a_contains,body->name);
-    Gr(consc,"constraints body",CONTAINS,a_contains,umbrella);
+    Gr(consc,umbrella,a_hasrole,"promise body constraint");
+    Gr(consc,body->name,a_hasrole,"promise body constraint");
 
-    Gr(consc,body->ns,CONTAINS|EXPRESSES,a_hasattr,body->name);
-    Gr(consc,body->ns,EXPRESSES,a_hasattr,"CGNgine namespace");
+    Gr(consc,body->ns,a_contains,body->name);
+    Gr(consc,body->ns,a_hasrole,"namespace");
 
     if (body->source_path)
        {
-       Gr(consc,body->source_path,EXPRESSES,a_hasattr,body->name);
-       Gr(consc,body->source_path,EXPRESSES,a_hasattr,umbrella);
-       Gr(consc,body->source_path,EXPRESSES,a_contains,body->name);
-       Gr(consc,body->source_path,EXPRESSES,a_contains,umbrella);
-       Gr(consc,body->source_path,EXPRESSES,a_hasattr,"file");
-       Gr(consc,body->source_path,EXPRESSES,a_hasattr,"where");
+       Gr(consc,body->source_path,a_contains,body->name);
+       Gr(consc,body->source_path,a_contains,umbrella);
+       Gr(consc,body->source_path,a_hasrole,"file");
+       Gr(consc,body->source_path,a_interpreted,"where");
        }
-
 
     for (Rlist *argp = body->args; argp != NULL; argp = argp->next)
        {
-       Gr(consc,umbrella,CONTAINS,a_contains,RlistScalarValue(argp));
+       Gr(consc,umbrella,a_depends,RlistScalarValue(argp));
        }
     }
 
@@ -238,23 +231,23 @@ void GenerateSemanticsGraph(Policy *policy)
 
 /**********************************************************************/
 
-void Gr(FILE *consc,char *from, int type, enum associations assoc, char *to)
+void Gr(FILE *consc,char *from, enum associations assoc, char *to)
 {
- fprintf(consc,"(%s,%d,%s,%s,%s)\n",from,type,A[assoc][F],A[assoc][B],to);
+ fprintf(consc,"(%s,%d,%s,%s,%s)\n",from,A[assoc].type,A[assoc].fwd,to,A[assoc].bwd);
 }
 
 /**********************************************************************/
 
-void IGr(FILE *consc,char *from, int type, enum associations assoc, char *to)
+void IGr(FILE *consc,char *from, enum associations assoc, char *to)
 {
- fprintf(consc,"(%s,-%d,%s,%s,%s)\n",from,type,A[assoc][B],A[assoc][F],to);
+ fprintf(consc,"(%s,-%d,%s,%s,%s)\n",from,A[assoc].type,A[assoc].bwd,to,A[assoc].fwd);
 }
 
 /**********************************************************************/
 
-void GrQ(FILE *consc,char *from, int type, enum associations assoc, double to)
+void GrQ(FILE *consc,char *from, enum associations assoc, double to)
 {
- fprintf(consc,"(%s,%d,%s,%s,%.2lf)\n",from,type,A[assoc][F],A[assoc][B],to);
+ fprintf(consc,"(%s,%d,%s,%.2lf,%s)\n",from,A[assoc].type,A[assoc].fwd,to,A[assoc].bwd);
 }
 
 /**********************************************************************/

@@ -651,10 +651,10 @@ static void BuildConsciousState(EvalContext *ctx, Averages av, Timescales t)
 
  if (consc)
     {
-    Gr(consc,VUQNAME,EXPRESSES,a_name,"host device");
+    Gr(consc,VUQNAME,a_name,"host device");
     if (VDOMAIN[0] != '\0')
        {
-       Gr(consc,VDOMAIN,EXPRESSES,a_name,"DNS domain or Workspace");
+       Gr(consc,VDOMAIN,a_name,"DNS domain or Workspace");
        }
     AnnotateContext(ctx, consc, now);
     }
@@ -1471,14 +1471,16 @@ if (consc == NULL)
 char here_and_now[CF_BUFSIZE];
 char buff[CF_BUFSIZE];
 
-Gr(consc,"sample times",CONTAINS,a_contains,now);
+printf("Current promise?????\n");
+
+Gr(consc,"sample times",a_contains,now);
 
  // The name/context is a semantic coordinate for the instances (like an array index)
 
 snprintf(here_and_now, CF_BUFSIZE, "%s:%s",VFQNAME,now);
-Gr(consc,VUQNAME,CONTAINS,a_contains,VFQNAME);
-Gr(consc,VFQNAME,CONTAINS,a_contains,here_and_now);
-Gr(consc,now,CONTAINS,a_contains,here_and_now);
+Gr(consc,VUQNAME,a_contains,VFQNAME);
+Gr(consc,VFQNAME,a_contains,here_and_now);
+Gr(consc,now,a_contains,here_and_now);
 
 ClassTableIterator *iter = EvalContextClassTableIteratorNewGlobal(ctx, NULL, true, true);
 Class *cls = NULL;
@@ -1489,14 +1491,39 @@ int i = 0;
 
 while ((cls = ClassTableIteratorNext(iter)))
    {
-   Gr(consc,here_and_now,EXPRESSES,a_hasattr,cls->name);
-   printf("GOT: %s, %s\n",cls->ns, cls->name);
+   Gr(consc,here_and_now,a_hasattr,cls->name);
    StringSet *tagset = EvalContextClassTags(ctx, cls->ns, cls->name);
    StringSetIterator iter = StringSetIteratorInit(tagset);
    const char *name = NULL;
    while ((name = StringSetIteratorNext(&iter)))
       {
-      printf(" -- %s\n", name);
+      if (strstr(name,"=") == 0)
+         {
+         Gr(consc,cls->name,a_related_to,name);
+
+         if (cls->ns)
+            {
+            Gr(consc,cls->ns,a_contains,cls->name);
+            Gr(consc,cls->ns,a_hasrole,"namespace");
+            }
+         else
+            {
+            Gr(consc,"default",a_contains,cls->name);
+            Gr(consc,"default",a_hasrole,"namespace");
+            }
+         }
+      else if (strncmp(name,"name=",5) == 0)
+         {
+         Gr(consc,cls->name,a_hasrole,name);
+         }
+      else if (strncmp(name,"source=",7) == 0)
+         {
+         Gr(consc,cls->name,a_origin,name);
+         }
+      else
+         {
+         //??
+         }
       }
    }
  
@@ -1514,9 +1541,9 @@ static void AnnotateCoactivation(FILE *consc,char *now,char *origin, char *name,
  snprintf(here_and_now, CF_BUFSIZE, "%s:%s",VFQNAME,now);
  
  // anchor basis for "here and now" context cluster to a unique but temporary key
- Gr(consc,now,EXPRESSES,a_hasattr,here_and_now);
+ Gr(consc,now,a_hasattr,here_and_now);
 
-// Gr(consc,now,NEAR,a_approx,here_and_now); 
+// Gr(consc,now,a_approx,here_and_now); 
 
 }
 
@@ -1530,13 +1557,13 @@ static void AnnotateOrigin(FILE *consc,char *now,char *origin,char *name,char *g
  // The name is a semantic coordinate for the instance
  snprintf(here_and_now, CF_BUFSIZE, "%s:%s:%s",VFQNAME,now,name);
 
- Gr(consc,name,CONTAINS,a_contains,here_and_now);
+ Gr(consc,name,a_contains,here_and_now);
   
  // anchor basis of measurment to a system region/interpretation (sensor type)
- Gr(consc,origin,CONTAINS|EXPRESSES,a_contains,name);
+ Gr(consc,origin,a_contains,name);
 
  // Explain meaning of name
- Gr(consc,origin,EXPRESSES,a_origin,here_and_now);
+ Gr(consc,origin,a_origin,here_and_now);
 
 }
 
@@ -1552,41 +1579,41 @@ static void AnnotateNumbers(FILE *consc,char *now,char *origin, char *name, char
 
  // anchor basis for value cluster
 
- Gr(consc,name,CONTAINS,a_hasinstance,here_and_now);
+ Gr(consc,name,a_generalizes,here_and_now);
 
  // label attributes (like object definition) and attach number symbols
  
  snprintf(buff,CF_BUFSIZE,"%s:q",here_and_now);
- Gr(consc,name,EXPRESSES,a_hasattr,buff);
- GrQ(consc,buff,EXPRESSES,a_hasvalue,q);
+ Gr(consc,name,a_hasattr,buff);
+ GrQ(consc,buff,a_hasvalue,q);
 
  snprintf(buff,CF_BUFSIZE,"%s:E",here_and_now);
- Gr(consc,name,EXPRESSES,a_hasattr,buff);
- GrQ(consc,buff,EXPRESSES,a_hasvalue,E);
+ Gr(consc,name,a_hasattr,buff);
+ GrQ(consc,buff,a_hasvalue,E);
 
  snprintf(buff,CF_BUFSIZE,"%s:sig",here_and_now);
- Gr(consc,name,EXPRESSES,a_hasattr,buff);
- GrQ(consc,buff,EXPRESSES,a_hasvalue,sig);
+ Gr(consc,name,a_hasattr,buff);
+ GrQ(consc,buff,a_hasvalue,sig);
 
  snprintf(buff,CF_BUFSIZE,"%s:Et",here_and_now);
- Gr(consc,name,EXPRESSES,a_hasattr,buff);
- GrQ(consc,buff,EXPRESSES,a_hasvalue,Et);
+ Gr(consc,name,a_hasattr,buff);
+ GrQ(consc,buff,a_hasvalue,Et);
 
  snprintf(buff,CF_BUFSIZE,"%s:tsig",here_and_now);
- Gr(consc,name,EXPRESSES,a_hasattr,buff);
- GrQ(consc,buff,EXPRESSES,a_hasvalue,tsig);
+ Gr(consc,name,a_hasattr,buff);
+ GrQ(consc,buff,a_hasvalue,tsig);
 
  // attach number meanings
  snprintf(buff,CF_BUFSIZE,"%s:q",here_and_now);
- IGr(consc,buff,EXPRESSES,a_name,"a current value");
+ IGr(consc,buff,a_name,"a current value");
  snprintf(buff,CF_BUFSIZE,"%s:E",here_and_now);
- IGr(consc,buff,EXPRESSES,a_name,"a mean value");
+ IGr(consc,buff,a_name,"a mean value");
  snprintf(buff,CF_BUFSIZE,"%s:sig",here_and_now);
- IGr(consc,buff,EXPRESSES,a_name,"a std deviation");
+ IGr(consc,buff,a_name,"a std deviation");
  snprintf(buff,CF_BUFSIZE,"%s:Et",here_and_now);
- IGr(consc,buff,EXPRESSES,a_name,"a mean time to change");
+ IGr(consc,buff,a_name,"a mean time to change");
  snprintf(buff,CF_BUFSIZE,"%s:tsig",here_and_now);
- IGr(consc,buff,EXPRESSES,a_name,"a mean time deviation");
+ IGr(consc,buff,a_name,"a mean time deviation");
 
 }
 

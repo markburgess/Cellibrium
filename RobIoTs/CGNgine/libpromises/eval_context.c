@@ -1441,15 +1441,15 @@ static const char *EvalContextCurrentNamespace(const EvalContext *ctx)
     switch (frame->type)
        {
        case STACK_FRAME_TYPE_BUNDLE:
-           return frame->data.bundle.owner->ns;
+           return frame->data.bundle.owner->ns ? frame->data.bundle.owner->ns: "default";
        case STACK_FRAME_TYPE_BODY:
-           return frame->data.body.owner->ns;
+           return frame->data.body.owner->ns ? frame->data.body.owner->ns : "default";
        default:
            break; /* out of the switch but not the loop ! */
        }
     }
  
- return NULL;
+ return "default";
 }
 
 /****************************************************************/
