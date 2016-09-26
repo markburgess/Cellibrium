@@ -24,7 +24,7 @@ Association A[a_ass_dim+1] =
     {GR_FOLLOWS,"depends on","partly determines"},
     {GR_EXPRESSES,"is called","is a name for"},
     {GR_EXPRESSES,"expresses an attribute","is an attribute expressed by"},
-    {GR_EXPRESSES,"is the state/value of","has value/state"},
+    {GR_EXPRESSES,"has value/state","is the state/value of"},
     {GR_EXPRESSES,"has the role of","is a role fulfilled by"},
     {GR_EXPRESSES,"has function","is the function of"},
     {GR_EXPRESSES,"has constraint","constrains"},

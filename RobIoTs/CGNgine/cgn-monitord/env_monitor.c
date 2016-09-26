@@ -1518,11 +1518,11 @@ while ((cls = ClassTableIteratorNext(iter)))
          }
       else if (strncmp(name,"name=",5) == 0)
          {
-         Gr(consc,cls->name,a_hasrole,name);
+         Gr(consc,cls->name,a_hasrole,name+5);
          }
       else if (strncmp(name,"source=",7) == 0)
          {
-         Gr(consc,cls->name,a_origin,name);
+         Gr(consc,cls->name,a_origin,name+7);
          }
       else
          {
@@ -1598,11 +1598,11 @@ static void AnnotateNumbers(FILE *consc,char *now,char *origin, char *name, char
  
  // attach number meanings
  snprintf(buff,CF_BUFSIZE,"%s:q",here_and_now);
- IGr(consc,buff,a_name,"a current value");
+ IGr(consc,buff,a_name,"the current observed value");
  snprintf(buff,CF_BUFSIZE,"%s:E",here_and_now);
- IGr(consc,buff,a_name,"a mean value");
+ IGr(consc,buff,a_name,"the running mean value");
  snprintf(buff,CF_BUFSIZE,"%s:sig",here_and_now);
- IGr(consc,buff,a_name,"a std deviation");
+ IGr(consc,buff,a_name,"a std deviation over recent samples");
  snprintf(buff,CF_BUFSIZE,"%s:Et",here_and_now);
  IGr(consc,buff,a_name,"a mean time to change");
  snprintf(buff,CF_BUFSIZE,"%s:tsig",here_and_now);
