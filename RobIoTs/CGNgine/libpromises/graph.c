@@ -248,7 +248,7 @@ void IGr(FILE *consc,char *from, enum associations assoc, char *to)
 void Number(FILE *consc, double q)
 {
  enum associations assoc = a_hasrole;
- fprintf(consc,"(%.2lf,%d,%s,%s,%s)\n",q,A[assoc].type,A[assoc].bwd,"number",A[assoc].fwd);
+ fprintf(consc,"(%.2lf,%d,%s,%s,%s)\n",q,A[assoc].type,A[assoc].fwd,"number",A[assoc].bwd);
 }
 
 /**********************************************************************/
