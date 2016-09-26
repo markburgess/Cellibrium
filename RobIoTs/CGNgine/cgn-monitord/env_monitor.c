@@ -119,15 +119,14 @@ static void UpdateAverages(EvalContext *ctx, char *timekey, Averages *newvals);
 static void UpdateDistributions(EvalContext *ctx, char *timekey, Averages *av);
 static double WAverage(double newvals, double oldvals, double age);
 static double SituationHereAndNow(EvalContext *ctx, FILE *consc, char *now, char *namespace, char *name, char *desc, double variable, double dq, double av_expect, double av_var, double t_expect,double t_dev, Item **classlist);
-static void SetVariable(char *name, double now, double average, double stddev, Item **list);
+static void SetVariable(FILE *consc, char *name, double now, double average, double stddev, Item **list);
 static double RejectAnomaly(double new, double av, double var);
 static void ZeroArrivals(void);
 static PromiseResult KeepMonitorPromise(EvalContext *ctx, const Promise *pp, void *param);
 static void GetNamespace(int index, char *buffer);
 static void AnnotateContext(EvalContext *ctx, FILE *fp, char *now);
 static void AnnotateNumbers(FILE *consc,char *now,char *origin, char *name, char *gradient, char *state, char* level, double q, double E, double sig, double Et, double tsig, char *description);
-static void AnnotateCoactivation(FILE *consc,char *now,char *origin,char *name,char *gradient,char *state, char* level, double q, double E, double sig, double Et, double tsig, char *description);
-static void AnnotateOrigin(FILE *consc,char *now,char *origin,char *name,char *gradient,char *state, char* level, double q, double E, double sig, double Et, double tsig, char *description);
+static void AnnotateOrigin(FILE *consc,char *now,char *origin,char *name, char *description);
 
 /****************************************************************/
 
@@ -360,6 +359,8 @@ void MonitorStartServer(EvalContext *ctx, const Policy *policy)
  
  while (!IsPendingTermination())
     {
+    EvalContextClear(ctx);
+    DetectEnvironment(ctx);
     UpdateTimeClasses(ctx, time(NULL));
     
     GetQ(ctx, policy);
@@ -649,16 +650,6 @@ static void BuildConsciousState(EvalContext *ctx, Averages av, Timescales t)
 
  // Device source
 
- if (consc)
-    {
-    Gr(consc,VUQNAME,a_name,"host device");
-    if (VDOMAIN[0] != '\0')
-       {
-       Gr(consc,VDOMAIN,a_name,"DNS domain or Workspace");
-       }
-    AnnotateContext(ctx, consc, now);
-    }
-
  // Mobile container? Find about processes
  
  for (i = 0; i < CF_OBSERVABLES; i++)
@@ -670,7 +661,9 @@ static void BuildConsciousState(EvalContext *ctx, Averages av, Timescales t)
     
     sigma = SituationHereAndNow(ctx,consc,now,namespace, name, desc, CF_THIS[i], av.Q[i].dq, av.Q[i].expect, av.Q[i].var, t.T[i].dchange_expect, sqrt(t.T[i].dchange_var), &mon_data);
 
-    SetVariable(name, CF_THIS[i], av.Q[i].expect, sigma, &mon_data);
+    SetVariable(consc, name, CF_THIS[i], av.Q[i].expect, sigma, &mon_data);
+    Gr(consc,now,a_contains,name);
+    AnnotateOrigin(consc,now,"observations",name,desc);
 
     /* LDT */
     
@@ -818,6 +811,17 @@ static void BuildConsciousState(EvalContext *ctx, Averages av, Timescales t)
 
  if (consc)
     {
+    Gr(consc,VUQNAME,a_name,"host device");
+    if (VDOMAIN[0] != '\0')
+       {
+       Gr(consc,VDOMAIN,a_name,"DNS domain or Workspace");
+       }
+
+    AnnotateContext(ctx, consc, now);
+    }
+
+ if (consc)
+    {
     fclose(consc);    
     }
 
@@ -862,7 +866,7 @@ static Averages *GetCurrentAverages(char *timekey)
 
 /*****************************************************************************/
 
-static void UpdateAverages(EvalContext *ctx, char *timekey, Averages *newvals)
+static void UpdateAverages(ARG_UNUSED EvalContext *ctx, char *timekey, Averages *newvals)
 {
  CF_DB *dbp;
  
@@ -899,7 +903,7 @@ static int Day2Number(const char *datestring)
 
 /*****************************************************************************/
 
-static void UpdateDistributions(EvalContext *ctx, char *timekey, Averages *av)
+static void UpdateDistributions(ARG_UNUSED EvalContext *ctx, char *timekey, Averages *av)
 {
  int position, day, i;
  static int counter = 0;
@@ -1022,7 +1026,7 @@ static double WAverage(double anew, double aold, double age)
 
 /*****************************************************************************/
 
-static double SituationHereAndNow(EvalContext *ctx, FILE *consc, char *now, char *namespace, char *name, char *desc, double variable, double dq, double av_expect, double av_var, double t_expect,double t_dev, Item **classlist)
+static double SituationHereAndNow(ARG_UNUSED EvalContext *ctx, FILE *consc, char *now, char *namespace, char *name, char *desc, double variable, double dq, double av_expect, double av_var, double t_expect,double t_dev, Item **classlist)
 {
  char buffer[CF_BUFSIZE], buffer2[CF_BUFSIZE];
  char level[CF_SMALLBUF], degree[CF_SMALLBUF];
@@ -1132,18 +1136,26 @@ else
 
 /*****************************************************************************/
 
-static void SetVariable(char *name, double value, double average, double stddev, Item **classlist)
+static void SetVariable(FILE *consc, char *name, double value, double average, double stddev, Item **classlist)
 {
  char var[CF_BUFSIZE];
  
  snprintf(var, CF_MAXVARSIZE, "value_%s=%.2lf", name, value);
  AppendItem(classlist, var, "");
+ Gr(consc,var,a_hasrole,"value/state");
+ GrQ(consc,name,a_hasvalue,value);
  
  snprintf(var, CF_MAXVARSIZE, "av_%s=%.2lf", name, average);
  AppendItem(classlist, var, "");
- 
+ Gr(consc,name,a_hasrole,"expectation value");
+    
  snprintf(var, CF_MAXVARSIZE, "dev_%s=%.2lf", name, stddev);
  AppendItem(classlist, var, "");
+ Gr(consc,name,a_hasrole,"standard deviation");
+    
+ Number(consc,value);
+ Number(consc,average);
+ Number(consc,stddev);
 }
 
 /*****************************************************************************/
@@ -1252,9 +1264,6 @@ static void GatherPromisedMeasures(EvalContext *ctx, const Policy *policy)
     
     EvalContextStackPopFrame(ctx);
     }
-
- EvalContextClear(ctx);
- DetectEnvironment(ctx);
 }
 
 /*********************************************************************/
@@ -1482,22 +1491,19 @@ Gr(consc,now,a_contains,here_and_now);
 
 ClassTableIterator *iter = EvalContextClassTableIteratorNewGlobal(ctx, NULL, true, true);
 Class *cls = NULL;
-int i = 0;
-
-// cls->ns, cls->name
-//  StringSet *tagset = EvalContextClassTags(ctx, cls->ns, cls->name);
 
 while ((cls = ClassTableIteratorNext(iter)))
    {
    Gr(consc,here_and_now,a_hasattr,cls->name);
    StringSet *tagset = EvalContextClassTags(ctx, cls->ns, cls->name);
    StringSetIterator iter = StringSetIteratorInit(tagset);
-   const char *name = NULL;
+   char *name = NULL;
    while ((name = StringSetIteratorNext(&iter)))
       {
       if (strstr(name,"=") == 0)
          {
          Gr(consc,cls->name,a_related_to,name);
+         Gr(consc,cls->name,a_hasrole,"class/context label");
 
          if (cls->ns)
             {
@@ -1530,36 +1536,18 @@ ClassTableIteratorDestroy(iter);
 
 /**********************************************************************/
 
-static void AnnotateCoactivation(FILE *consc,char *now,char *origin, char *name, char *gradient, char *state, char* level, double q, double E, double sig, double Et, double tsig, char *description)
+static void AnnotateOrigin(FILE *consc,char *now,char *origin,char *name, char *description)
 {
  char here_and_now[CF_BUFSIZE];
- char buff[CF_BUFSIZE];
-
- // The name is a semantic coordinate for the instance
- snprintf(here_and_now, CF_BUFSIZE, "%s:%s",VFQNAME,now);
- 
- // anchor basis for "here and now" context cluster to a unique but temporary key
- Gr(consc,now,a_hasattr,here_and_now);
-
-// Gr(consc,now,a_approx,here_and_now); 
-
-}
-
-/**********************************************************************/
-
-static void AnnotateOrigin(FILE *consc,char *now,char *origin,char *name,char *gradient,char *state, char* level, double q, double E, double sig, double Et, double tsig, char *description)
-{
- char here_and_now[CF_BUFSIZE];
- char buff[CF_BUFSIZE];
 
  // The name is a semantic coordinate for the instance
  snprintf(here_and_now, CF_BUFSIZE, "%s:%s:%s",VFQNAME,now,name);
 
- Gr(consc,name,a_contains,here_and_now);
+ Gr(consc,now,a_contains,here_and_now);
+ Gr(consc,here_and_now,a_contains,name);
+ Gr(consc,name,a_interpreted,description);
+ Gr(consc,here_and_now,a_interpreted,description);
   
- // anchor basis of measurment to a system region/interpretation (sensor type)
- Gr(consc,origin,a_contains,name);
-
  // Explain meaning of name
  Gr(consc,origin,a_origin,here_and_now);
 
@@ -1567,7 +1555,7 @@ static void AnnotateOrigin(FILE *consc,char *now,char *origin,char *name,char *g
 
 /**********************************************************************/
 
-static void AnnotateNumbers(FILE *consc,char *now,char *origin, char *name, char *gradient, char *state, char* level, double q, double E, double sig, double Et, double tsig, char *description)
+static void AnnotateNumbers(FILE *consc,char *now,char *origin, char *name, char *gradient, char *state, ARG_UNUSED char* level, double q, double E, double sig, double Et, double tsig, char *description)
 { 
  char here_and_now[CF_BUFSIZE];
  char buff[CF_BUFSIZE];
@@ -1578,29 +1566,36 @@ static void AnnotateNumbers(FILE *consc,char *now,char *origin, char *name, char
  // anchor basis for value cluster
 
  Gr(consc,name,a_generalizes,here_and_now);
+ Gr(consc,name,a_interpreted,description);
+ Gr(consc,origin,a_contains,name);
 
  // label attributes (like object definition) and attach number symbols
  
  snprintf(buff,CF_BUFSIZE,"%s:q",here_and_now);
  Gr(consc,name,a_hasattr,buff);
  GrQ(consc,buff,a_hasvalue,q);
-
+ Number(consc,q);
+ 
  snprintf(buff,CF_BUFSIZE,"%s:E",here_and_now);
  Gr(consc,name,a_hasattr,buff);
  GrQ(consc,buff,a_hasvalue,E);
-
+ Number(consc,E);
+ 
  snprintf(buff,CF_BUFSIZE,"%s:sig",here_and_now);
  Gr(consc,name,a_hasattr,buff);
  GrQ(consc,buff,a_hasvalue,sig);
-
+ Number(consc,sig);
+ 
  snprintf(buff,CF_BUFSIZE,"%s:Et",here_and_now);
  Gr(consc,name,a_hasattr,buff);
  GrQ(consc,buff,a_hasvalue,Et);
-
+ Number(consc,Et);
+ 
  snprintf(buff,CF_BUFSIZE,"%s:tsig",here_and_now);
  Gr(consc,name,a_hasattr,buff);
  GrQ(consc,buff,a_hasvalue,tsig);
-
+ Number(consc,tsig);
+ 
  // attach number meanings
  snprintf(buff,CF_BUFSIZE,"%s:q",here_and_now);
  IGr(consc,buff,a_name,"a current value");

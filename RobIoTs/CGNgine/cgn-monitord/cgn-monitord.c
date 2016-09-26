@@ -114,7 +114,6 @@ int main(int argc, char *argv[])
     GenericAgentConfig *config = CheckOpts(argc, argv);
     EvalContext *ctx = EvalContextNew();
     GenericAgentConfigApply(ctx, config);
-
     GenericAgentDiscoverContext(ctx, config);
     Policy *policy = LoadPolicy(ctx, config);
 

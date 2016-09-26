@@ -39,6 +39,7 @@ Association;
 void Gr(FILE *consc,char *from, enum associations assoc, char *to);
 void IGr(FILE *consc,char *from, enum associations assoc, char *to);
 void GrQ(FILE *consc,char *from, enum associations assoc, double to);
+void Number(FILE *consc, double q);
 void GenerateSemanticsGraph(Policy *policy);
 #endif
 

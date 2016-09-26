@@ -132,7 +132,7 @@ void GenerateSemanticsGraph(Policy *policy)
 
           // Class activation
           Gr(consc,handle,a_depends,promise->classes);
-          Gr(consc,promise->classes,a_hasrole,"context label");
+          Gr(consc,promise->classes,a_hasrole,"class/context label");
 
           for (size_t cpi = 0; cpi < SeqLength(promise->conlist); cpi++)
              {
@@ -241,6 +241,14 @@ void Gr(FILE *consc,char *from, enum associations assoc, char *to)
 void IGr(FILE *consc,char *from, enum associations assoc, char *to)
 {
  fprintf(consc,"(%s,-%d,%s,%s,%s)\n",from,A[assoc].type,A[assoc].bwd,to,A[assoc].fwd);
+}
+
+/**********************************************************************/
+
+void Number(FILE *consc, double q)
+{
+ enum associations assoc = a_hasrole;
+ fprintf(consc,"(%.2lf,%d,%s,%s,%s)\n",q,A[assoc].type,A[assoc].bwd,"number",A[assoc].fwd);
 }
 
 /**********************************************************************/
