@@ -380,8 +380,8 @@ fi
 
 dnl Redis
 
-AC_CHECK_HEADERS(hiredis/hiredis.h, [], [AC_MSG_ERROR(Cannot find Redis)])
-AC_CHECK_LIB(hiredis, redisConnectWithTimeout)
+dnl AC_CHECK_HEADERS(hiredis/hiredis.h, [], [AC_MSG_ERROR(Cannot find Redis)])
+dnl AC_CHECK_LIB(hiredis, redisConnectWithTimeout)
 
 dnl OpenLDAP Lightning MDB
 
