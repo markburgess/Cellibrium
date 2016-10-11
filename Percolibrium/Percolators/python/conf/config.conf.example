@@ -1,0 +1,1 @@
+neo4j_url   = "http://neo4j:n@localhost:7474/db/data"
