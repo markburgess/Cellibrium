@@ -347,6 +347,7 @@ const ConstraintSyntax CFM_CONTROLBODY[] =
     ConstraintSyntaxNewBool("histograms", "Ignored, kept for backward compatibility. Default value: true", SYNTAX_STATUS_NORMAL),
     ConstraintSyntaxNewBool("tcpdump", "true/false use tcpdump if found. Default value: false", SYNTAX_STATUS_NORMAL),
     ConstraintSyntaxNewString("tcpdumpcommand", CF_ABSPATHRANGE, "Path to the tcpdump command on this system", SYNTAX_STATUS_NORMAL),
+    ConstraintSyntaxNewInt("sample_sleep_interval", CF_VALRANGE, "Time to sleep after sampling in seconds", SYNTAX_STATUS_NORMAL),
     ConstraintSyntaxNewNull()
 };
 

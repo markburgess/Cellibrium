@@ -82,7 +82,7 @@ static double CF_THIS[CF_OBSERVABLES] = { 0.0 };
 
 /* Work */
 
-static const int SLEEPTIME = 1; // 15; //2.5 * 60;  
+int SLEEPTIME = 60;  
 
 static long ITER = ITER_RESET;               /* Iteration since start */
 static double AGE = 0.0, WAGE = 0.0;        /* Age and weekly age of database */
@@ -642,7 +642,7 @@ static void BuildConsciousState(EvalContext *ctx, Averages av, Timescales t)
 
  char now[CF_SMALLBUF];
  time_t nowt = time(NULL);
- snprintf(now,CF_SMALLBUF, "t_%ld", (long)nowt);
+ snprintf(now,CF_SMALLBUF, "t_%s", GenTimeKey(nowt));
  UpdateTimeClasses(ctx, nowt);
 
  unlink(GRAPHFILE_NEW);

@@ -44,6 +44,8 @@ typedef enum
     MONITOR_CONTROL_MONITOR_FACILITY,
     MONITOR_CONTROL_HISTOGRAMS,
     MONITOR_CONTROL_TCP_DUMP,
+    MONITOR_CONTROL_TCP_DUMP_COMMAND,
+    MONITOR_CONTROL_SLEEPTIME,
     MONITOR_CONTROL_NONE
 } MonitorControl;
 
@@ -268,6 +270,12 @@ static void KeepPromises(EvalContext *ctx, const Policy *policy)
           {
           sscanf(value, "%lf", &FORGETRATE);
           Log(LOG_LEVEL_DEBUG, "forget rate %f", FORGETRATE);
+          }
+
+       if (strcmp(cp->lval, CFM_CONTROLBODY[MONITOR_CONTROL_SLEEPTIME].lval) == 0)
+          {
+          sscanf(value, "%d", &SLEEPTIME);
+          Log(LOG_LEVEL_VERBOSE, "Sample sleep time intervals %d seconds", SLEEPTIME);
           }
        }
     }

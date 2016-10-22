@@ -94,9 +94,3 @@ constraints match_value single_value
 select_line_matching => ".*";
 extraction_regex => "([0-9]+)";
 }
-
-
-constraints monitor control
-{
-sample_sleep_interval => 150; # seconds
-}

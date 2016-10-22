@@ -28,6 +28,7 @@
 #include <cf3.defs.h>
 
 extern double FORGETRATE;
+extern int SLEEPTIME;
 
 void MonitorInitialize(void);
 void MonitorStartServer(EvalContext *ctx, const Policy *policy);
