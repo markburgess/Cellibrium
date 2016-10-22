@@ -303,11 +303,11 @@ static void ThisAgentInit(void)
           Log(LOG_LEVEL_VERBOSE,"Couldn't read system clock\n");
           }
        
-       snprintf(OUTPUTDIR, CF_BUFSIZE, "cgn-reports-%s-%s", CanonifyName(VFQNAME), cf_ctime(&now));
+       snprintf(OUTPUTDIR, CF_BUFSIZE, "~/cgn-reports-%s-%s", CanonifyName(VFQNAME), cf_ctime(&now));
        }
     else
        {
-       snprintf(OUTPUTDIR, CF_BUFSIZE, "cgn-reports-%s", CanonifyName(VFQNAME));
+       snprintf(OUTPUTDIR, CF_BUFSIZE, "~/cgn-reports-%s", CanonifyName(VFQNAME));
        }
     }
 
