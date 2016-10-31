@@ -44,23 +44,39 @@ def insert_into_db():
 				mylist.extend(l)
 				os.remove(fn)
 			#res.append(mylist)
-
 		statements = []
 		for l in mylist:
+			timestamp = time.time()
+			r1_left = r2_right = '-'
+			r1_right = '->'
+			r2_left = '<-'
+
 			if l[1] < 0:
 				l[1] *= -1
-				merge1 = 'MERGE (n)<-[:`%s` {type:{two}, b: {three}}]-(m)' % (l[4])
-				merge2 = 'MERGE (n)-[:`%s` {type:{two}, b: {five}}]->(m)' % (l[2])
-			else:
-				merge1 = 'MERGE (n)-[:`%s` {type:{two}, b: {five}}]->(m)' % (l[2])
-				merge2 = 'MERGE (n)<-[:`%s` {type:{two}, b: {three}}]-(m)' % (l[4])
+			#	merge1 = 'MERGE (n)<-[r1:`%s` {type:{two}, b: {three}}]-(m) SET r1 += {r1_props}' % (l[4])
+			#	merge2 = 'MERGE (n)-[r2:`%s` {type:{two}, b: {five}}]->(m) SET r2 += {r2_props}' % (l[2])
+				r1_left = '<-'
+				r1_right = r2_left = '-'
+				r2_right = '->'
+
+			merge1 = (
+				'MERGE (n)%s[r1:`%s` {type:{two}, b: {five}}]%s(m) ON CREATE SET r1.w = 0.3, r1.ts = {ts} ' 
+				'ON MATCH SET r1.ts = {ts}, r1.w = (r1.w + 0.7)'
+			) % (r1_left,l[2],r1_right)
+
+			merge2 = (
+				'MERGE (n)%s[r2:`%s` {type:{two}, b: {three}}]%s(m) ON CREATE SET r2.w = 0.3, r2.ts = {ts} ' 
+				'ON MATCH SET r2.ts = {ts}, r2.w = (r2.w + 0.7)'
+			) % (r2_left,l[4],r2_right)
+
+				#MERGE (n:TESTING {Name: 'testing1'})-[r:TESTING {Name: 'testing2'}]->(m:TESTING {Name: 'testing3'}) ON CREATE SET r.weight = 0.3, r.ts = 'blargh' ON MATCH SET r += {ts: '1234512qwerqwer3', weight: (r.weight + 0.7)};
 
 			statements.append({
 			'statement': (
 #				'MERGE (n:Label {Name: {one}})'
 #				'MERGE (m:Label {Name: {three}})'
-				'MERGE (n:CGN {Name: {one}})'
-				'MERGE (m:CGN {Name: {four}})'
+				'MERGE (n:CGN {Name: {one}}) '
+				'MERGE (m:CGN {Name: {four}}) '
 				'%s %s' % (merge1, merge2)
 				#'MERGE (n)-[:`%s` {type: %s, b:`%s`}]-(m)' % (l[2],l[1],l[3])
 	#			'MERGE (n)-[:`%s` {type:{three}]-(m)' % (l[2])
@@ -72,7 +88,8 @@ def insert_into_db():
 				'three' : l[2],
 				'four' : l[3],
 				'five' : l[4],
-			}
+				'ts': str(timestamp),
+				}
 		})
 		#pp.pprint(statements)
 		print time.strftime("%d/%m/%Y %H:%M:%S") + " - STARTING LOAD (%d files)" % (nofiles)
