@@ -19,7 +19,7 @@ Association A[a_ass_dim+1] =
 {
     {GR_CONTAINS,"contains","belongs to/is part of"},
     {GR_CONTAINS,"generalizes","is a special case of"},
-    {GR_FOLLOWS,"originates from","is the source of"},
+    {GR_FOLLOWS,"may originate from","may be the source of"},
     {GR_FOLLOWS,"is maintained by","maintains"},
     {GR_FOLLOWS,"depends on","partly determines"},
     {GR_FOLLOWS,"may be caused by","can cause"},

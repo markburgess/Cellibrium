@@ -102,7 +102,7 @@ void GenerateSemanticsGraph(Policy *policy)
           Gr(consc,handle,a_hasrole,"promise handle");
           Gr(consc,handle,a_hasfunction,"promise");
 
-          Gr(consc,promise->promiser,a_interpreted,"what");
+          Gr(consc,promise->promiser,a_hasrole,"what");
 
           if (promise->comment)
              {
@@ -204,7 +204,7 @@ void GenerateSemanticsGraph(Policy *policy)
 
     Gr(consc,body->name,a_hasrole,body->type);
     Gr(consc,umbrella,a_hasrole,body->type);
-    Gr(consc,body->type,a_interpreted,"what");
+    Gr(consc,body->type,a_hasrole,"what");
 
     Gr(consc,umbrella,a_hasrole,"promise body constraint");
     Gr(consc,body->name,a_hasrole,"promise body constraint");
@@ -217,7 +217,7 @@ void GenerateSemanticsGraph(Policy *policy)
        Gr(consc,body->source_path,a_contains,body->name);
        Gr(consc,body->source_path,a_contains,umbrella);
        Gr(consc,body->source_path,a_hasrole,"file");
-       Gr(consc,body->source_path,a_interpreted,"where");
+       Gr(consc,body->source_path,a_hasrole,"where");
        }
 
     for (Rlist *argp = body->args; argp != NULL; argp = argp->next)

@@ -230,7 +230,7 @@ void Canonify(char *str)
     {
     if (*sp == '/' || *sp == '\\')
        {
-       *sp = '%';
+       *sp = ':';
        }
     }
 }

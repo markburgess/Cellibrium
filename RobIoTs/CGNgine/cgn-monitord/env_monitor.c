@@ -1497,12 +1497,13 @@ while ((cls = ClassTableIteratorNext(iter)))
    StringSet *tagset = EvalContextClassTags(ctx, cls->ns, cls->name);
    StringSetIterator iter = StringSetIteratorInit(tagset);
    char *name = NULL;
+   
    while ((name = StringSetIteratorNext(&iter)))
       {
       if (strstr(name,"=") == 0)
          {
-         Gr(consc,cls->name,a_related_to,name);
-         Gr(consc,cls->name,a_hasrole,"class/context label");
+         Gr(consc,name, a_generalizes,cls->name);
+         Gr(consc,"class or context label",a_hasrole,cls->name);
 
          if (cls->ns)
             {

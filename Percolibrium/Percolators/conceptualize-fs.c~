@@ -25,7 +25,7 @@
 
 #define true 1
 #define false 0
-#define CGN_BUFSIZE 4096
+#define CGN_BUFSIZE 256
 #define MAX_ASSOC_ARRAY 128
 
 /*****************************************************************************/
@@ -47,6 +47,7 @@ void UpdateAssociation(char *concept1, int atype, char *fwd, char *bwd, char *co
 void GetConceptAssociations(FILE *fp, Association *array,int maxentries);
 void UpdateConceptAssociations(FILE *fp, Association *array,int maxentries);
 void InitializeAssociations(Association *array);
+void Canonify(char *str);
 
 /*****************************************************************************/
 
@@ -62,9 +63,7 @@ void main(int argc, char** argv)
  
  // foreach file
  
- ReadTupleFile(argv[1]);
-
- 
+ ReadTupleFile(argv[1]); 
 }
 
 /*****************************************************************************/
@@ -90,11 +89,15 @@ void ReadTupleFile(char *filename)
     from[0] = to[0] = afwd[0] = abwd[0] = '\0';
     
     fscanf(fin, "(%[^,],%d,%[^,],%[^,],%[^)])\n",from,&atype,afwd,to,abwd);
+
+    Canonify(from);
+    Canonify(to);
     
     //printf("FROM(%s) -(%s)- TO(%s)\n  (%s,%d)\n",from,afwd,to,abwd,atype);
     UpdateConcept(from);
     UpdateConcept(to);
     UpdateAssociation(from,atype,afwd,abwd,to);
+    UpdateAssociation(to,-atype,abwd,afwd,from);
     }
  
  fclose(fin);
@@ -215,5 +218,19 @@ void UpdateConceptAssociations(FILE *fin, Association *array,int maxentries)
     fprintf(fin, "(%s,%s,%ld,%lf)\n",array[i].fwd,array[i].bwd,array[i].lastseen,array[i].weight);
 
     //printf("WROTE(%s <> %s at %s x %.2lf)\n", array[i].fwd,array[i].bwd,ctime(&(array[i].lastseen)),array[i].weight);
+    }
+}
+
+/*****************************************************************************/
+
+void Canonify(char *str)
+    
+{
+ for (char *sp = str; *sp != '\0'; sp++)
+    {
+    if (*sp == '/' || *sp == '\\')
+       {
+       *sp = '%';
+       }
     }
 }

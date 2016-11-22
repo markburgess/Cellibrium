@@ -101,12 +101,12 @@ void main(int argc, char** argv)
     FollowAssociations(argv[1], this, GR_FOLLOWS, CGN_ROOT, level);
 
     // A bit like ...
-    FollowAssociations(argv[1], this, GR_NEAR, CGN_ROOT, level);
-    FollowAssociations(argv[1], this, -GR_NEAR, CGN_ROOT, level);
+    //FollowAssociations(argv[1], this, GR_NEAR, CGN_ROOT, level);
+    //FollowAssociations(argv[1], this, -GR_NEAR, CGN_ROOT, level);
 
     // Has relevant properties...
-    FollowAssociations(argv[1], this, GR_EXPRESSES, CGN_ROOT, level);
-    FollowAssociations(argv[1], this, -GR_EXPRESSES, CGN_ROOT, level);
+    //FollowAssociations(argv[1], this, GR_EXPRESSES, CGN_ROOT, level);
+    //FollowAssociations(argv[1], this, -GR_EXPRESSES, CGN_ROOT, level);
     }
 }
 
@@ -117,12 +117,18 @@ void FollowAssociations(char *concept, struct Concept *this, int atype, int prev
 {
  char filename[CGN_BUFSIZE];
  Association array[MAX_ASSOC_ARRAY];
- int i, done;
+ int i, count, done;
  time_t now = time(NULL);
  DIR *dirh;
  FILE *fin;
  struct dirent *dirp;
 
+ if (level > 20)
+    {
+    printf("!! Story truncated...at 20 levels\n");
+    return;
+    }
+ 
  InitializeAssociations(array);
  snprintf(filename,CGN_BUFSIZE,"%s/%s/%d",BASEDIR,concept,atype);
 
@@ -134,6 +140,8 @@ void FollowAssociations(char *concept, struct Concept *this, int atype, int prev
     }
 
  //printf("opened concept %s...\n", filename);
+
+ count = 0;
  
  for (dirp = readdir(dirh); dirp != NULL; dirp = readdir(dirh))
     {
@@ -145,6 +153,12 @@ void FollowAssociations(char *concept, struct Concept *this, int atype, int prev
     if (PruneLoops(dirp->d_name,this))
        {
        continue;
+       }
+    
+    if (count++ > 2) // arbitrary limit
+       {
+       printf("  ++more ....\n");
+       break;
        }
 
     struct Concept *next = NewConcept(dirp->d_name, this);
@@ -169,27 +183,30 @@ void FollowAssociations(char *concept, struct Concept *this, int atype, int prev
     
     for (i = 0; (i < MAX_ASSOC_ARRAY) && (array[i].fwd[0] != '\0'); i++)
        {
+
+       // If we explore alternatives like where we came from, then limited value
        if (atype == -prevtype)
           {
-          printf ("(%d) %s and also note \"%s\" %s \"%s\"\n", atype, Indent(level), concept, array[i].fwd, dirp->d_name);
+          printf ("%s and also note \"%s\" %s \"%s\"\n", Indent(level), concept, array[i].fwd, dirp->d_name);
+          continue;
           }
        else
           {
-          printf ("(%d) %s \"%s\" %s \"%s\"\n", atype, Indent(level), concept, array[i].fwd, dirp->d_name);
+          printf ("%s \"%s\" %s \"%s\"\n", Indent(level), concept, array[i].fwd, dirp->d_name);
           }
        
        // Attributes of current are normally leaves adorning a story concept
 
-       FollowAssociations(dirp->d_name, next, GR_EXPRESSES, atype, level+1);
-       FollowAssociations(dirp->d_name, next, -GR_EXPRESSES, atype, level+1);
+       //FollowAssociations(dirp->d_name, next, GR_EXPRESSES, atype, level+1);
+       //FollowAssociations(dirp->d_name, next, -GR_EXPRESSES, atype, level+1);
 
        if (atype == GR_EXPRESSES)
           {
-          continue;
+          //continue;
           }
        
-       FollowAssociations(dirp->d_name, next, GR_NEAR, atype, level+1);
-       FollowAssociations(dirp->d_name, next, -GR_NEAR, atype, level+1);
+       //FollowAssociations(dirp->d_name, next, GR_NEAR, atype, level+1);
+       //FollowAssociations(dirp->d_name, next, -GR_NEAR, atype, level+1);
        
        // Exploring next, policy only if previous connection was also quasi-transitive
        

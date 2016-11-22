@@ -1,15 +1,15 @@
 /*****************************************************************************/
 /*                                                                           */
-/* File: conceptualize-fs.c                                                  */
+/* File: stories-fs.c                                                        */
 /*                                                                           */
 /*****************************************************************************/
 
- // Conceptual sketch for convergently updating graph knowledge representation
- // This marries/matches with Narrators/stories-fs.c
+ // Conceptual sketch for exploring the graph knowledge representation
+ // This marries/matches with Percolators/conceptualize-fs.c
 
- // gcc -o conceptualize -g -std=c99 conceptualize-fs.c
+ // gcc -o stories -g -std=c99 stories-fs.c
 
- // Usage example: ./conceptualize ~/.CGNgine/state/env_graph 
+ // Usage example: ./stories "expectation value" 
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -21,12 +21,20 @@
 #include <sys/types.h>
 #include <utime.h>
 
+// cited from "../../RobIoTs/CGNgine/libpromises/graph_defs.c"
+#define GR_CONTAINS  1 // for membership
+#define GR_FOLLOWS   2 // i.e. influenced by
+#define GR_EXPRESSES 3 // naming/represents - do not use to label membership, only exterior promises
+#define GR_NEAR      4 // approx like
+// END
+
 #define BASEDIR "/home/a10004/KMdata"
 
 #define true 1
 #define false 0
-#define CGN_BUFSIZE 4096
+#define CGN_BUFSIZE 256
 #define MAX_ASSOC_ARRAY 128
+#define CGN_ROOT 99
 
 /*****************************************************************************/
 
@@ -39,139 +47,168 @@ typedef struct
    
 } Association;
 
+struct Concept
+{
+   char name[CGN_BUFSIZE];
+   int importance_rank;
+   struct Concept *next_concept;
+   struct Concept *prev_concept;
+   Association next_assoc;
+   struct Concept *last_concept;
+};
+
+struct Story
+{
+   char name[CGN_BUFSIZE];
+   struct Concept *next_concept;
+   struct Story * next_story;
+   struct Story * last_story;
+}
+    *STORIES = NULL;
+
 /*****************************************************************************/
 
-void ReadTupleFile(char *filename);
-void UpdateConcept(char *name);
-void UpdateAssociation(char *concept1, int atype, char *fwd, char *bwd, char *concept2);
-void GetConceptAssociations(FILE *fp, Association *array,int maxentries);
-void UpdateConceptAssociations(FILE *fp, Association *array,int maxentries);
+void FollowAssociations(char *concept, struct Concept *this, int atype, int prevtype, int level);
 void InitializeAssociations(Association *array);
+void GetConceptAssociations(FILE *fin, Association *array,int maxentries);
+void UpdateConceptAssociations(FILE *fin, Association *array,int maxentries);
+
+struct Story *NewStory(char *name);
+struct Concept *NewConcept(char *name, struct Concept *prev);
+char *Indent(int level);
+int PruneLoops(char *concept, struct Concept *this);
 
 /*****************************************************************************/
 
 void main(int argc, char** argv)
 {
- if (argc =! 2)
+ int level = 0;
+
+ struct Concept *this = NewConcept(argv[1], NULL);
+
+ if (argc == 3)
     {
-    printf("Syntax: conceptualize <input file>\n");
-    exit(1);
+    FollowAssociations(argv[1], this, atoi(argv[2]), CGN_ROOT, level);
     }
+ else
+    {
+    // Causation and membership ...
+    FollowAssociations(argv[1], this, -GR_CONTAINS, CGN_ROOT, level);
+    FollowAssociations(argv[1], this, -GR_FOLLOWS, CGN_ROOT, level);
 
- mkdir(BASEDIR,0755);
- 
- // foreach file
- 
- ReadTupleFile(argv[1]);
+    // Inverse causation/membership
+    FollowAssociations(argv[1], this, GR_CONTAINS, CGN_ROOT, level);
+    FollowAssociations(argv[1], this, GR_FOLLOWS, CGN_ROOT, level);
 
- 
+    // A bit like ...
+    FollowAssociations(argv[1], this, GR_NEAR, CGN_ROOT, level);
+    FollowAssociations(argv[1], this, -GR_NEAR, CGN_ROOT, level);
+
+    // Has relevant properties...
+    FollowAssociations(argv[1], this, GR_EXPRESSES, CGN_ROOT, level);
+    FollowAssociations(argv[1], this, -GR_EXPRESSES, CGN_ROOT, level);
+    }
 }
 
 /*****************************************************************************/
 
-void ReadTupleFile(char *filename)
-{
- FILE *fin;
- char from[CGN_BUFSIZE];
- char to[CGN_BUFSIZE];
- char afwd[CGN_BUFSIZE];
- char abwd[CGN_BUFSIZE];
- int atype;
+void FollowAssociations(char *concept, struct Concept *this, int atype, int prevtype, int level)
 
- if ((fin = fopen(filename,"r")) == NULL)
-    {
-    return;
-    }
-
- // Input validation?
- 
- while (!feof(fin))
-    {
-    from[0] = to[0] = afwd[0] = abwd[0] = '\0';
-    
-    fscanf(fin, "(%[^,],%d,%[^,],%[^,],%[^)])\n",from,&atype,afwd,to,abwd);
-    
-    //printf("FROM(%s) -(%s)- TO(%s)\n  (%s,%d)\n",from,afwd,to,abwd,atype);
-    UpdateConcept(from);
-    UpdateConcept(to);
-    UpdateAssociation(from,atype,afwd,abwd,to);
-    }
- 
- fclose(fin);
-}
-
-/*****************************************************************************/
-
-void UpdateConcept(char *name)
-{
- char filename[CGN_BUFSIZE];
-
- // Represent a concept as a directory of associations
- 
- snprintf(filename,CGN_BUFSIZE,"%s/%s",BASEDIR,name);
-
- // Ignore return code to make idempotent
-
- mkdir(filename,0755); 
- utime(filename, NULL);
-}
-
-/*****************************************************************************/
-
-void UpdateAssociation(char *concept1, int atype, char *fwd, char *bwd, char *concept2)
 {
  char filename[CGN_BUFSIZE];
  Association array[MAX_ASSOC_ARRAY];
- FILE *fp;
  int i, done;
  time_t now = time(NULL);
- 
- // (fwd,bwd,lastseen,weight)
+ DIR *dirh;
+ FILE *fin;
+ struct dirent *dirp;
 
- if (fwd[0] == '\0')
+ InitializeAssociations(array);
+ snprintf(filename,CGN_BUFSIZE,"%s/%s/%d",BASEDIR,concept,atype);
+
+ // printf("Looking for concept %s...\n", filename);
+  
+ if ((dirh = opendir(filename)) == NULL)
     {
     return;
     }
 
- InitializeAssociations(array);
+ //printf("opened concept %s...\n", filename);
  
- snprintf(filename,CGN_BUFSIZE,"%s/%s/%d",BASEDIR,concept1,atype);
- mkdir(filename,0755);
- snprintf(filename,CGN_BUFSIZE,"%s/%s/%d/%s",BASEDIR,concept1,atype,concept2);
-
- if ((fp = fopen(filename,"r")) != NULL)
+ for (dirp = readdir(dirh); dirp != NULL; dirp = readdir(dirh))
     {
-    GetConceptAssociations(fp,array,MAX_ASSOC_ARRAY);
-    fclose(fp);
-    }
-
- done = false;
-
- for (i = 0; (i < MAX_ASSOC_ARRAY) && (array[i].fwd[0] != '\0'); i++)
-    {
-    if (strcmp(fwd,array[i].fwd) == 0)
+    if (dirp->d_name[0] == '.')
        {
-       array[i].weight = (0.6+0.4*array[i].weight);
-       array[i].lastseen = now;
-       done = true;
-       break;
+       continue;
+       }
+
+    if (PruneLoops(dirp->d_name,this))
+       {
+       continue;
+       }
+
+    struct Concept *next = NewConcept(dirp->d_name, this);
+    
+    //printf("GOT related concept \"%s\"\n", dirp->d_name);
+
+    Association array[MAX_ASSOC_ARRAY];
+
+    snprintf(filename,CGN_BUFSIZE,"%s/%s/%d/%s",BASEDIR,concept,atype,dirp->d_name);
+
+    if ((fin = fopen(filename, "r")) != NULL)
+       {
+       InitializeAssociations(array);
+       GetConceptAssociations(fin,array,MAX_ASSOC_ARRAY);
+       fclose(fin);
+       }
+    else
+       {
+       printf("Missing concept - %s\n", filename);
+       continue;
+       }
+    
+    for (i = 0; (i < MAX_ASSOC_ARRAY) && (array[i].fwd[0] != '\0'); i++)
+       {
+       // If we explore alternatives like where we came from, then limited value
+       if (atype == -prevtype)
+          {
+          printf ("%s and also note \"%s\" %s \"%s\"\n", Indent(level), concept, array[i].fwd, dirp->d_name);
+          continue;
+          }
+       else
+          {
+          printf ("%s \"%s\" %s \"%s\"\n", Indent(level), concept, array[i].fwd, dirp->d_name);
+          }
+       
+       // Attributes of current are normally leaves adorning a story concept
+
+       FollowAssociations(dirp->d_name, next, GR_EXPRESSES, atype, level+1);
+       FollowAssociations(dirp->d_name, next, -GR_EXPRESSES, atype, level+1);
+
+       if (atype == GR_EXPRESSES)
+          {
+          continue;
+          }
+       
+       FollowAssociations(dirp->d_name, next, GR_NEAR, atype, level+1);
+       FollowAssociations(dirp->d_name, next, -GR_NEAR, atype, level+1);
+       
+       // Exploring next, policy only if previous connection was also quasi-transitive
+       
+       FollowAssociations(dirp->d_name, next, GR_CONTAINS, atype, level+1);
+       FollowAssociations(dirp->d_name, next, GR_FOLLOWS, atype, level+1);
+       FollowAssociations(dirp->d_name, next, -GR_CONTAINS, atype, level+1);
+       FollowAssociations(dirp->d_name, next, -GR_FOLLOWS, atype, level+1);
+       
+       printf("\n");
        }
     }
+ closedir(dirh);
 
- if (!done)
+ if (level == 0)
     {
-    strcpy(array[i].fwd,fwd);
-    strcpy(array[i].bwd,bwd);
-    array[i].weight = 0.7;
-    array[i].lastseen = now;
+    printf("-------------------------------------------\n");
     }
-
- if ((fp = fopen(filename,"w")) != NULL)
-    {
-    UpdateConceptAssociations(fp,array,MAX_ASSOC_ARRAY);
-    fclose(fp);
-    }
-
 }
 
 /*****************************************************************************/
@@ -186,6 +223,23 @@ void InitializeAssociations(Association *array)
     array[i].lastseen = 0;
     }
 }
+
+/*****************************************************************************/
+
+char *Indent(int level)
+{
+ static char indent[256];
+ int i;
+
+ for (i = 0; (i < 3*level) && (i < 256); i++)
+    {
+    indent[i] = ' ';
+    }
+
+ indent[i] = '\0';
+ return indent;
+}
+
 /*****************************************************************************/
 
 void GetConceptAssociations(FILE *fin, Association *array,int maxentries)
@@ -199,8 +253,6 @@ void GetConceptAssociations(FILE *fin, Association *array,int maxentries)
     array[i].lastseen = 0;
     
     fscanf(fin, "(%[^,],%[^,],%ld,%lf)\n",array[i].fwd,array[i].bwd,&(array[i].lastseen),&(array[i].weight));
-
-    //printf("FOUND(%s <> %s at %s x %.2lf)\n", array[i].fwd,array[i].bwd,ctime(&(array[i].lastseen)),array[i].weight);
     }
 }
 
@@ -213,7 +265,69 @@ void UpdateConceptAssociations(FILE *fin, Association *array,int maxentries)
  for (i = 0; (i < maxentries) && (array[i].fwd[0] != '\0'); i++)
     {
     fprintf(fin, "(%s,%s,%ld,%lf)\n",array[i].fwd,array[i].bwd,array[i].lastseen,array[i].weight);
-
-    //printf("WROTE(%s <> %s at %s x %.2lf)\n", array[i].fwd,array[i].bwd,ctime(&(array[i].lastseen)),array[i].weight);
     }
+}
+
+
+/*****************************************************************************/
+
+struct Story *NewStory(char *name)
+
+{ struct Story *new;
+
+ new = (struct Story *)malloc(sizeof(struct Story));
+
+ strcpy(new->name,name);
+ new->next_concept = NULL;
+ new->next_story = NULL;
+ return new;
+}
+
+/*****************************************************************************/
+
+struct Concept *NewConcept(char *name, struct Concept *prev)
+
+{ struct Concept *new;
+
+ new = (struct Concept *)malloc(sizeof(struct Concept));
+  
+ if (name)
+    {
+    strncpy(new->name,name,CGN_BUFSIZE);
+    }
+ else
+    {
+    new->name[0] = '\0';
+    }
+
+ if (prev)
+    {
+    prev->next_concept = new;
+    }
+
+ new->importance_rank = 0;
+ new->prev_concept = prev;
+
+ // Association assoc only applies if next_concept != NULL;
+
+ return new;
+}
+
+/*****************************************************************************/
+
+int PruneLoops(char *concept, struct Concept *this)
+
+{ struct Concept *prev;
+
+ // Is this concept already a part of the story?
+ 
+ for (prev = this->prev_concept; prev != NULL; prev = prev->prev_concept)
+    {
+    if (strcmp(concept, prev->name) == 0)
+       {
+       return true;
+       }
+    }
+
+ return false;
 }
