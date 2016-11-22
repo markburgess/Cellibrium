@@ -1147,11 +1147,11 @@ static void SetVariable(FILE *consc, char *name, double value, double average, d
  
  snprintf(var, CF_MAXVARSIZE, "av_%s=%.2lf", name, average);
  AppendItem(classlist, var, "");
- Gr(consc,name,a_hasrole,"expectation value");
+ Gr(consc,var,a_hasrole,"expectation value");
     
  snprintf(var, CF_MAXVARSIZE, "dev_%s=%.2lf", name, stddev);
  AppendItem(classlist, var, "");
- Gr(consc,name,a_hasrole,"standard deviation");
+ Gr(consc,var,a_hasrole,"standard deviation");
     
  Number(consc,value);
  Number(consc,average);
@@ -1378,17 +1378,17 @@ static void GetNamespace(int index, char *buffer)
  switch (index)
     {
     case ob_users:
-        strcpy(buffer,"human");
+        strcpy(buffer,"human aspects");
         break;
     case ob_rootprocs:
-        strcpy(buffer,"system");
+        strcpy(buffer,"system aspects");
         break;
     case ob_otherprocs:
-        strcpy(buffer,"system|human");
+        strcpy(buffer,"system and human aspects");
         break;
     case ob_diskfree:
     case ob_loadavg:
-        strcpy(buffer,"system");
+        strcpy(buffer,"system aspects");
         break;
     case ob_netbiosns_in:
     case ob_netbiosns_out:
@@ -1478,7 +1478,6 @@ if (consc == NULL)
    }
 
 char here_and_now[CF_BUFSIZE];
-char buff[CF_BUFSIZE];
 
 Gr(consc,"sample times",a_contains,now);
 
@@ -1569,30 +1568,32 @@ static void AnnotateNumbers(FILE *consc,char *now,char *origin, char *name, char
  Gr(consc,name,a_interpreted,description);
  Gr(consc,origin,a_contains,name);
 
+ Gr(consc,name,a_hasinstance,here_and_now);
+  
  // label attributes (like object definition) and attach number symbols
  
  snprintf(buff,CF_BUFSIZE,"%s:q",here_and_now);
- Gr(consc,name,a_hasattr,buff);
+ Gr(consc,here_and_now,a_hasattr,buff);
  GrQ(consc,buff,a_hasvalue,q);
  Number(consc,q);
  
  snprintf(buff,CF_BUFSIZE,"%s:E",here_and_now);
- Gr(consc,name,a_hasattr,buff);
+ Gr(consc,here_and_now,a_hasattr,buff);
  GrQ(consc,buff,a_hasvalue,E);
  Number(consc,E);
  
  snprintf(buff,CF_BUFSIZE,"%s:sig",here_and_now);
- Gr(consc,name,a_hasattr,buff);
+ Gr(consc,here_and_now,a_hasattr,buff);
  GrQ(consc,buff,a_hasvalue,sig);
  Number(consc,sig);
  
  snprintf(buff,CF_BUFSIZE,"%s:Et",here_and_now);
- Gr(consc,name,a_hasattr,buff);
+ Gr(consc,here_and_now,a_hasattr,buff);
  GrQ(consc,buff,a_hasvalue,Et);
  Number(consc,Et);
  
  snprintf(buff,CF_BUFSIZE,"%s:tsig",here_and_now);
- Gr(consc,name,a_hasattr,buff);
+ Gr(consc,here_and_now,a_hasattr,buff);
  GrQ(consc,buff,a_hasvalue,tsig);
  Number(consc,tsig);
  

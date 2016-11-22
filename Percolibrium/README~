@@ -1,0 +1,5 @@
+
+Here are various implementation representations of the reasoning
+engine and knowledge representation.  The files marked "fs" for
+filesystem use a simple file representation which makes the logic and
+code simple, but has some limitations.

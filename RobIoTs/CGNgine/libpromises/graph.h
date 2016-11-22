@@ -13,8 +13,10 @@ enum associations
     a_origin,
     a_maintainedby,
     a_depends,
+    a_caused_by,
     a_name,
     a_hasattr,  // avoid this, it says nothing unambiguously
+    a_hasinstance,
     a_hasvalue,
     a_hasrole,     // what is its function/object type? e.g. file,process..
     a_hasfunction,
