@@ -1512,8 +1512,8 @@ while ((cls = ClassTableIteratorNext(iter)))
             }
          else
             {
-            Gr(consc,"default",a_contains,cls->name);
-            Gr(consc,"default",a_hasrole,"namespace");
+            Gr(consc,"default namespace",a_contains,cls->name);
+            Gr(consc,"default namespace",a_hasrole,"namespace");
             }
          }
       else if (strncmp(name,"name=",5) == 0)

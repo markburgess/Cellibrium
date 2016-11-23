@@ -18,6 +18,7 @@ enum associations
     a_hasattr,  // avoid this, it says nothing unambiguously
     a_hasinstance,
     a_hasvalue,
+    a_hasarg,
     a_hasrole,     // what is its function/object type? e.g. file,process..
     a_hasfunction,
     a_hasconstraint,

@@ -18,3 +18,11 @@ To test,
  ./stories "expectation value"
  ./stories linux 
 
+
+
+The files in CGNgine which generate the semantic tuples are
+
+libpromises/graph.c
+libpromises/graph.h
+libpromises/graph_defs.c
+

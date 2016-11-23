@@ -132,7 +132,7 @@ void GenerateSemanticsGraph(Policy *policy)
 
           // Class activation
           Gr(consc,handle,a_depends,promise->classes);
-          Gr(consc,promise->classes,a_hasrole,"class/context label");
+          Gr(consc,promise->classes,a_hasrole,"classifier or context label");
 
           for (size_t cpi = 0; cpi < SeqLength(promise->conlist); cpi++)
              {
@@ -182,7 +182,8 @@ void GenerateSemanticsGraph(Policy *policy)
                     for (Rlist *argp = fp->args; argp != NULL; argp = argp->next)
                        {
                        Gr(consc,umbrella,a_depends,RlistScalarValue(argp));
-                       Gr(consc,RlistScalarValue(argp),a_hasrole,"parameter/argument");
+                       Gr(consc,umbrella,a_hasarg,RlistScalarValue(argp));
+                       Gr(consc,RlistScalarValue(argp),a_hasrole,"argument parameter");                       
                        }
                     }
                     break;
@@ -223,6 +224,8 @@ void GenerateSemanticsGraph(Policy *policy)
     for (Rlist *argp = body->args; argp != NULL; argp = argp->next)
        {
        Gr(consc,umbrella,a_depends,RlistScalarValue(argp));
+       Gr(consc,umbrella,a_hasarg,RlistScalarValue(argp));
+       Gr(consc,RlistScalarValue(argp),a_hasrole,"argument parameter");
        }
     }
 
