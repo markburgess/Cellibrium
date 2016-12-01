@@ -17,9 +17,11 @@
 #include <string.h>
 #include <unistd.h>
 #include <time.h>
+#include <string.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <utime.h>
+#include <getopt.h>
 
 // cited from "../../RobIoTs/CGNgine/libpromises/graph_defs.c"
 #define GR_CONTAINS  1 // for membership
@@ -35,6 +37,27 @@
 #define CGN_BUFSIZE 256
 #define MAX_ASSOC_ARRAY 128
 #define CGN_ROOT 99
+
+extern char *optarg;
+extern int optind, opterr, optopt;
+
+static const struct option OPTIONS[5] =
+{
+    {"help", no_argument, 0, 'h'},
+    {"subject", required_argument, 0, 's'},
+    {"context", required_argument, 0, 'c'},
+    {"type", required_argument, 0, 't'},
+    {NULL, 0, 0, '\0'}
+};
+
+static const char *HINTS[5] =
+{
+    "Print the help message",
+    "The subject of the story (initial condition)", 
+    "Context relevance string",
+    "Association type 1-4",
+    NULL
+};
 
 /*****************************************************************************/
 
@@ -83,30 +106,124 @@ int PruneLoops(char *concept, struct Concept *this);
 void main(int argc, char** argv)
 {
  int level = 0;
-
- struct Concept *this = NewConcept(argv[1], NULL);
-
- if (argc == 3)
+ extern char *optarg;
+ int optindex = 0, i;
+ char c;
+ char *subject = NULL, *context = NULL;
+ int atype = 99;
+ struct Concept *this = NULL;
+ 
+  while ((c = getopt_long(argc, argv, "ht:s:c:", OPTIONS, &optindex)) != EOF)
     {
-    FollowAssociations(argv[1], this, atoi(argv[2]), CGN_ROOT, level);
+    switch ((char) c)
+       {
+       case 'h':
+
+           printf("Usage: %s [OPTION]...\n");
+           
+           printf("\nOPTIONS:\n");
+           
+           for (i = 0; OPTIONS[i].name != NULL; i++)
+              {
+              if (OPTIONS[i].has_arg)
+                 {
+                 printf("  --%-12s, -%c value - %s\n", OPTIONS[i].name, (char) OPTIONS[i].val, HINTS[i]);
+                 }
+              else
+                 {
+                 printf("  --%-12s, -%-7c - %s\n", OPTIONS[i].name, (char) OPTIONS[i].val, HINTS[i]);
+                 }
+              }
+           exit(0);
+           break;
+
+       case 's':
+           subject = strdup(optarg);
+           break;
+
+       case 'c':
+           context = strdup(optarg);
+           break;
+
+       case 't':
+           atype = atoi(optarg);
+           break;
+
+       default:
+           printf("Unknown option %c\n", c);
+           break;
+       }
+    }
+
+  // validate input args
+
+  if (subject)
+     {
+     printf("Found story subject: %s\n", subject);
+     }
+  else
+     {
+     printf("You need to provide a subject for the story (option -s before the string)\n");
+     exit(1);
+     }
+
+  if (context)
+     {
+     printf("Found context: %s\n", context);
+     }
+
+  if (atype != 99)
+     {
+     printf("Stories of type %d only\n", atype);
+     }
+  
+  // off we go
+
+  this = NewConcept(subject, NULL);
+
+ if (atype != 99)
+    {
+    FollowAssociations(subject, this, atype, CGN_ROOT, level);
     }
  else
     {
-    // Causation and membership ...
-    FollowAssociations(argv[1], this, -GR_CONTAINS, CGN_ROOT, level);
-    FollowAssociations(argv[1], this, -GR_FOLLOWS, CGN_ROOT, level);
+    printf("*******************************************************************\n");
+    printf("* CONTAINS                                                        *\n");
+    printf("*******************************************************************\n");
+    FollowAssociations(subject, this, GR_CONTAINS, CGN_ROOT, level);
 
-    // Inverse causation/membership
-    FollowAssociations(argv[1], this, GR_CONTAINS, CGN_ROOT, level);
-    FollowAssociations(argv[1], this, GR_FOLLOWS, CGN_ROOT, level);
+    printf("*******************************************************************\n");
+    printf("* CONTAINED BY                                                    *\n");
+    printf("*******************************************************************\n");
+    
+    FollowAssociations(subject, this, -GR_CONTAINS, CGN_ROOT, level);
 
-    // A bit like ...
-    //FollowAssociations(argv[1], this, GR_NEAR, CGN_ROOT, level);
-    //FollowAssociations(argv[1], this, -GR_NEAR, CGN_ROOT, level);
+    printf("*******************************************************************\n");
+    printf("* FOLLOWS / CAUSED BY                                             *\n");
+    printf("*******************************************************************\n");
+
+    FollowAssociations(subject, this, GR_FOLLOWS, CGN_ROOT, level);
+
+    printf("*******************************************************************\n");
+    printf("* FOLLOWED BY / CAUSES                                            *\n");
+    printf("*******************************************************************\n"); 
+
+    FollowAssociations(subject, this, -GR_FOLLOWS, CGN_ROOT, level);
+
+    printf("*******************************************************************\n");
+    printf("* CLOSE TO / APPROX                                               *\n");
+    printf("*******************************************************************\n"); 
+
+    FollowAssociations(subject, this, GR_NEAR, CGN_ROOT, level);
+    FollowAssociations(subject, this, -GR_NEAR, CGN_ROOT, level);
+
+    printf("*******************************************************************\n");
+    printf("* CLOSE TO / APPROX                                               *\n");
+    printf("*******************************************************************\n"); 
 
     // Has relevant properties...
-    //FollowAssociations(argv[1], this, GR_EXPRESSES, CGN_ROOT, level);
-    //FollowAssociations(argv[1], this, -GR_EXPRESSES, CGN_ROOT, level);
+    FollowAssociations(subject, this, GR_EXPRESSES, CGN_ROOT, level);
+    //FollowAssociations(subject, this, -GR_EXPRESSES, CGN_ROOT, level);
     }
 }
 
@@ -155,11 +272,11 @@ void FollowAssociations(char *concept, struct Concept *this, int atype, int prev
        continue;
        }
     
-    if (count++ > 2) // arbitrary limit
+/*    if (count++ > 2) // arbitrary limit
        {
        printf("  ++more ....\n");
        break;
-       }
+       }*/
 
     struct Concept *next = NewConcept(dirp->d_name, this);
     
@@ -205,8 +322,8 @@ void FollowAssociations(char *concept, struct Concept *this, int atype, int prev
           //continue;
           }
        
-       //FollowAssociations(dirp->d_name, next, GR_NEAR, atype, level+1);
-       //FollowAssociations(dirp->d_name, next, -GR_NEAR, atype, level+1);
+       FollowAssociations(dirp->d_name, next, GR_NEAR, atype, level+1);
+       FollowAssociations(dirp->d_name, next, -GR_NEAR, atype, level+1);
        
        // Exploring next, policy only if previous connection was also quasi-transitive
        
@@ -230,7 +347,9 @@ void FollowAssociations(char *concept, struct Concept *this, int atype, int prev
 
 void InitializeAssociations(Association *array)
 {
- for (int i = 0; i < MAX_ASSOC_ARRAY; i++)
+ int i;
+ 
+ for (i = 0; i < MAX_ASSOC_ARRAY; i++)
     {
     array[i].fwd[0] = '\0';
     array[i].bwd[0] = '\0';

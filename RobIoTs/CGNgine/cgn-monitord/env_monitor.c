@@ -642,7 +642,7 @@ static void BuildConsciousState(EvalContext *ctx, Averages av, Timescales t)
 
  char now[CF_SMALLBUF];
  time_t nowt = time(NULL);
- snprintf(now,CF_SMALLBUF, "t_%s", GenTimeKey(nowt));
+ snprintf(now,CF_SMALLBUF, "t_%s as a sample", GenTimeKey(nowt));
  UpdateTimeClasses(ctx, nowt);
 
  unlink(GRAPHFILE_NEW);
