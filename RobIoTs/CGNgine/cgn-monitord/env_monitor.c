@@ -662,7 +662,7 @@ static void BuildConsciousState(EvalContext *ctx, Averages av, Timescales t)
     sigma = SituationHereAndNow(ctx,consc,now,namespace, name, desc, CF_THIS[i], av.Q[i].dq, av.Q[i].expect, av.Q[i].var, t.T[i].dchange_expect, sqrt(t.T[i].dchange_var), &mon_data);
 
     SetVariable(consc, name, CF_THIS[i], av.Q[i].expect, sigma, &mon_data);
-    Gr(consc,now,a_contains,name);
+    Gr(consc,now,a_contains,name,"data sample");
     AnnotateOrigin(consc,now,"observations",name,desc);
 
     /* LDT */
@@ -811,10 +811,10 @@ static void BuildConsciousState(EvalContext *ctx, Averages av, Timescales t)
 
  if (consc)
     {
-    Gr(consc,VUQNAME,a_name,"host device");
+    Gr(consc,VUQNAME,a_name,"host device","system monitoring");
     if (VDOMAIN[0] != '\0')
        {
-       Gr(consc,VDOMAIN,a_name,"DNS domain or Workspace");
+       Gr(consc,VDOMAIN,a_name,"DNS domain or Workspace","system monitoring");
        }
 
     AnnotateContext(ctx, consc, now);
@@ -1142,20 +1142,20 @@ static void SetVariable(FILE *consc, char *name, double value, double average, d
  
  snprintf(var, CF_MAXVARSIZE, "value_%s=%.2lf", name, value);
  AppendItem(classlist, var, "");
- Gr(consc,var,a_hasrole,"value/state");
- GrQ(consc,name,a_hasvalue,value);
+ Gr(consc,var,a_hasrole,"value/state","system monitoring");
+ GrQ(consc,name,a_hasvalue,value,"system monitoring");
  
  snprintf(var, CF_MAXVARSIZE, "av_%s=%.2lf", name, average);
  AppendItem(classlist, var, "");
- Gr(consc,var,a_hasrole,"expectation value");
+ Gr(consc,var,a_hasrole,"expectation value","system monitoring");
     
  snprintf(var, CF_MAXVARSIZE, "dev_%s=%.2lf", name, stddev);
  AppendItem(classlist, var, "");
- Gr(consc,var,a_hasrole,"standard deviation");
+ Gr(consc,var,a_hasrole,"standard deviation","system monitoring");
     
- Number(consc,value);
- Number(consc,average);
- Number(consc,stddev);
+ Number(consc,value,"system monitoring");
+ Number(consc,average,"system monitoring");
+ Number(consc,stddev,"system monitoring");
 }
 
 /*****************************************************************************/
@@ -1479,21 +1479,24 @@ if (consc == NULL)
 
 char here_and_now[CF_BUFSIZE];
 
-Gr(consc,"sample times",a_contains,now);
+Gr(consc,"sample times",a_contains,now,"system monitoring");
 
  // The name/context is a semantic coordinate for the instances (like an array index)
 
 snprintf(here_and_now, CF_BUFSIZE, "%s:%s",VFQNAME,now);
-Gr(consc,VUQNAME,a_contains,VFQNAME);
-Gr(consc,VFQNAME,a_contains,here_and_now);
-Gr(consc,now,a_contains,here_and_now);
+Gr(consc,here_and_now,a_hasattr,now,"system monitoring");
+Gr(consc,here_and_now,a_hasattr,VFQNAME,"system monitoring");
+
+Gr(consc,VUQNAME,a_contains,VFQNAME,"system monitoring");
+Gr(consc,VFQNAME,a_hasinstance,here_and_now,"system monitoring");
+Gr(consc,here_and_now,a_generalizes,now,"system monitoring");
 
 ClassTableIterator *iter = EvalContextClassTableIteratorNewGlobal(ctx, NULL, true, true);
 Class *cls = NULL;
 
 while ((cls = ClassTableIteratorNext(iter)))
    {
-   Gr(consc,here_and_now,a_hasattr,cls->name);
+   Gr(consc,here_and_now,a_hasattr,cls->name,"system monitoring");
    StringSet *tagset = EvalContextClassTags(ctx, cls->ns, cls->name);
    StringSetIterator iter = StringSetIteratorInit(tagset);
    char *name = NULL;
@@ -1502,27 +1505,27 @@ while ((cls = ClassTableIteratorNext(iter)))
       {
       if (strstr(name,"=") == 0)
          {
-         Gr(consc,name, a_generalizes,cls->name);
-         Gr(consc,"class or context label",a_hasrole,cls->name);
+         Gr(consc,name, a_generalizes,cls->name,"class or context label");
+         Gr(consc,"class or context label",a_hasrole,cls->name,"system monitoring");
 
          if (cls->ns)
             {
-            Gr(consc,cls->ns,a_contains,cls->name);
-            Gr(consc,cls->ns,a_hasrole,"namespace");
+            Gr(consc,cls->ns,a_contains,cls->name,"system monitoring");
+            Gr(consc,cls->ns,a_hasrole,"namespace","system monitoring");
             }
          else
             {
-            Gr(consc,"default namespace",a_contains,cls->name);
-            Gr(consc,"default namespace",a_hasrole,"namespace");
+            Gr(consc,"default namespace",a_contains,cls->name,"system monitoring");
+            Gr(consc,"default namespace",a_hasrole,"namespace","system monitoring");
             }
          }
       else if (strncmp(name,"name=",5) == 0)
          {
-         Gr(consc,cls->name,a_hasrole,name+5);
+         Gr(consc,cls->name,a_hasrole,name+5,"system monitoring");
          }
       else if (strncmp(name,"source=",7) == 0)
          {
-         Gr(consc,cls->name,a_origin,name+7);
+         Gr(consc,cls->name,a_origin,name+7,"system monitoring");
          }
       else
          {
@@ -1543,14 +1546,12 @@ static void AnnotateOrigin(FILE *consc,char *now,char *origin,char *name, char *
  // The name is a semantic coordinate for the instance
  snprintf(here_and_now, CF_BUFSIZE, "%s:%s:%s",VFQNAME,now,name);
 
- Gr(consc,now,a_contains,here_and_now);
- Gr(consc,here_and_now,a_contains,name);
- Gr(consc,name,a_interpreted,description);
- Gr(consc,here_and_now,a_interpreted,description);
+ Gr(consc,here_and_now,a_hasattr,now,"system monitoring");
+ Gr(consc,here_and_now,a_hasattr,name,"system monitoring");
+ Gr(consc,name,a_interpreted,description,"system monitoring");
   
  // Explain meaning of name
- Gr(consc,origin,a_origin,here_and_now);
-
+ Gr(consc,origin,a_origin,here_and_now,"system monitoring");
 }
 
 /**********************************************************************/
@@ -1565,50 +1566,51 @@ static void AnnotateNumbers(FILE *consc,char *now,char *origin, char *name, char
 
  // anchor basis for value cluster
 
- Gr(consc,name,a_generalizes,here_and_now);
- Gr(consc,name,a_interpreted,description);
- Gr(consc,origin,a_contains,name);
-
- Gr(consc,name,a_hasinstance,here_and_now);
+ Gr(consc,here_and_now,a_hasattr,name,"system monitoring");
+ Gr(consc,here_and_now,a_hasattr,now,"system monitoring");
+ Gr(consc,here_and_now,a_hasattr,VFQNAME,"system monitoring");
   
+ Gr(consc,here_and_now,a_interpreted,description,"system monitoring");
+ Gr(consc,origin,a_contains,name,"system monitoring");
+ 
  // label attributes (like object definition) and attach number symbols
  
  snprintf(buff,CF_BUFSIZE,"%s:q",here_and_now);
- Gr(consc,here_and_now,a_hasattr,buff);
- GrQ(consc,buff,a_hasvalue,q);
- Number(consc,q);
+ Gr(consc,here_and_now,a_hasattr,buff,"system monitoring");
+ GrQ(consc,buff,a_hasvalue,q,"system monitoring");
+ Number(consc,q,"system monitoring");
  
  snprintf(buff,CF_BUFSIZE,"%s:E",here_and_now);
- Gr(consc,here_and_now,a_hasattr,buff);
- GrQ(consc,buff,a_hasvalue,E);
- Number(consc,E);
+ Gr(consc,here_and_now,a_hasattr,buff,"system monitoring");
+ GrQ(consc,buff,a_hasvalue,E,"system monitoring");
+ Number(consc,E,"system monitoring");
  
  snprintf(buff,CF_BUFSIZE,"%s:sig",here_and_now);
- Gr(consc,here_and_now,a_hasattr,buff);
- GrQ(consc,buff,a_hasvalue,sig);
- Number(consc,sig);
+ Gr(consc,here_and_now,a_hasattr,buff,"system monitoring");
+ GrQ(consc,buff,a_hasvalue,sig,"system monitoring");
+ Number(consc,sig,"system monitoring");
  
  snprintf(buff,CF_BUFSIZE,"%s:Et",here_and_now);
- Gr(consc,here_and_now,a_hasattr,buff);
- GrQ(consc,buff,a_hasvalue,Et);
- Number(consc,Et);
+ Gr(consc,here_and_now,a_hasattr,buff,"system monitoring");
+ GrQ(consc,buff,a_hasvalue,Et,"system monitoring");
+ Number(consc,Et,"system monitoring");
  
  snprintf(buff,CF_BUFSIZE,"%s:tsig",here_and_now);
- Gr(consc,here_and_now,a_hasattr,buff);
- GrQ(consc,buff,a_hasvalue,tsig);
- Number(consc,tsig);
+ Gr(consc,here_and_now,a_hasattr,buff,"system monitoring");
+ GrQ(consc,buff,a_hasvalue,tsig,"system monitoring");
+ Number(consc,tsig,"system monitoring");
  
  // attach number meanings
  snprintf(buff,CF_BUFSIZE,"%s:q",here_and_now);
- IGr(consc,buff,a_name,"the current observed value");
+ IGr(consc,buff,a_name,"the current observed value","system monitoring");
  snprintf(buff,CF_BUFSIZE,"%s:E",here_and_now);
- IGr(consc,buff,a_name,"the running mean value");
+ IGr(consc,buff,a_name,"the running mean value","system monitoring");
  snprintf(buff,CF_BUFSIZE,"%s:sig",here_and_now);
- IGr(consc,buff,a_name,"a std deviation over recent samples");
+ IGr(consc,buff,a_name,"a std deviation over recent samples","system monitoring");
  snprintf(buff,CF_BUFSIZE,"%s:Et",here_and_now);
- IGr(consc,buff,a_name,"a mean time to change");
+ IGr(consc,buff,a_name,"a mean time to change","system monitoring");
  snprintf(buff,CF_BUFSIZE,"%s:tsig",here_and_now);
- IGr(consc,buff,a_name,"a mean time deviation");
+ IGr(consc,buff,a_name,"a mean time deviation","system monitoring");
 
 }
 

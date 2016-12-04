@@ -17,15 +17,15 @@
 
 Association A[a_ass_dim+1] =
 {
-    {GR_CONTAINS,"contains","belongs to, i.e. is part of"},
+    {GR_CONTAINS,"contains","belongs to or is part of"},
     {GR_CONTAINS,"generalizes","is a special case of"},
     {GR_FOLLOWS,"may originate from","may be the source or origin of"},
     {GR_FOLLOWS,"is maintained by","maintains"},
     {GR_FOLLOWS,"depends on","partly determines"},
     {GR_FOLLOWS,"may be caused by","can cause"},
     {GR_EXPRESSES,"is called","is a name for"},
-    {GR_EXPRESSES,"expresses an attribute of","is an attribute expressed by"},
-    {GR_EXPRESSES,"expresses an instance or case","is an instance/case of"},
+    {GR_EXPRESSES,"expresses an attribute","is an attribute of"},
+    {GR_EXPRESSES,"has an instance or particular case","is a particular case of"},
     {GR_EXPRESSES,"has value or state","is the state or value of"},
     {GR_EXPRESSES,"has argument or parameter","is a parameter or argument of"},
     {GR_EXPRESSES,"has the role of","is a role fulfilled by"},

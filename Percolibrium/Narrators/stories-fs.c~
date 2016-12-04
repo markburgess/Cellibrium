@@ -91,7 +91,7 @@ struct Story
 
 /*****************************************************************************/
 
-void FollowAssociations(char *context, char *concept, struct Concept *this, int atype, int prevtype, int level);
+void FollowAssociations(char *concept, struct Concept *this, int atype, int prevtype, int level);
 void InitializeAssociations(Association *array);
 void GetConceptAssociations(FILE *fin, Association *array,int maxentries);
 void UpdateConceptAssociations(FILE *fin, Association *array,int maxentries);
@@ -171,17 +171,11 @@ void main(int argc, char** argv)
      {
      printf("Found context: %s\n", context);
      }
-  else
-     {
-     context = strdup("*");
-     }
 
   if (atype != 99)
      {
      printf("Stories of type %d only\n", atype);
      }
-
-  printf("\n\n");
   
   // off we go
 
@@ -189,28 +183,53 @@ void main(int argc, char** argv)
 
  if (atype != 99)
     {
-    FollowAssociations(context, subject, this, atype, CGN_ROOT, level);
+    FollowAssociations(subject, this, atype, CGN_ROOT, level);
     }
  else
     {
-    FollowAssociations(context, subject, this, GR_CONTAINS, CGN_ROOT, level);
-    FollowAssociations(context, subject, this, -GR_CONTAINS, CGN_ROOT, level);
+    printf("*******************************************************************\n");
+    printf("* CONTAINS                                                        *\n");
+    printf("*******************************************************************\n");
+    FollowAssociations(subject, this, GR_CONTAINS, CGN_ROOT, level);
 
-    FollowAssociations(context, subject, this, GR_FOLLOWS, CGN_ROOT, level);
-    FollowAssociations(context, subject, this, -GR_FOLLOWS, CGN_ROOT, level);
+    printf("*******************************************************************\n");
+    printf("* CONTAINED BY                                                    *\n");
+    printf("*******************************************************************\n");
+    
+    FollowAssociations(subject, this, -GR_CONTAINS, CGN_ROOT, level);
 
-    FollowAssociations(context, subject, this, GR_NEAR, CGN_ROOT, level);
-    FollowAssociations(context, subject, this, -GR_NEAR, CGN_ROOT, level);
+    printf("*******************************************************************\n");
+    printf("* FOLLOWS / CAUSED BY                                             *\n");
+    printf("*******************************************************************\n");
+
+    FollowAssociations(subject, this, GR_FOLLOWS, CGN_ROOT, level);
+
+    printf("*******************************************************************\n");
+    printf("* FOLLOWED BY / CAUSES                                            *\n");
+    printf("*******************************************************************\n"); 
+
+    FollowAssociations(subject, this, -GR_FOLLOWS, CGN_ROOT, level);
+
+    printf("*******************************************************************\n");
+    printf("* CLOSE TO / APPROX                                               *\n");
+    printf("*******************************************************************\n"); 
+
+    FollowAssociations(subject, this, GR_NEAR, CGN_ROOT, level);
+    FollowAssociations(subject, this, -GR_NEAR, CGN_ROOT, level);
+
+    printf("*******************************************************************\n");
+    printf("* CLOSE TO / APPROX                                               *\n");
+    printf("*******************************************************************\n"); 
 
     // Has relevant properties...
-    FollowAssociations(context, subject, this, GR_EXPRESSES, CGN_ROOT, level);
-    FollowAssociations(context, subject, this, -GR_EXPRESSES, CGN_ROOT, level);
+    FollowAssociations(subject, this, GR_EXPRESSES, CGN_ROOT, level);
+    //FollowAssociations(subject, this, -GR_EXPRESSES, CGN_ROOT, level);
     }
 }
 
 /*****************************************************************************/
 
-void FollowAssociations(char *context, char *concept, struct Concept *this, int atype, int prevtype, int level)
+void FollowAssociations(char *concept, struct Concept *this, int atype, int prevtype, int level)
 
 {
  char filename[CGN_BUFSIZE];
@@ -228,13 +247,12 @@ void FollowAssociations(char *context, char *concept, struct Concept *this, int 
     }
  
  InitializeAssociations(array);
- snprintf(filename,CGN_BUFSIZE,"%s/%s::%s/%d",BASEDIR,context,concept,atype);
+ snprintf(filename,CGN_BUFSIZE,"%s/%s/%d",BASEDIR,concept,atype);
 
- //printf("Looking for concept %s...\n", filename);
+ // printf("Looking for concept %s...\n", filename);
   
  if ((dirh = opendir(filename)) == NULL)
     {
-    //printf("failed to open concept %s...\n", filename);
     return;
     }
 
@@ -249,33 +267,24 @@ void FollowAssociations(char *context, char *concept, struct Concept *this, int 
        continue;
        }
 
-    struct Concept *next = NewConcept(dirp->d_name, this);
-
     if (PruneLoops(dirp->d_name,this))
        {
        continue;
        }
-
-    if (count++ > 4) // arbitrary limit
+    
+/*    if (count++ > 2) // arbitrary limit
        {
        printf("  ++more ....\n");
        break;
-       }
+       }*/
+
+    struct Concept *next = NewConcept(dirp->d_name, this);
     
-    char nextconcept[CGN_BUFSIZE];
-    char nextcontext[CGN_BUFSIZE];
+    //printf("GOT related concept \"%s\"\n", dirp->d_name);
 
-    nextconcept[0] = nextcontext[0] = '\0';
-
-    sscanf(dirp->d_name, "%[^:]::%[^\n]",nextcontext,nextconcept);
-
-    //printf("GOT related concept \"%s\" in the context of %s\n", nextconcept,nextcontext);
-    
     Association array[MAX_ASSOC_ARRAY];
 
-    // Try the direct approach first
-    
-    snprintf(filename,CGN_BUFSIZE,"%s/%s::%s/%d/%s",BASEDIR,context,concept,atype,dirp->d_name);
+    snprintf(filename,CGN_BUFSIZE,"%s/%s/%d/%s",BASEDIR,concept,atype,dirp->d_name);
 
     if ((fin = fopen(filename, "r")) != NULL)
        {
@@ -291,50 +300,39 @@ void FollowAssociations(char *context, char *concept, struct Concept *this, int 
     
     for (i = 0; (i < MAX_ASSOC_ARRAY) && (array[i].fwd[0] != '\0'); i++)
        {
-       // If we explore alternatives like where we came from, then limited value
 
-       if (atype == -prevtype) // ALSO EXCLUDE THE NODE WE JUST CAME FROM
+       // If we explore alternatives like where we came from, then limited value
+       if (atype == -prevtype)
           {
-          if (strcmp(concept, nextconcept) != 0)
-             {
-             printf ("%s and also note \"%s\" %s \"%s\"\n", Indent(level), concept, array[i].fwd, nextconcept);
-             }
-          continue; 
+          printf ("%s and also note \"%s\" %s \"%s\"\n", Indent(level), concept, array[i].fwd, dirp->d_name);
+          //continue; ??
           }
        else
           {
-          if (strcmp(concept, nextconcept) != 0)
-             {
-             printf ("(%d) %s In the context of %s, \"%s\" %s \"%s\" (in the context %s)\n", atype, Indent(level), context, concept, array[i].fwd, nextconcept, nextcontext);
-             }
+          printf ("%s \"%s\" %s \"%s\"\n", Indent(level), concept, array[i].fwd, dirp->d_name);
           }
        
        // Attributes of current are normally leaves adorning a story concept
 
-       FollowAssociations(nextcontext,nextconcept, next, GR_EXPRESSES, atype, level+1);
-       FollowAssociations(nextcontext,nextconcept, next, -GR_EXPRESSES, atype, level+1);
+       //FollowAssociations(dirp->d_name, next, GR_EXPRESSES, atype, level+1);
+       //FollowAssociations(dirp->d_name, next, -GR_EXPRESSES, atype, level+1);
+
+       if (atype == GR_EXPRESSES)
+          {
+          //continue; ??
+          }
        
-       FollowAssociations(nextcontext,nextconcept, next, GR_NEAR, atype, level+1);
-       FollowAssociations(nextcontext,nextconcept, next, -GR_NEAR, atype, level+1);
+       FollowAssociations(dirp->d_name, next, GR_NEAR, atype, level+1);
+       FollowAssociations(dirp->d_name, next, -GR_NEAR, atype, level+1);
        
        // Exploring next, policy only if previous connection was also quasi-transitive
        
-       FollowAssociations(nextcontext,nextconcept, next, GR_CONTAINS, atype, level+1);
-       FollowAssociations(nextcontext,nextconcept, next, GR_FOLLOWS, atype, level+1);
-
-       FollowAssociations(nextcontext,nextconcept, next, -GR_CONTAINS, atype, level+1);
-       FollowAssociations(nextcontext,nextconcept, next, -GR_FOLLOWS, atype, level+1);
-
-
-       printf("\n");
-
-       // Attributes mark highlight where we have reached (final destination) and don't propagate
-       // So no need to go through all. This could come at the end, so it doesn't prune other avenues
+       FollowAssociations(dirp->d_name, next, GR_CONTAINS, atype, level+1);
+       FollowAssociations(dirp->d_name, next, GR_FOLLOWS, atype, level+1);
+       FollowAssociations(dirp->d_name, next, -GR_CONTAINS, atype, level+1);
+       FollowAssociations(dirp->d_name, next, -GR_FOLLOWS, atype, level+1);
        
-       if (atype == GR_EXPRESSES) 
-          {
-          continue;
-          }
+       printf("\n");
        }
     }
  closedir(dirh);
@@ -461,7 +459,6 @@ int PruneLoops(char *concept, struct Concept *this)
     {
     if (strcmp(concept, prev->name) == 0)
        {
-       //printf("SKIPPING %s...%s\n", concept, prev->name);
        return true;
        }
     }

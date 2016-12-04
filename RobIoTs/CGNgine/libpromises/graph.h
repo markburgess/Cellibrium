@@ -39,10 +39,10 @@ typedef struct
 Association;
 
 #ifndef PERCOLATION
-void Gr(FILE *consc,char *from, enum associations assoc, char *to);
-void IGr(FILE *consc,char *from, enum associations assoc, char *to);
-void GrQ(FILE *consc,char *from, enum associations assoc, double to);
-void Number(FILE *consc, double q);
+void Gr(FILE *consc,char *from, enum associations assoc, char *to, char *context);
+void IGr(FILE *consc,char *from, enum associations assoc, char *to, char *context);
+void GrQ(FILE *consc,char *from, enum associations assoc, double to, char *context);
+void Number(FILE *consc, double q, char *context);
 void GenerateSemanticsGraph(Policy *policy);
 #endif
 
