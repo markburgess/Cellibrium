@@ -14,6 +14,7 @@ enum associations
     a_maintainedby,
     a_depends,
     a_caused_by,
+    a_uses,
     a_name,
     a_hasattr,  // avoid this, it says nothing unambiguously
     a_hasinstance,

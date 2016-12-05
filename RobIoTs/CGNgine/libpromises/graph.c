@@ -19,6 +19,7 @@
 #include <files_lib.h>
 
 static void MakeUniqueClusterName(char *lval,void *sorted,char type,char *buffer);
+static char *SanitizeString(char *s);
 
 #include "graph_defs.c"
 
@@ -48,11 +49,11 @@ void GenerateSemanticsGraph(Policy *policy)
  Gr(consc,"system policy", a_contains,"namespace","system policy");
  Gr(consc,"promise bundle", a_contains,"promise","system policy");
  Gr(consc,"promise", a_contains,"promise type","system policy");
+ Gr(consc,"promise", a_contains,"promise handle","system policy");
  Gr(consc,"promise", a_contains,"constraint","system policy");
  Gr(consc,"promise", a_contains,"promisee","system policy");
  Gr(consc,"constraint", a_contains,"lval","system policy");
  Gr(consc,"constraint", a_contains,"rval","system policy");
- Gr(consc,"rval", a_hasrole, "compound rval","system policy");
  Gr(consc,"compound rval", a_alias, "body group","system policy");
  Gr(consc,"compound rval", a_alias, "constraints body","system policy");
 
@@ -143,10 +144,10 @@ void GenerateSemanticsGraph(Policy *policy)
                     MakeUniqueClusterName(constraint->lval,constraint->rval.item,RVAL_TYPE_SCALAR,umbrella);
                     Gr(consc,handle,a_hasconstraint,umbrella,"promise");
                     Gr(consc,umbrella,a_hasrole,"promise body constraint","promise");
-                    Gr(consc,umbrella,a_hasattr,constraint->lval,"promise");
                     Gr(consc,umbrella,a_hasattr,constraint->rval.item,"promise");
                     Gr(consc,constraint->lval, a_hasrole, "lval","promise");
                     Gr(consc,constraint->rval.item, a_hasrole, "rval","promise");
+                    Gr(consc,constraint->rval.item, a_interpreted, constraint->lval,"promise");
                     break;
 
                 case RVAL_TYPE_LIST:
@@ -160,23 +161,30 @@ void GenerateSemanticsGraph(Policy *policy)
                        {
                        Gr(consc,umbrella,a_hasattr,RlistScalarValue(rp),"promise");
                        Gr(consc,RlistScalarValue(rp), a_hasrole, "rval","promise");
+                       Gr(consc,RlistScalarValue(rp), a_interpreted, constraint->lval,"promise");
                        }
                     break;
 
                 case RVAL_TYPE_FNCALL:
                     {
                     FnCall *fp = (FnCall *)(constraint->rval).item;
+                    
                     MakeUniqueClusterName(fp->name,fp->args,RVAL_TYPE_LIST,umbrella);
-                    Gr(consc,handle,a_hasconstraint,umbrella,"promise");
+
+                    Gr(consc,handle,a_depends,umbrella,"promise");
+                    Gr(consc,umbrella,a_hasattr,fp->name,"promise");
+                    Gr(consc,umbrella,a_hasattr,constraint->lval,"promise");
+                    
                     Gr(consc,constraint->lval, a_hasrole, "lval","promise");
                     Gr(consc,fp->name, a_hasrole, "rval","promise");
-                    Gr(consc,handle,a_depends,umbrella,"promise");
-                    Gr(consc,umbrella,a_depends,fp->name,"promise");
+                    Gr(consc,fp->name, a_interpreted, constraint->lval,"promise");
 
+                    Gr(consc,handle,a_uses,fp->name,"promise");
+                    
                     Gr(consc,promise->promiser,a_depends,umbrella,"promise");
                     Gr(consc,fp->name, a_hasrole,"function","promise");
-                    Gr(consc,fp->name,a_generalizes,umbrella,"promise");
-                    Gr(consc,umbrella,a_hasattr,constraint->lval,"promise");
+
+
                        
                     for (Rlist *argp = fp->args; argp != NULL; argp = argp->next)
                        {
@@ -233,21 +241,37 @@ void GenerateSemanticsGraph(Policy *policy)
 
 void Gr(FILE *consc,char *from, enum associations assoc, char *to, char *context)
 {
+ char *sfrom = SanitizeString(from);
+ char *sto = SanitizeString(to);
+ char *scontext = SanitizeString(context);
+ 
  if (context && strlen(context) > 0)
     {
-    fprintf(consc,"(%s,%d,%s,%s,%s,%s)\n",from,A[assoc].type,A[assoc].fwd,to,A[assoc].bwd,context);
+    fprintf(consc,"(%s,%d,%s,%s,%s,%s)\n",sfrom,A[assoc].type,A[assoc].fwd,sto,A[assoc].bwd,scontext);
     }
  else
     {
-    fprintf(consc,"(%s,%d,%s,%s,%s,%s)\n",from,A[assoc].type,A[assoc].fwd,to,A[assoc].bwd,"*");
+    fprintf(consc,"(%s,%d,%s,%s,%s,%s)\n",sfrom,A[assoc].type,A[assoc].fwd,sto,A[assoc].bwd,"*");
     }
+
+ free(sfrom);
+ free(sto);
+ free(scontext);
 }
 
 /**********************************************************************/
 
 void IGr(FILE *consc,char *from, enum associations assoc, char *to, char *context)
 {
- fprintf(consc,"(%s,-%d,%s,%s,%s,%s)\n",from,A[assoc].type,A[assoc].bwd,to,A[assoc].fwd,context);
+ char *sfrom = SanitizeString(from);
+ char *sto = SanitizeString(to);
+ char *scontext = SanitizeString(context);
+
+ fprintf(consc,"(%s,-%d,%s,%s,%s,%s)\n",sfrom,A[assoc].type,A[assoc].bwd,sto,A[assoc].fwd,scontext);
+
+ free(sfrom);
+ free(sto);
+ free(scontext);
 }
 
 /**********************************************************************/
@@ -262,7 +286,13 @@ void Number(FILE *consc, double q, char *context)
 
 void GrQ(FILE *consc,char *from, enum associations assoc, double to, char *context)
 {
- fprintf(consc,"(%s,%d,%s,%.2lf,%s,%s)\n",from,A[assoc].type,A[assoc].fwd,to,A[assoc].bwd,context);
+ char *sfrom = SanitizeString(from);
+ char *scontext = SanitizeString(context);
+
+ fprintf(consc,"(%s,%d,%s,%.2lf,%s,%s)\n",sfrom,A[assoc].type,A[assoc].fwd,to,A[assoc].bwd,scontext);
+
+ free(sfrom);
+ free(scontext); 
 }
 
 /**********************************************************************/
@@ -298,4 +328,30 @@ static void MakeUniqueClusterName(char *lval,void *sorted,char type,char *buffer
            }
         break;
     }
+}
+
+/**********************************************************************/
+
+static char *SanitizeString(char *s)
+{
+ if (s == NULL)
+    {
+    return NULL;
+    }
+ 
+ char *sp, *str = strdup(s);
+ for (sp = str; *sp != '\0'; sp++)
+    {
+    switch (*sp)
+       {
+       case ',':
+       case '/':
+       case '\\':
+           *sp = '_';
+           break;
+       default:
+           break;
+       }
+    }
+ return str;
 }

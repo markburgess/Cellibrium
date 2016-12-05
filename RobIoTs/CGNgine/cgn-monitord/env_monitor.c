@@ -1506,7 +1506,7 @@ while ((cls = ClassTableIteratorNext(iter)))
       if (strstr(name,"=") == 0)
          {
          Gr(consc,name, a_generalizes,cls->name,"class or context label");
-         Gr(consc,"class or context label",a_hasrole,cls->name,"system monitoring");
+         Gr(consc,cls->name,a_hasrole,"class or context label","system monitoring");
 
          if (cls->ns)
             {

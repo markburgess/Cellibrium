@@ -23,6 +23,7 @@ Association A[a_ass_dim+1] =
     {GR_FOLLOWS,"is maintained by","maintains"},
     {GR_FOLLOWS,"depends on","partly determines"},
     {GR_FOLLOWS,"may be caused by","can cause"},
+    {GR_FOLLOWS,"may use","may be used by"},
     {GR_EXPRESSES,"is called","is a name for"},
     {GR_EXPRESSES,"expresses an attribute","is an attribute of"},
     {GR_EXPRESSES,"has an instance or particular case","is a particular case of"},

@@ -57,10 +57,7 @@ Gr(stdout,"CGNgine error messages",a_contains,"Neighbour IP address should be a 
 Gr(stdout,"CGNgine error messages",a_contains,"Unsupported user policy * in users promise","errors and faults");
 Gr(stdout,"CGNgine error messages",a_contains,"Error writing marker file *","errors and faults");
 Gr(stdout,"CGNgine error messages",a_contains,"Error removing marker file *","errors and faults");
-Gr(stdout,"CGNgine error messages",a_contains,"Inputs path exists at *, but it is not a directory","errors and faults");
-Gr(stdout,"CGNgine error messages",a_contains,"Path exists at *, but it is not a regular file","errors and faults");
 Gr(stdout,"CGNgine error messages",a_contains,"Failed to decrypt string","errors and faults");
-Gr(stdout,"CGNgine error messages",a_contains,"Database * is broken, trying to repair...","errors and faults");
 Gr(stdout,"CGNgine error messages",a_contains,"Failed to repair database *, recreating...","errors and faults");
 Gr(stdout,"CGNgine error messages",a_contains,"Host class counting is only available in CFEngine Enterprise","errors and faults");
 Gr(stdout,"CGNgine error messages",a_contains,"Chop was called on a string that seemed to have no terminator","errors and faults");
@@ -80,7 +77,7 @@ Gr(stdout,"CGNgine error messages",a_contains,"You cannot cancel a reserved hard
 Gr(stdout,"CGNgine error messages",a_contains,"Unable to open private log *","errors and faults");
 Gr(stdout,"CGNgine error messages",a_contains,"Could not get host entry age","errors and faults");
 Gr(stdout,"CGNgine error messages",a_contains,"getusers is not implemented","errors and faults");
-Gr(stdout,"CGNgine error messages",a_contains,"FIPS mode is enabled, and md5 is not an approved algorithm","errors and faults");
+Gr(stdout,"CGNgine error messages",a_contains,"FIPS mode is enabled and md5 is not an approved algorithm","errors and faults");
 
 // Derivatives
 
@@ -96,15 +93,24 @@ Gr(stdout,"Cannot mix CIDR notation with xxx-yyy range notation *", a_caused_by,
 // We can try to make documentation causal instead of encyclopaedic
 
 Gr(stdout,"Cannot mix CIDR notation with xxx-yyy range notation *", a_caused_by,"incorrect use of network pattern matching","errors and faults");
-Gr(stdout,"incorrect use of pattern matching",a_related_to,"network pattern matching", "errors and faults");
+
+Gr(stdout,"incorrect use of network pattern matching",a_related_to,"network pattern matching", "errors and faults");
 
 Gr(stdout,"pattern matching", a_contains, "network pattern matching","*");
 Gr(stdout,"pattern matching", a_contains, "wildcards","*");
 Gr(stdout,"pattern matching", a_contains, "regular expressions","*");
 
 
-Gr(stdout, "iprange" ,a_depends,"FuzzySetMatch","software");
+Gr(stdout, "iprange" ,a_uses,"FuzzySetMatch","software");
+Gr(stdout, "iprange" ,a_depends,"network pattern matching","software");
+
+
 Gr(stdout, "iprange" ,a_hasrole,"CGNgine class function","software");
+Gr(stdout, "iprange" ,a_hasrole,"host classifier","software");
+Gr(stdout, "iprange" ,a_hasattr,"host","software");
+Gr(stdout, "iprange" ,a_hasattr,"host classifier","software");
+
+Gr(stdout, "class or context label" ,a_alias,"host classifier","system monitoring");
 
 Gr(stdout, "CGNgine class function",a_contains,"iprange","software");
 Gr(stdout, "system policy", a_contains, "CGNgine class function","software");

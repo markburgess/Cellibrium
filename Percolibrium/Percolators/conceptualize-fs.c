@@ -56,7 +56,6 @@ void GetConceptAssociations(FILE *fp, LinkAssociation *array,int maxentries);
 void UpdateConceptAssociations(FILE *fp, LinkAssociation *array,int maxentries);
 void InitializeAssociations(LinkAssociation *array);
 void Canonify(char *str);
-void UpdateContextAssociation(char *context, char *concept1);
 
 /*****************************************************************************/
 
@@ -142,23 +141,11 @@ void ReadTupleFile(char *filename)
     Canonify(from);
     Canonify(to);
     
-    //printf("FROM(%s) -(%s)- TO(%s)\n  (%s,%d)\n",from,afwd,to,abwd,atype);
-
-    // Update these anyway
-    UpdateConcept("*",from);
-    UpdateConcept("*",to);
-
-    if (strlen(context) > 0)
-       {
-       UpdateConcept(context,from);
-       UpdateConcept(context,to);
-       }
+    UpdateConcept(context,from);
+    UpdateConcept(context,to);
 
     // In all contexts, the contextualized qualified version is a member of the cluster of all (class instance)
        
-    UpdateContextAssociation(context,from);
-    UpdateContextAssociation(context,to);
-    
     UpdateAssociation(context,from,atype,afwd,abwd,to);
     UpdateAssociation(context,to,-atype,abwd,afwd,from);
     }
@@ -172,113 +159,16 @@ void UpdateConcept(char *context, char *name)
 {
  char filename[CGN_BUFSIZE];
 
- // Represent a concept as a directory of associations
+ // Represent a concept as a directory of associations (idempotent)
  
- snprintf(filename,CGN_BUFSIZE,"%s/%s::%s",BASEDIR,context,name);
-
- // Ignore return code to make idempotent
+ snprintf(filename,CGN_BUFSIZE,"%s/%s",BASEDIR,name);
+ mkdir(filename,0755); 
+ utime(filename, NULL);
+ 
+ snprintf(filename,CGN_BUFSIZE,"%s/%s/%s",BASEDIR,name,context);
 
  mkdir(filename,0755); 
  utime(filename, NULL);
-}
-
-/*****************************************************************************/
-
-void UpdateContextAssociation(char *context, char *concept)
-{
- char filename[CGN_BUFSIZE];
- LinkAssociation array[MAX_ASSOC_ARRAY];
- FILE *fp;
- int i, done;
- time_t now = time(NULL);
- enum associations assoc = a_hasinstance;
-     
- // From graph_defs.c, graph.c in CGNgine/libpromises
- // {GR_EXPRESSES,"has an instance or particular case","is a particular case of"},     a_hasinstance,
- 
- InitializeAssociations(array);
-
- // Careful with the signs of association types
- 
- snprintf(filename,CGN_BUFSIZE,"%s/%s::%s/%d",BASEDIR,context,concept,-A[assoc].type);
- mkdir(filename,0755);
-
- snprintf(filename,CGN_BUFSIZE,"%s/%s::%s/%d",BASEDIR,"*",concept,A[assoc].type);
- mkdir(filename,0755);
-
- // Forward link context free has a qualified instance by the contextualized version
- 
- snprintf(filename,CGN_BUFSIZE,"%s/%s::%s/%d/%s::%s",BASEDIR,"*",concept,A[assoc].type,context,concept);
-
- if ((fp = fopen(filename,"r")) != NULL)
-    {
-    GetConceptAssociations(fp,array,MAX_ASSOC_ARRAY);
-    fclose(fp);
-    }
-
- done = false;
-
- for (i = 0; (i < MAX_ASSOC_ARRAY) && (array[i].fwd[0] != '\0'); i++)
-    {
-    if (strcmp(A[assoc].fwd,array[i].fwd) == 0)
-       {
-       array[i].weight = (0.6+0.4*array[i].weight);
-       array[i].lastseen = now;
-       done = true;
-       break;
-       }
-    }
-
- if (!done)
-    {
-    strcpy(array[i].fwd,A[assoc].fwd);
-    strcpy(array[i].bwd,A[assoc].bwd);
-    array[i].weight = 0.7;
-    array[i].lastseen = now;
-    }
-
- if ((fp = fopen(filename,"w")) != NULL)
-    {
-    UpdateConceptAssociations(fp,array,MAX_ASSOC_ARRAY);
-    fclose(fp);
-    }
-
- // Now reverse assoc ------ is an instance of
-
-  snprintf(filename,CGN_BUFSIZE,"%s/%s::%s/%d/%s::%s",BASEDIR,context,concept,-A[assoc].type,"*",concept);
-
- if ((fp = fopen(filename,"r")) != NULL)
-    {
-    GetConceptAssociations(fp,array,MAX_ASSOC_ARRAY);
-    fclose(fp);
-    }
-
- done = false;
-
- for (i = 0; (i < MAX_ASSOC_ARRAY) && (array[i].fwd[0] != '\0'); i++)
-    {
-    if (strcmp(A[assoc].bwd,array[i].fwd) == 0)
-       {
-       array[i].weight = (0.6+0.4*array[i].weight);
-       array[i].lastseen = now;
-       done = true;
-       break;
-       }
-    }
-
- if (!done)
-    {
-    strcpy(array[i].fwd,A[assoc].bwd);
-    strcpy(array[i].bwd,A[assoc].fwd);
-    array[i].weight = 0.7;
-    array[i].lastseen = now;
-    }
-
- if ((fp = fopen(filename,"w")) != NULL)
-    {
-    UpdateConceptAssociations(fp,array,MAX_ASSOC_ARRAY);
-    fclose(fp);
-    }
 }
 
 /*****************************************************************************/
@@ -300,9 +190,9 @@ void UpdateAssociation(char *context, char *concept1, int atype, char *fwd, char
 
  InitializeAssociations(array);
  
- snprintf(filename,CGN_BUFSIZE,"%s/%s::%s/%d",BASEDIR,context,concept1,atype);
+ snprintf(filename,CGN_BUFSIZE,"%s/%s/%s/%d",BASEDIR,concept1,context,atype);
  mkdir(filename,0755);
- snprintf(filename,CGN_BUFSIZE,"%s/%s::%s/%d/%s::%s",BASEDIR,context,concept1,atype,context,concept2);
+ snprintf(filename,CGN_BUFSIZE,"%s/%s/%s/%d/%s",BASEDIR,concept1,context,atype,concept2);
 
  if ((fp = fopen(filename,"r")) != NULL)
     {
@@ -335,8 +225,8 @@ void UpdateAssociation(char *context, char *concept1, int atype, char *fwd, char
     {
     UpdateConceptAssociations(fp,array,MAX_ASSOC_ARRAY);
     fclose(fp);
+    printf("Wrote .. %s\n", filename);
     }
-
 }
 
 /*****************************************************************************/
@@ -390,7 +280,7 @@ void Canonify(char *str)
 {
  for (char *sp = str; *sp != '\0'; sp++)
     {
-    if (*sp == '/' || *sp == '\\')
+    if (*sp == '/' || *sp == '\\' || *sp == ',')
        {
        *sp = '!';
        }
