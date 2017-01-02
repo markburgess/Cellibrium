@@ -60,22 +60,22 @@ void GenerateSemanticsGraph(Policy *policy)
  for (size_t i = 0; i < SeqLength(policy->bundles); i++)
     {
     const Bundle *bundle = SeqAt(policy->bundles, i);
-    Gr(consc,bundle->ns,a_contains,bundle->name,"system policy");
-    Gr(consc,bundle->ns,a_hasrole,"namespace","system policy");
+    Gr(consc,bundle->ns,a_contains,bundle->name,"policy namespace");
+    Gr(consc,bundle->ns,a_hasrole,"namespace","policy namespace");
     Gr(consc,bundle->name,a_hasrole,"promise bundle","system policy");
     Gr(consc,bundle->type,a_maintainedby,bundle->name,"system policy");
 
     if (bundle->source_path)
        {
-       Gr(consc,bundle->source_path,a_contains,bundle->name,"system policy");
-       Gr(consc,bundle->source_path,a_hasrole,"policy file","system policy");
+       Gr(consc,bundle->source_path,a_contains,bundle->name,"system policy file");
+       Gr(consc,bundle->source_path,a_hasrole,"policy file","system policy file");
        }
 
     Rlist *argp = NULL;
 
     for (argp = bundle->args; argp != NULL; argp = argp->next)
        {
-       Gr(consc,bundle->name,a_depends,RlistScalarValue(argp),"system policy");
+       Gr(consc,bundle->name,a_depends,RlistScalarValue(argp),"system promise bundle");
        }
 
     for (size_t i = 0; i < SeqLength(bundle->promise_types); i++)
@@ -94,35 +94,35 @@ void GenerateSemanticsGraph(Policy *policy)
              }
 
           // Promise type
-          Gr(consc,handle,a_hasfunction,type->name,"system policy");
-          Gr(consc,handle,a_contains,promise->promiser,"system policy");
-          Gr(consc,promise->promiser,a_maintainedby,bundle->type,"system policy");
-          Gr(consc,promise->promiser,a_hasrole,"promiser","system policy");
+          Gr(consc,handle,a_hasfunction,type->name,"system promise handle");
+          Gr(consc,handle,a_contains,promise->promiser,"system promise handle");
+          Gr(consc,promise->promiser,a_maintainedby,bundle->type,"system promise");
+          Gr(consc,promise->promiser,a_hasrole,"promiser","system promise");
 
-          Gr(consc,bundle->name,a_contains,handle,"system policy");
-          Gr(consc,handle,a_maintainedby,bundle->type,"system policy");
-          Gr(consc,handle,a_hasrole,"promise handle","system policy");
-          Gr(consc,handle,a_hasfunction,"promise","system policy");
+          Gr(consc,bundle->name,a_contains,handle,"system promise bundle");
+          Gr(consc,handle,a_maintainedby,bundle->type,"system promise handle");
+          Gr(consc,handle,a_hasrole,"promise handle","system promise");
+          Gr(consc,handle,a_hasfunction,"promise handle","system promise handle");
 
           if (promise->comment)
              {
-             Gr(consc,handle,a_hasattr,promise->comment,"promise");
+             Gr(consc,handle,a_hasattr,promise->comment,"system promise");
              }
 
           switch (promise->promisee.type)
              {
              case RVAL_TYPE_SCALAR:
-                 Gr(consc,handle,a_contains,promise->promisee.item,"promise");
-                 Gr(consc,(char *)promise->promisee.item,a_depends,promise->promiser,"promise");
-                 Gr(consc,(char *)promise->promisee.item,a_depends,handle,"promise");
+                 Gr(consc,handle,a_contains,promise->promisee.item,"system promise");
+                 Gr(consc,(char *)promise->promisee.item,a_depends,promise->promiser,"system promise");
+                 Gr(consc,(char *)promise->promisee.item,a_depends,handle,"system promise");
                  break;
 
              case RVAL_TYPE_LIST:
                  for (const Rlist *rp = promise->promisee.item; rp; rp = rp->next)
                     {
-                    Gr(consc,handle,a_contains,RlistScalarValue(rp),"promise");
-                    Gr(consc,RlistScalarValue(rp),a_depends, promise->promiser,"promise");
-                    Gr(consc,RlistScalarValue(rp),a_depends, handle,"promise");
+                    Gr(consc,handle,a_contains,RlistScalarValue(rp),"system promise");
+                    Gr(consc,RlistScalarValue(rp),a_depends, promise->promiser,"system promise");
+                    Gr(consc,RlistScalarValue(rp),a_depends, handle,"system promise");
                     }
                  break;
 
@@ -131,8 +131,8 @@ void GenerateSemanticsGraph(Policy *policy)
              }
 
           // Class activation
-          Gr(consc,handle,a_depends,promise->classes,"promise");
-          Gr(consc,promise->classes,a_hasrole,"classifier or context label","promise");
+          Gr(consc,handle,a_depends,promise->classes,"system promise");
+          Gr(consc,promise->classes,a_hasrole,"classifier or context label","system promise context precondition");
 
           for (size_t cpi = 0; cpi < SeqLength(promise->conlist); cpi++)
              {
@@ -142,26 +142,26 @@ void GenerateSemanticsGraph(Policy *policy)
                 {
                 case RVAL_TYPE_SCALAR:
                     MakeUniqueClusterName(constraint->lval,constraint->rval.item,RVAL_TYPE_SCALAR,umbrella);
-                    Gr(consc,handle,a_hasconstraint,umbrella,"promise");
-                    Gr(consc,umbrella,a_hasrole,"promise body constraint","promise");
-                    Gr(consc,umbrella,a_hasattr,constraint->rval.item,"promise");
-                    Gr(consc,constraint->lval, a_hasrole, "lval","promise");
-                    Gr(consc,constraint->rval.item, a_hasrole, "rval","promise");
-                    Gr(consc,constraint->rval.item, a_interpreted, constraint->lval,"promise");
+                    Gr(consc,handle,a_hasconstraint,umbrella,"system promise");
+                    Gr(consc,umbrella,a_hasrole,"promise body constraint","system promise constraint");
+                    Gr(consc,umbrella,a_hasattr,constraint->rval.item,"system promise constraint");
+                    Gr(consc,constraint->lval, a_hasrole, "lval","system promise constraint type");
+                    Gr(consc,constraint->rval.item, a_hasrole, "rval","system promise constraint value");
+                    Gr(consc,constraint->rval.item, a_interpreted, constraint->lval,"system promise constraint value");
                     break;
 
                 case RVAL_TYPE_LIST:
                     MakeUniqueClusterName(constraint->lval,constraint->rval.item,RVAL_TYPE_LIST,umbrella);
-                    Gr(consc,handle,a_hasconstraint,umbrella,"promise");
-                    Gr(consc,umbrella,a_hasrole,"promise body constraint","promise");
-                    Gr(consc,umbrella,a_hasattr,constraint->lval,"promise");
-                    Gr(consc,constraint->lval, a_hasrole, "lval","promise");
+                    Gr(consc,handle,a_hasconstraint,umbrella,"system promise");
+                    Gr(consc,umbrella,a_hasrole,"promise body constraint","system promise constraint");
+                    Gr(consc,umbrella,a_hasattr,constraint->lval,"system promise constraint");
+                    Gr(consc,constraint->lval, a_hasrole, "lval","system promise constraint type");
 
                     for (Rlist *rp = (Rlist *)constraint->rval.item; rp != NULL; rp=rp->next)
                        {
-                       Gr(consc,umbrella,a_hasattr,RlistScalarValue(rp),"promise");
-                       Gr(consc,RlistScalarValue(rp), a_hasrole, "rval","promise");
-                       Gr(consc,RlistScalarValue(rp), a_interpreted, constraint->lval,"promise");
+                       Gr(consc,umbrella,a_hasattr,RlistScalarValue(rp),"system promise constraint");
+                       Gr(consc,RlistScalarValue(rp), a_hasrole, "rval","system promise constraint value");
+                       Gr(consc,RlistScalarValue(rp), a_interpreted, constraint->lval,"system promise constraint value");
                        }
                     break;
 
@@ -171,26 +171,24 @@ void GenerateSemanticsGraph(Policy *policy)
                     
                     MakeUniqueClusterName(fp->name,fp->args,RVAL_TYPE_LIST,umbrella);
 
-                    Gr(consc,handle,a_depends,umbrella,"promise");
-                    Gr(consc,umbrella,a_hasattr,fp->name,"promise");
-                    Gr(consc,umbrella,a_hasattr,constraint->lval,"promise");
+                    Gr(consc,handle,a_depends,umbrella,"system promise");
+                    Gr(consc,umbrella,a_hasattr,fp->name,"system promise constraint");
+                    Gr(consc,umbrella,a_hasattr,constraint->lval,"system promise constraint");
                     
-                    Gr(consc,constraint->lval, a_hasrole, "lval","promise");
-                    Gr(consc,fp->name, a_hasrole, "rval","promise");
-                    Gr(consc,fp->name, a_interpreted, constraint->lval,"promise");
+                    Gr(consc,constraint->lval, a_hasrole, "lval","system promise constraint type");
+                    Gr(consc,fp->name, a_hasrole, "rval","system promise constraint value function");
+                    Gr(consc,fp->name, a_interpreted, constraint->lval,"system promise constraint value function");
 
-                    Gr(consc,handle,a_uses,fp->name,"promise");
+                    Gr(consc,handle,a_uses,fp->name,"system promise");
                     
-                    Gr(consc,promise->promiser,a_depends,umbrella,"promise");
-                    Gr(consc,fp->name, a_hasrole,"function","promise");
-
-
+                    Gr(consc,promise->promiser,a_depends,umbrella,"system promise promiser");
+                    Gr(consc,fp->name, a_hasrole,"function","system promise constraint value function");
                        
                     for (Rlist *argp = fp->args; argp != NULL; argp = argp->next)
                        {
-                       Gr(consc,umbrella,a_depends,RlistScalarValue(argp),"promise");
-                       Gr(consc,umbrella,a_hasarg,RlistScalarValue(argp),"promise");
-                       Gr(consc,RlistScalarValue(argp),a_hasrole,"argument parameter","promise");                       
+                       Gr(consc,umbrella,a_depends,RlistScalarValue(argp),"system promise constraint");
+                       Gr(consc,umbrella,a_hasarg,RlistScalarValue(argp),"promise promise constraint");
+                       Gr(consc,RlistScalarValue(argp),a_hasrole,"argument parameter","promise constraint value function");
                        }
                     }
                     break;
@@ -210,27 +208,27 @@ void GenerateSemanticsGraph(Policy *policy)
 
     MakeUniqueClusterName(body->name,body->args,RVAL_TYPE_LIST,umbrella);
 
-    Gr(consc,body->name,a_hasrole,body->type,"promise");
-    Gr(consc,umbrella,a_hasrole,body->type,"promise");
+    Gr(consc,body->name,a_hasrole,body->type,"promise compound constraint template");
+    Gr(consc,umbrella,a_hasrole,body->type,"promise compound constraint");
 
-    Gr(consc,umbrella,a_hasrole,"promise body constraint","promise");
-    Gr(consc,body->name,a_hasrole,"promise body constraint","promise");
+    Gr(consc,umbrella,a_hasrole,"promise body constraint","promise compound constraint");
+    Gr(consc,body->name,a_hasrole,"promise body constraint","promise compound constraint template");
 
-    Gr(consc,body->ns,a_contains,body->name,"promise");
-    Gr(consc,body->ns,a_hasrole,"namespace","promise");
+    Gr(consc,body->ns,a_contains,body->name,"policy namespace");
+    Gr(consc,body->ns,a_hasrole,"namespace","policy namespace");
 
     if (body->source_path)
        {
-       Gr(consc,body->source_path,a_contains,body->name,"promise");
-       Gr(consc,body->source_path,a_contains,umbrella,"promise");
-       Gr(consc,body->source_path,a_hasrole,"file","promise");
+       Gr(consc,body->source_path,a_contains,body->name,"promise compound constraint template source");
+       Gr(consc,body->source_path,a_contains,umbrella,"promise compound constraint template source");
+       Gr(consc,body->source_path,a_hasrole,"file","promise compound constraint template source");
        }
 
     for (Rlist *argp = body->args; argp != NULL; argp = argp->next)
        {
-       Gr(consc,umbrella,a_depends,RlistScalarValue(argp),"promise");
-       Gr(consc,umbrella,a_hasarg,RlistScalarValue(argp),"promise");
-       Gr(consc,RlistScalarValue(argp),a_hasrole,"argument parameter","promise");
+       Gr(consc,umbrella,a_depends,RlistScalarValue(argp),"promise compound constraint");
+       Gr(consc,umbrella,a_hasarg,RlistScalarValue(argp),"promise compound constraint");
+       Gr(consc,RlistScalarValue(argp),a_hasrole,"argument parameter","promise compound constraint argument");
        }
     }
 

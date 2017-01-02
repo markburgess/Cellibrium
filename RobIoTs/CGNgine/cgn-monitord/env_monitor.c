@@ -1506,17 +1506,17 @@ while ((cls = ClassTableIteratorNext(iter)))
       if (strstr(name,"=") == 0)
          {
          Gr(consc,name, a_generalizes,cls->name,"class or context label");
-         Gr(consc,cls->name,a_hasrole,"class or context label","system monitoring");
+         Gr(consc,cls->name,a_hasrole,"class or context label","system context state");
 
          if (cls->ns)
             {
-            Gr(consc,cls->ns,a_contains,cls->name,"system monitoring");
-            Gr(consc,cls->ns,a_hasrole,"namespace","system monitoring");
+            Gr(consc,cls->ns,a_contains,cls->name,"namespace");
+            Gr(consc,cls->ns,a_hasrole,"namespace","namespace");
             }
          else
             {
-            Gr(consc,"default namespace",a_contains,cls->name,"system monitoring");
-            Gr(consc,"default namespace",a_hasrole,"namespace","system monitoring");
+            Gr(consc,"default namespace",a_contains,cls->name,"namespace");
+            Gr(consc,"default namespace",a_hasrole,"namespace","namespace");
             }
          }
       else if (strncmp(name,"name=",5) == 0)
