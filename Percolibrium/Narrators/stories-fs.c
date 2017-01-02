@@ -61,14 +61,13 @@ static const char *HINTS[5] =
 
 /*****************************************************************************/
 
-typedef struct
+struct Association
 {
    char fwd[CGN_BUFSIZE];
    char bwd[CGN_BUFSIZE];
    time_t lastseen;
    double weight;
-   
-} Association;
+};
 
 struct Concept
 {
@@ -76,7 +75,7 @@ struct Concept
    int importance_rank;
    struct Concept *next_concept;
    struct Concept *prev_concept;
-   Association next_assoc;
+   struct Association next_assoc;
    struct Concept *last_concept;
 };
 
@@ -89,13 +88,20 @@ struct Story
 }
     *STORIES = NULL;
 
+enum hier
+{
+    h_context,
+    h_association
+};
+
 /*****************************************************************************/
 
 void FollowContextualizedAssociations(char *context, char *concept, struct Concept *this, int atype, int prevtype, int level);
 void FollowUnqualifiedAssociation(int prevtype,int atype,int level, char *context, char *concept, char *nextconcept, struct Concept *next);
-void InitializeAssociations(Association *array);
-void GetConceptAssociations(FILE *fin, Association *array,int maxentries);
-void UpdateConceptAssociations(FILE *fin, Association *array,int maxentries);
+void InitializeAssociations(struct Association *array);
+void GetConceptAssociations(FILE *fin, struct Association *array,int maxentries);
+void UpdateConceptAssociations(FILE *fin, struct Association *array,int maxentries);
+void PrioritizeAssociations(char *array[MAX_ASSOC_ARRAY][2], char *basedir, char* concept, int atype);
 
 struct Story *NewStory(char *name);
 struct Concept *NewConcept(char *name, struct Concept *prev);
@@ -213,84 +219,43 @@ void main(int argc, char** argv)
 
 void FollowContextualizedAssociations(char *context, char *concept, struct Concept *this, int atype, int prevtype, int level)
 
-{ int count = 0;
- char filename[CGN_BUFSIZE];
- DIR *dirh_context,*dirh_assocs;
- struct dirent *dirp_c,*dirp_a;
+{ int i, count = 0;
+ char *array[MAX_ASSOC_ARRAY][2];
 
- // Here we need to explore context options....if we don't find an immediate match
- 
- snprintf(filename,CGN_BUFSIZE,"%s/%s",BASEDIR,concept);
+ PrioritizeAssociations(array,BASEDIR,concept,atype);
 
- if ((dirh_context = opendir(filename)) == NULL)
+ for (i = 0; (array[i][h_context] != NULL) && (i < MAX_ASSOC_ARRAY); i++)
     {
-    exit(0);
-    }
-
- //printf("opened concept %s...\n", filename);
-
- for (dirp_c = readdir(dirh_context); dirp_c != NULL; dirp_c = readdir(dirh_context))
-    {
-    if (dirp_c->d_name[0] == '.')
+    if (PruneLoops(array[i][h_association],this)) // next assoc
        {
-       continue;
-       }
-
-    //printf("EX %s\n",dirp_c->d_name);
-
-    snprintf(filename,CGN_BUFSIZE,"%s/%s/%s/%d",BASEDIR,concept,dirp_c->d_name,atype);
-
-    if ((dirh_assocs = opendir(filename)) == NULL)
-       {
-       //printf("stop %s - %s\n",dirp_c->d_name,filename);
-       //perror("opendir");
        continue;
        }
     
-    for (dirp_a = readdir(dirh_assocs); dirp_a != NULL; dirp_a = readdir(dirh_assocs))
+    struct Concept *next = NewConcept(array[i][h_association], this); // next assoc
+    
+    if (atype == -prevtype)
        {
-       if (dirp_a->d_name[0] == '.')
+       if (atype == GR_CONTAINS || atype == -GR_CONTAINS || atype == GR_EXPRESSES || atype == -GR_EXPRESSES)
           {
-          continue;
+          count += 1;
           }
-
-       //printf("EXx %s\n",dirp_a->d_name);
-              
-       if (PruneLoops(dirp_a->d_name,this))
-          {
-          continue;
-          }
-
-       //printf("EXxx %s\n",dirp_a->d_name);
        
-       struct Concept *next = NewConcept(dirp_a->d_name, this);
-
-       if (atype == -prevtype)
+       if (count++ > 4)
           {
-          if (atype == GR_CONTAINS || atype == -GR_CONTAINS || atype == GR_EXPRESSES || atype == -GR_EXPRESSES)
-             {
-             count += 1;
-             }
-
-          if (count++ > 4)
-             {
-             printf("     ++ more ....\n");
-             break; // Truncate litany of similar things
-             }
-          }
-
-       if (level < 10) // Arbitrary curb on length of stories
-          {
-          FollowUnqualifiedAssociation(prevtype, atype,level, dirp_c->d_name, concept, dirp_a->d_name, next);
-          }
-       else
-          {
-          printf("###");
+          printf("     ++ more ....\n");
+          break; // Truncate litany of similar things
           }
        }
-    closedir(dirh_assocs);
+    
+    if (level < 10) // Arbitrary curb on length of stories
+       {
+       FollowUnqualifiedAssociation(prevtype, atype,level, array[i][h_context], concept, array[i][h_association], next);
+       }
+    else
+       {
+       printf("###");
+       }
     }
- closedir(dirh_context);
      
  if (level == 0)
     {
@@ -304,7 +269,7 @@ void FollowUnqualifiedAssociation(int prevtype,int atype,int level, char *contex
 
 {
  int i;
- Association array[MAX_ASSOC_ARRAY];
+ struct Association array[MAX_ASSOC_ARRAY];
  FILE *fin;
  char filename[CGN_BUFSIZE];
 
@@ -371,7 +336,7 @@ void FollowUnqualifiedAssociation(int prevtype,int atype,int level, char *contex
 
 /*****************************************************************************/
 
-void InitializeAssociations(Association *array)
+void InitializeAssociations(struct Association *array)
 {
  int i;
  
@@ -402,7 +367,7 @@ char *Indent(int level)
 
 /*****************************************************************************/
 
-void GetConceptAssociations(FILE *fin, Association *array,int maxentries)
+void GetConceptAssociations(FILE *fin, struct Association *array,int maxentries)
 
 { int i;
 
@@ -418,7 +383,7 @@ void GetConceptAssociations(FILE *fin, Association *array,int maxentries)
 
 /*****************************************************************************/
 
-void UpdateConceptAssociations(FILE *fin, Association *array,int maxentries)
+void UpdateConceptAssociations(FILE *fin, struct Association *array,int maxentries)
 
 { int i;
 
@@ -427,7 +392,6 @@ void UpdateConceptAssociations(FILE *fin, Association *array,int maxentries)
     fprintf(fin, "(%s,%s,%ld,%lf)\n",array[i].fwd,array[i].bwd,array[i].lastseen,array[i].weight);
     }
 }
-
 
 /*****************************************************************************/
 
@@ -490,4 +454,69 @@ int PruneLoops(char *concept, struct Concept *this)
     }
 
  return false;
+}
+
+
+/*************************************************************/
+
+void PrioritizeAssociations(char *array[MAX_ASSOC_ARRAY][2], char *basedir, char* concept, int atype)
+{
+ char filename[CGN_BUFSIZE];
+ DIR *dirh_context,*dirh_assocs;
+ struct dirent *dirp_c,*dirp_a;
+ int count;
+
+ for (count = 0; count < MAX_ASSOC_ARRAY; count++)
+    {
+    array[count][0] = NULL;
+    array[count][1] = NULL;
+    }
+
+ count = 0;
+ 
+ snprintf(filename,CGN_BUFSIZE,"%s/%s",basedir,concept);
+
+ if ((dirh_context = opendir(filename)) == NULL)
+    {
+    exit(0);
+    }
+ 
+ for (dirp_c = readdir(dirh_context); dirp_c != NULL; dirp_c = readdir(dirh_context))
+    {
+    if (dirp_c->d_name[0] == '.')
+       {
+       continue;
+       }
+
+    snprintf(filename,CGN_BUFSIZE,"%s/%s/%s/%d",basedir,concept,dirp_c->d_name,atype);
+
+    if ((dirh_assocs = opendir(filename)) == NULL)
+       {
+       continue;
+       }
+    
+    for (dirp_a = readdir(dirh_assocs); dirp_a != NULL; dirp_a = readdir(dirh_assocs))
+       {
+       if (dirp_a->d_name[0] == '.')
+          {
+          continue;
+          }
+
+       array[count][0] = strdup(dirp_c->d_name);
+       array[count][1] = strdup(dirp_a->d_name);
+
+       //printf("Setting a[%d][0] = %s, a[%d][1] = %s\n ", count, array[count][0], count, array[count][1]);
+
+       if (++count > MAX_ASSOC_ARRAY)
+          {
+          printf("Ran out of slots...\n");
+          return;
+          }
+       }
+    closedir(dirh_assocs);
+    }
+ closedir(dirh_context);
+
+ //qsort(array);
+
 }
