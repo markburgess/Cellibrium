@@ -42,22 +42,25 @@ extern char *optarg;
 extern int optind, opterr, optopt;
 
 int ATYPE_OPT = CGN_ROOT;
+int RECURSE_OPT = 10;
 
-static const struct option OPTIONS[5] =
+static const struct option OPTIONS[6] =
 {
     {"help", no_argument, 0, 'h'},
     {"subject", required_argument, 0, 's'},
     {"context", required_argument, 0, 'c'},
     {"type", required_argument, 0, 't'},
+    {"recurse", required_argument, 0, 'r'},
     {NULL, 0, 0, '\0'}
 };
 
-static const char *HINTS[5] =
+static const char *HINTS[6] =
 {
     "Print the help message",
     "The subject of the story (initial condition)", 
     "Context relevance string",
     "Association type 1-4",
+    "Recursion depth",
     NULL
 };
 
@@ -122,7 +125,7 @@ void main(int argc, char** argv)
  char *subject = NULL, *context = NULL;
  struct Concept *this = NULL;
  
-  while ((c = getopt_long(argc, argv, "ht:s:c:", OPTIONS, &optindex)) != EOF)
+  while ((c = getopt_long(argc, argv, "ht:s:c:r:", OPTIONS, &optindex)) != EOF)
     {
     switch ((char) c)
        {
@@ -156,6 +159,10 @@ void main(int argc, char** argv)
 
        case 't':
            ATYPE_OPT = atoi(optarg);
+           break;
+
+       case 'r':
+           RECURSE_OPT = atoi(optarg);
            break;
 
        default:
@@ -254,7 +261,7 @@ void FollowContextualizedAssociations(char *context, char *concept, struct Conce
           }
        }
     
-    if (level < 10) // Arbitrary curb on length of stories
+    if (level < RECURSE_OPT+1) // Arbitrary curb on length of stories
        {
        FollowUnqualifiedAssociation(prevtype, atype,level, array[i][h_context], concept, array[i][h_association], next);
        }
