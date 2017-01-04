@@ -102,23 +102,24 @@ void ReadTupleFile(char *filename)
     
     fgets(linebuff, CGN_BUFSIZE, fin);
 
-    if (strlen(linebuff) == 0)
+    switch (linebuff[0])
        {
-       break;
+       case '(':
+           break;
+       default:
+           continue;
        }
-    
-    line++;
-    
+
     sscanf(linebuff, "(%[^,],%d,%[^,],%[^,],%[^,],%[^)])\n",from,&atype,afwd,to,abwd,context);
 
     if (strlen(from) == 0)
        {
-       printf("Missing field near line %d\n",line);
+       printf("Missing field near line %d (%s) len %d\n",line,linebuff,strlen(linebuff));
        }
 
     if (strlen(afwd) == 0)
        {
-       printf("Missing field near line %d (%s)\n",line,from);
+       printf("Missing field near line %d (%s)\n",line,linebuff,strlen(linebuff));
        }
 
     if (strlen(abwd) == 0)
@@ -148,6 +149,7 @@ void ReadTupleFile(char *filename)
        
     UpdateAssociation(context,from,atype,afwd,abwd,to);
     UpdateAssociation(context,to,-atype,abwd,afwd,from);
+    line++;
     }
  
  fclose(fin);
