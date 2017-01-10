@@ -126,3 +126,10 @@ void Gr(FILE *consc,char *from, enum associations assoc, char *to, char *context
 {
  fprintf(consc,"(%s,%d,%s,%s,%s,%s)\n",from,A[assoc].type,A[assoc].fwd,to,A[assoc].bwd,context);
 }
+
+/**********************************************************************/
+
+void GrNOT(FILE *consc,char *from, enum associations assoc, char *to, char *context)
+{
+ fprintf(consc,"(%s,%d,NOT %s,%s,NOT %s,%s)\n",from,A[assoc].type,A[assoc].fwd,to,A[assoc].bwd,context);
+}
