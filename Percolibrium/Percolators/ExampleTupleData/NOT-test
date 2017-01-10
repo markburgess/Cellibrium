@@ -1,0 +1,15 @@
+
+
+(facebook authentication,3,is a service offered by,facebook,offers service,logging in)
+(tidal,1,is generalized by,application,has instance,online services)
+(tidal,1,is generalized by,gravitational effect,has instance,physics gravity orbit moon satellite distortion)
+(gravitational effect,2,depends on,mass,affects,physics)
+(gravitational effect,2,depends on,distance,affects,physics)
+(tidal,2,is authenticated by,facebook authentication,authenticates,online services applications)
+(tidal,2,depends on,facebook,provides a service for,online services applications)
+
+(tidal,2,NOT depends on,facebook,NOT provides a service for,physics gravity orbit moon satellite distortion)
+
+% This final NOT should prevent us from seeing highly ranked matches about facebook in the search for physics
+% It should poison a certain class of associations
+% We don't want to exclude them altogether, because that prevents lateral thinking
