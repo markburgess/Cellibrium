@@ -1142,20 +1142,20 @@ static void SetVariable(FILE *consc, char *name, double value, double average, d
  
  snprintf(var, CF_MAXVARSIZE, "value_%s=%.2lf", name, value);
  AppendItem(classlist, var, "");
- Gr(consc,var,a_hasrole,"value/state","system monitoring");
- GrQ(consc,name,a_hasvalue,value,"system monitoring");
+ Gr(consc,var,a_hasrole,"value/state","system state here now");
+ GrQ(consc,name,a_hasvalue,value,"system state here now");
  
  snprintf(var, CF_MAXVARSIZE, "av_%s=%.2lf", name, average);
  AppendItem(classlist, var, "");
- Gr(consc,var,a_hasrole,"expectation value","system monitoring");
+ Gr(consc,var,a_hasrole,"expectation value","system state here now");
     
  snprintf(var, CF_MAXVARSIZE, "dev_%s=%.2lf", name, stddev);
  AppendItem(classlist, var, "");
- Gr(consc,var,a_hasrole,"standard deviation","system monitoring");
+ Gr(consc,var,a_hasrole,"standard deviation","system state here now");
     
- Number(consc,value,"system monitoring");
- Number(consc,average,"system monitoring");
- Number(consc,stddev,"system monitoring");
+ Number(consc,value,"system state here now");
+ Number(consc,average,"system state here now");
+ Number(consc,stddev,"system state here now");
 }
 
 /*****************************************************************************/
@@ -1479,24 +1479,24 @@ if (consc == NULL)
 
 char here_and_now[CF_BUFSIZE];
 
-Gr(consc,"sample times",a_contains,now,"system monitoring");
+Gr(consc,"sample times",a_contains,now,"system state here now");
 
  // The name/context is a semantic coordinate for the instances (like an array index)
 
 snprintf(here_and_now, CF_BUFSIZE, "%s:%s",VFQNAME,now);
-Gr(consc,here_and_now,a_hasattr,now,"system monitoring");
-Gr(consc,here_and_now,a_hasattr,VFQNAME,"system monitoring");
+Gr(consc,here_and_now,a_hasattr,now,"system state here now");
+Gr(consc,here_and_now,a_hasattr,VFQNAME,"system state here now");
 
-Gr(consc,VUQNAME,a_contains,VFQNAME,"system monitoring");
-Gr(consc,VFQNAME,a_hasinstance,here_and_now,"system monitoring");
-Gr(consc,here_and_now,a_generalizes,now,"system monitoring");
+Gr(consc,VUQNAME,a_contains,VFQNAME,"system state here now");
+Gr(consc,VFQNAME,a_hasinstance,here_and_now,"system state here now");
+Gr(consc,here_and_now,a_generalizes,now,"system state here now");
 
 ClassTableIterator *iter = EvalContextClassTableIteratorNewGlobal(ctx, NULL, true, true);
 Class *cls = NULL;
 
 while ((cls = ClassTableIteratorNext(iter)))
    {
-   Gr(consc,here_and_now,a_hasattr,cls->name,"system monitoring");
+   Gr(consc,here_and_now,a_hasattr,cls->name,"system state here now");
    StringSet *tagset = EvalContextClassTags(ctx, cls->ns, cls->name);
    StringSetIterator iter = StringSetIteratorInit(tagset);
    char *name = NULL;
@@ -1521,11 +1521,11 @@ while ((cls = ClassTableIteratorNext(iter)))
          }
       else if (strncmp(name,"name=",5) == 0)
          {
-         Gr(consc,cls->name,a_hasrole,name+5,"system monitoring");
+         Gr(consc,cls->name,a_hasrole,name+5,"system state here now");
          }
       else if (strncmp(name,"source=",7) == 0)
          {
-         Gr(consc,cls->name,a_origin,name+7,"system monitoring");
+         Gr(consc,cls->name,a_origin,name+7,"system state here now");
          }
       else
          {
@@ -1546,12 +1546,12 @@ static void AnnotateOrigin(FILE *consc,char *now,char *origin,char *name, char *
  // The name is a semantic coordinate for the instance
  snprintf(here_and_now, CF_BUFSIZE, "%s:%s:%s",VFQNAME,now,name);
 
- Gr(consc,here_and_now,a_hasattr,now,"system monitoring");
- Gr(consc,here_and_now,a_hasattr,name,"system monitoring");
- Gr(consc,name,a_interpreted,description,"system monitoring");
+ Gr(consc,here_and_now,a_hasattr,now,"system state here now");
+ Gr(consc,here_and_now,a_hasattr,name,"system state here now");
+ Gr(consc,name,a_interpreted,description,"system state here now");
   
  // Explain meaning of name
- Gr(consc,origin,a_origin,here_and_now,"system monitoring");
+ Gr(consc,origin,a_origin,here_and_now,"system state here now");
 }
 
 /**********************************************************************/
@@ -1562,55 +1562,55 @@ static void AnnotateNumbers(FILE *consc,char *now,char *origin, char *name, char
  char buff[CF_BUFSIZE];
 
  // The name is a semantic coordinate for the instance
- snprintf(here_and_now, CF_BUFSIZE, "%s:%s:%s",VFQNAME,now,name);
-
+ snprintf(here_and_now, CF_BUFSIZE, "here now");
+ 
+ Gr(consc,here_and_now,a_contains,"here","system state here now");
+ Gr(consc,here_and_now,a_contains,"now","system state here now");
+ Gr(consc,"here",a_contains,VFQNAME,"system state here now");
+          
  // anchor basis for value cluster
 
- Gr(consc,here_and_now,a_hasattr,name,"system monitoring");
- Gr(consc,here_and_now,a_hasattr,now,"system monitoring");
- Gr(consc,here_and_now,a_hasattr,VFQNAME,"system monitoring");
-  
- Gr(consc,here_and_now,a_interpreted,description,"system monitoring");
- Gr(consc,origin,a_contains,name,"system monitoring");
+ Gr(consc,here_and_now,a_interpreted,description,"system state here now");
+ Gr(consc,origin,a_contains,name,"system state here now");
  
  // label attributes (like object definition) and attach number symbols
  
  snprintf(buff,CF_BUFSIZE,"%s:q",here_and_now);
- Gr(consc,here_and_now,a_hasattr,buff,"system monitoring");
- GrQ(consc,buff,a_hasvalue,q,"system monitoring");
- Number(consc,q,"system monitoring");
+ Gr(consc,here_and_now,a_hasattr,buff,"system state here now");
+ GrQ(consc,buff,a_hasvalue,q,"system state here now");
+ Number(consc,q,"system state here now");
  
  snprintf(buff,CF_BUFSIZE,"%s:E",here_and_now);
- Gr(consc,here_and_now,a_hasattr,buff,"system monitoring");
- GrQ(consc,buff,a_hasvalue,E,"system monitoring");
- Number(consc,E,"system monitoring");
+ Gr(consc,here_and_now,a_hasattr,buff,"system state here now");
+ GrQ(consc,buff,a_hasvalue,E,"system state here now");
+ Number(consc,E,"system state here now");
  
  snprintf(buff,CF_BUFSIZE,"%s:sig",here_and_now);
- Gr(consc,here_and_now,a_hasattr,buff,"system monitoring");
- GrQ(consc,buff,a_hasvalue,sig,"system monitoring");
- Number(consc,sig,"system monitoring");
+ Gr(consc,here_and_now,a_hasattr,buff,"system state here now");
+ GrQ(consc,buff,a_hasvalue,sig,"system state here now");
+ Number(consc,sig,"system state here now");
  
  snprintf(buff,CF_BUFSIZE,"%s:Et",here_and_now);
- Gr(consc,here_and_now,a_hasattr,buff,"system monitoring");
- GrQ(consc,buff,a_hasvalue,Et,"system monitoring");
- Number(consc,Et,"system monitoring");
+ Gr(consc,here_and_now,a_hasattr,buff,"system state here now");
+ GrQ(consc,buff,a_hasvalue,Et,"system state here now");
+ Number(consc,Et,"system state here now");
  
  snprintf(buff,CF_BUFSIZE,"%s:tsig",here_and_now);
- Gr(consc,here_and_now,a_hasattr,buff,"system monitoring");
- GrQ(consc,buff,a_hasvalue,tsig,"system monitoring");
- Number(consc,tsig,"system monitoring");
+ Gr(consc,here_and_now,a_hasattr,buff,"system state here now");
+ GrQ(consc,buff,a_hasvalue,tsig,"system state here now");
+ Number(consc,tsig,"system state here now");
  
  // attach number meanings
  snprintf(buff,CF_BUFSIZE,"%s:q",here_and_now);
- IGr(consc,buff,a_name,"the current observed value","system monitoring");
+ IGr(consc,buff,a_name,"the current observed value","system state here now");
  snprintf(buff,CF_BUFSIZE,"%s:E",here_and_now);
- IGr(consc,buff,a_name,"the running mean value","system monitoring");
+ IGr(consc,buff,a_name,"the running mean value","system state here now");
  snprintf(buff,CF_BUFSIZE,"%s:sig",here_and_now);
- IGr(consc,buff,a_name,"a std deviation over recent samples","system monitoring");
+ IGr(consc,buff,a_name,"a std deviation over recent samples","system state here now");
  snprintf(buff,CF_BUFSIZE,"%s:Et",here_and_now);
- IGr(consc,buff,a_name,"a mean time to change","system monitoring");
+ IGr(consc,buff,a_name,"a mean time to change","system state here now");
  snprintf(buff,CF_BUFSIZE,"%s:tsig",here_and_now);
- IGr(consc,buff,a_name,"a mean time deviation","system monitoring");
+ IGr(consc,buff,a_name,"a mean time deviation","system state here now");
 
 }
 

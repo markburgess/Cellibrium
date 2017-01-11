@@ -40,6 +40,9 @@
 % dynamically changing observations (cognitive inputs)
 %
 
+% User sensors - what am I doing now?
+
+
 % query responses become promises
 
 (doctor,3,promises,accepted doctor patient binding,is promised by,patient doctor registration)

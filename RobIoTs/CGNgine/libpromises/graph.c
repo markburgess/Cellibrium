@@ -94,6 +94,7 @@ void GenerateSemanticsGraph(Policy *policy)
              }
 
           // Promise type
+          Gr(consc,handle,a_hasrole,type->name,"system promise handle");
           Gr(consc,handle,a_hasfunction,type->name,"system promise handle");
           Gr(consc,handle,a_contains,promise->promiser,"system promise handle");
           Gr(consc,promise->promiser,a_maintainedby,bundle->type,"system promise");
@@ -131,7 +132,7 @@ void GenerateSemanticsGraph(Policy *policy)
              }
 
           // Class activation
-          Gr(consc,handle,a_depends,promise->classes,"system promise");
+
           Gr(consc,promise->classes,a_hasrole,"classifier or context label","system promise context precondition");
 
           for (size_t cpi = 0; cpi < SeqLength(promise->conlist); cpi++)
