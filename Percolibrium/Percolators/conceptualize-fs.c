@@ -44,7 +44,7 @@ typedef int Policy; // Hack to use CGNgine defs
 /*****************************************************************************/
 
 void ReadTupleFile(char *filename);
-void UpdateConcept(char *context, char *name);
+void UpdateConcept(char *name);
 void UpdateAssociation(char *context, char *concept1, int atype, char *fwd, char *bwd, char *concept2);
 void GetConceptAssociations(FILE *fp, LinkAssociation *array,int maxentries);
 void UpdateConceptAssociations(FILE *fp, LinkAssociation *array,int maxentries);
@@ -82,6 +82,8 @@ void ReadTupleFile(char *filename)
  int atype;
  int line = 0;
 
+ UpdateConcept("all contexts");
+ 
  if ((fin = fopen(filename,"r")) == NULL)
     {
     return;
@@ -136,13 +138,25 @@ void ReadTupleFile(char *filename)
     Canonify(from);
     Canonify(to);
     
-    UpdateConcept(context,from);
-    UpdateConcept(context,to);
-    
+    UpdateConcept(from);
+    UpdateConcept(to);
+
     // In all contexts, the contextualized qualified version is a member of the cluster of all (class instance)
        
     UpdateAssociation(context,from,atype,afwd,abwd,to);
     UpdateAssociation(context,to,-atype,abwd,afwd,from);
+
+    // Now create an introspective feedback to context as a scaled concept of its own
+
+    UpdateConcept(context);
+    UpdateAssociation("all contexts",from,-1,"appears in the context of","is context for",context);
+    UpdateAssociation("all contexts",context,1,"is context for","appears in the context of",to);
+    UpdateAssociation("all contexts",from,-1,"appears in the context of","is context for",context);
+    UpdateAssociation("all contexts",context,1,"is context for","appears in the context of",to);
+
+    UpdateAssociation("all contexts","all contexts",1,"contains","is contained by",context);
+    UpdateAssociation("all contexts",context,-1,"is contained by","contains","all contexts");
+    
     line++;
     }
  
@@ -151,7 +165,7 @@ void ReadTupleFile(char *filename)
 
 /*****************************************************************************/
 
-void UpdateConcept(char *context, char *name)
+void UpdateConcept(char *name)
 {
  char filename[CGN_BUFSIZE];
 

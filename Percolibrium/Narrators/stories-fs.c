@@ -114,6 +114,7 @@ char *Indent(int level);
 int PruneLoops(char *concept, struct Concept *this);
 static int cmpassoc(const void *p1, const void *p2);
 void SplitCompound(char *str, char *atoms[256], int len[256]);
+void ShowMatchingConcepts(char *context);
 
 /*****************************************************************************/
 
@@ -173,16 +174,6 @@ void main(int argc, char** argv)
 
   // validate input args
 
-  if (subject)
-     {
-     printf("Found story subject: \"%s\"\n", subject);
-     }
-  else
-     {
-     printf("You need to provide a subject for the story (option -s before the string)\n");
-     exit(1);
-     }
-
   if (CONTEXT_OPT)
      {
      printf("Found context: \"%s\"\n", CONTEXT_OPT);
@@ -190,6 +181,22 @@ void main(int argc, char** argv)
   else
      {
      CONTEXT_OPT = strdup("*");
+     }
+
+  if (subject)
+     {
+     printf("Found story subject: \"%s\"\n", subject);
+     }
+  else
+     {
+     if (strcmp(CONTEXT_OPT,"*") != 0)
+        {
+        ShowMatchingConcepts(CONTEXT_OPT);
+        return;
+        }
+     
+     printf("You need to provide a subject for the story (option -s before the string)\n");
+     exit(1);
      }
 
   if (ATYPE_OPT != 99)
@@ -222,6 +229,19 @@ void main(int argc, char** argv)
     FollowContextualizedAssociations(subject, this, GR_EXPRESSES, CGN_ROOT, level);
     FollowContextualizedAssociations(subject, this, -GR_EXPRESSES, CGN_ROOT, level);
     }
+}
+
+/**********************************************************/
+
+void ShowMatchingConcepts(char *context)
+
+{
+ int level = 0;
+ struct Concept *this = NewConcept("all contexts", NULL);
+
+ RECURSE_OPT = 1;
+
+ FollowContextualizedAssociations("all contexts", this, GR_CONTAINS, CGN_ROOT, level);
 }
 
 /*****************************************************************************/
@@ -369,7 +389,7 @@ char *GetBestConceptAssociations(char *best_association, char *concept,int atype
     
     if (!RelevantToCurrentContext(concept,array[i].fwd,nextconcept,array[i].context))
        {
-       printf("(excluding concept \"%s\" in context \"%s\")\n",nextconcept,CONTEXT_OPT);
+       //printf("(excluding concept \"%s\" in context \"%s\")\n",nextconcept,CONTEXT_OPT);
        return NULL;
        }
     }
@@ -382,14 +402,20 @@ char *GetBestConceptAssociations(char *best_association, char *concept,int atype
     {
     strcpy(best_association, "both ");
     strcat(best_association, array[0].fwd);
-    snprintf(comment,CGN_BUFSIZE," (%s)", array[0].context);
-    strcat(best_association, comment);
+    if (strcmp(array[0].context,"all contexts") != 0)
+       {
+       snprintf(comment,CGN_BUFSIZE," (%s)", array[0].context);
+       strcat(best_association, comment);
+       }
     }
  else
     {
     strcpy(best_association, array[0].fwd);
-    snprintf(comment,CGN_BUFSIZE," (%s)", array[0].context);
-    strcat(best_association, comment);
+    if (strcmp(array[0].context,"all contexts") != 0)
+       {
+       snprintf(comment,CGN_BUFSIZE," (%s)", array[0].context);
+       strcat(best_association, comment);
+       }
     }
  
  for (i = 1; (i < MAX_ASSOC_ARRAY) && (array[i].fwd[0] != '\0'); i++)
@@ -400,8 +426,11 @@ char *GetBestConceptAssociations(char *best_association, char *concept,int atype
        }
     strcat(best_association, " and ");
     strcat(best_association, array[i].fwd);
-    snprintf(comment,CGN_BUFSIZE," (%s)", array[i].context);
-    strcat(best_association, comment);
+    if (strcmp(array[0].context,"all contexts") != 0)
+       {
+       snprintf(comment,CGN_BUFSIZE," (%s)", array[i].context);
+       strcat(best_association, comment);
+       }
     }
 
  // WARN: not checking for overflow here ... very unlikely but ...
@@ -535,7 +564,21 @@ int RelevantToCurrentContext(char *concept,char *assoc,char *nextconcept,char *c
  int nlen[256] = {0};
 
 // We need a VERY good reason to actually EXCLUDE a path, because it could become relevant to lateral thinking
- 
+// unless we have no subject, in which case CONTEXT is context hub and rules are different
+
+ if (strcmp(context,"all contexts") == 0)
+    {
+    SplitCompound(nextconcept,then,tlen);     // Look at the learned relevance
+    SplitCompound(CONTEXT_OPT,now,nlen); // Look at the current cognitive context
+    
+    if (Overlap(now,then,nlen,tlen))
+       {
+       return true;
+       }
+
+    return false;
+    }
+
 // Get current search contexts and see whether strings seem compatible by some measure
 // Want to know if there are common genes in these context strings, leading to significant overlap
  
