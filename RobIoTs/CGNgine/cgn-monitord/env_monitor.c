@@ -642,7 +642,7 @@ static void BuildConsciousState(EvalContext *ctx, Averages av, Timescales t)
 
  char now[CF_SMALLBUF];
  time_t nowt = time(NULL);
- snprintf(now,CF_SMALLBUF, "t_%s as a sample", GenTimeKey(nowt));
+ snprintf(now,CF_SMALLBUF, "sample at t_%s", GenTimeKey(nowt));
  UpdateTimeClasses(ctx, nowt);
 
  unlink(GRAPHFILE_NEW);
@@ -1414,26 +1414,26 @@ static void GetNamespace(int index, char *buffer)
     case ob_wwws_out:
     case ob_dns_in:
     case ob_dns_out:
-        strcpy(buffer,"services");
+        strcpy(buffer,"application service measurements");
         break;
     case ob_webaccess:
     case ob_weberrors:
     case ob_syslog:
     case ob_messages:
-        strcpy(buffer,"logs");
+        strcpy(buffer,"system logs");
         break;
     case ob_temp0:
     case ob_temp1:
     case ob_temp2:
     case ob_temp3:
-        strcpy(buffer,"physical");
+        strcpy(buffer,"physical environment measurements");
         break;
     case ob_cpuall:
     case ob_cpu0:
     case ob_cpu1:
     case ob_cpu2:
     case ob_cpu3:
-        strcpy(buffer,"system");
+        strcpy(buffer,"processor related measurements");
         break;
         
     case ob_microsoft_ds_in:
@@ -1454,16 +1454,16 @@ static void GetNamespace(int index, char *buffer)
     case ob_postgresql_out:
     case ob_ipp_in:
     case ob_ipp_out:
-        strcpy(buffer,"services");
+        strcpy(buffer,"application service services");
         break;
     case ob_ospf_in:
     case ob_ospf_out:
     case ob_bgp_in:
     case ob_bgp_out:
-        strcpy(buffer,"routing");
+        strcpy(buffer,"routing measurements");
         break;
     default:                      // Empirically these seem to be the system probes Mikhail reorganized to random addresses
-        strcpy(buffer,"system");
+        strcpy(buffer,"unknown measurement type");
         break;
     }
 }
@@ -1500,7 +1500,8 @@ while ((cls = ClassTableIteratorNext(iter)))
    StringSet *tagset = EvalContextClassTags(ctx, cls->ns, cls->name);
    StringSetIterator iter = StringSetIteratorInit(tagset);
    char *name = NULL;
-   
+   char ns[CF_BUFSIZE];
+
    while ((name = StringSetIteratorNext(&iter)))
       {
       if (strstr(name,"=") == 0)
@@ -1510,8 +1511,9 @@ while ((cls = ClassTableIteratorNext(iter)))
 
          if (cls->ns)
             {
-            Gr(consc,cls->ns,a_contains,cls->name,"namespace");
-            Gr(consc,cls->ns,a_hasrole,"namespace","namespace");
+            snprintf(ns,CF_BUFSIZE,"%s namespace", cls->ns);
+            Gr(consc,ns,a_contains,cls->name,"namespace");
+            Gr(consc,ns,a_hasrole,"namespace","namespace");
             }
          else
             {
@@ -1525,7 +1527,8 @@ while ((cls = ClassTableIteratorNext(iter)))
          }
       else if (strncmp(name,"source=",7) == 0)
          {
-         Gr(consc,cls->name,a_origin,name+7,"system state here now");
+         snprintf(ns,CF_BUFSIZE,"%s namespace", name+7);
+         Gr(consc,cls->name,a_origin,ns,"system state here now");
          }
       else
          {
@@ -1541,17 +1544,7 @@ ClassTableIteratorDestroy(iter);
 
 static void AnnotateOrigin(FILE *consc,char *now,char *origin,char *name, char *description)
 {
- char here_and_now[CF_BUFSIZE];
-
- // The name is a semantic coordinate for the instance
- snprintf(here_and_now, CF_BUFSIZE, "%s:%s:%s",VFQNAME,now,name);
-
- Gr(consc,here_and_now,a_hasattr,now,"system state here now");
- Gr(consc,here_and_now,a_hasattr,name,"system state here now");
  Gr(consc,name,a_interpreted,description,"system state here now");
-  
- // Explain meaning of name
- Gr(consc,origin,a_origin,here_and_now,"system state here now");
 }
 
 /**********************************************************************/
