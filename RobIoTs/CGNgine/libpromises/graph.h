@@ -45,6 +45,8 @@ void IGr(FILE *consc,char *from, enum associations assoc, char *to, char *contex
 void GrQ(FILE *consc,char *from, enum associations assoc, double to, char *context);
 void Number(FILE *consc, double q, char *context);
 void GenerateSemanticsGraph(Policy *policy);
+char *RoleCluster(FILE *consc,char *compound_name, char *role, char *attributes, char *ex_context);
+char *ContextCluster(FILE *consc,char *compound_name);
 #endif
 
 /*****************************************************************************/

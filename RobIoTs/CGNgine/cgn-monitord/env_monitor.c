@@ -662,8 +662,16 @@ static void BuildConsciousState(EvalContext *ctx, Averages av, Timescales t)
     sigma = SituationHereAndNow(ctx,consc,now,namespace, name, desc, CF_THIS[i], av.Q[i].dq, av.Q[i].expect, av.Q[i].var, t.T[i].dchange_expect, sqrt(t.T[i].dchange_var), &mon_data);
 
     SetVariable(consc, name, CF_THIS[i], av.Q[i].expect, sigma, &mon_data);
-    Gr(consc,now,a_contains,name,"data sample");
-    AnnotateOrigin(consc,now,"observations",name,desc);
+
+    //
+    char this_measurement[CF_BUFSIZE];
+    char cname[CF_BUFSIZE],dstring[CF_BUFSIZE];
+    snprintf(cname,CF_BUFSIZE,"measurement called %s",name);
+    snprintf(dstring,CF_BUFSIZE,"%s,measurement",name);
+    strcpy(this_measurement, RoleCluster(consc,cname, "measurement type", dstring, ContextCluster(consc,"system monitoring data sample")));
+
+    Gr(consc,this_measurement,a_interpreted,desc,"system monitoring data sample");
+    Gr(consc,"system monitoring measurements",a_contains,cname,"system monitoring data sample");
 
     /* LDT */
     
@@ -811,10 +819,21 @@ static void BuildConsciousState(EvalContext *ctx, Averages av, Timescales t)
 
  if (consc)
     {
-    Gr(consc,VUQNAME,a_name,"host device","system monitoring");
+    char this_hostname[CF_BUFSIZE];
+    char cname[CF_BUFSIZE],dname[CF_BUFSIZE];
+
+    snprintf(cname,CF_BUFSIZE,"unqualified hostname %s",VUQNAME);
+    strcpy(this_hostname, RoleCluster(consc,cname,"unqualified hostname", VUQNAME, ContextCluster(consc,"hostname identification")));
+    Gr(consc,this_hostname,a_origin,"system monitoring measurements","system monitoring data sample");
+
     if (VDOMAIN[0] != '\0')
        {
-       Gr(consc,VDOMAIN,a_name,"DNS domain or Workspace","system monitoring");
+       snprintf(cname,CF_BUFSIZE,"fully qualified hostname %s",VFQNAME);
+       strcpy(this_hostname, RoleCluster(consc,cname,"fully qualified hostname", VFQNAME, "hostname identification"));
+       Gr(consc,this_hostname,a_origin,"system monitoring measurements","system monitoring data sample");
+       snprintf(dname,CF_BUFSIZE,"DNS domainname %s",VDOMAIN);
+       strcpy(this_hostname, RoleCluster(consc,dname,"DNS domain", VDOMAIN, "hostname identification"));
+       Gr(consc,this_hostname,a_contains,cname, "hostname identification");
        }
 
     AnnotateContext(ctx, consc, now);
@@ -1544,7 +1563,6 @@ ClassTableIteratorDestroy(iter);
 
 static void AnnotateOrigin(FILE *consc,char *now,char *origin,char *name, char *description)
 {
- Gr(consc,name,a_interpreted,description,"system state here now");
 }
 
 /**********************************************************************/

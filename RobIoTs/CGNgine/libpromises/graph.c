@@ -97,33 +97,33 @@ void GenerateSemanticsGraph(Policy *policy)
           Gr(consc,handle,a_hasrole,type->name,"system promise handle");
           Gr(consc,handle,a_hasfunction,type->name,"system promise handle");
           Gr(consc,handle,a_contains,promise->promiser,"system promise handle");
-          Gr(consc,promise->promiser,a_maintainedby,bundle->type,"system promise");
-          Gr(consc,promise->promiser,a_hasrole,"promiser","system promise");
+          Gr(consc,promise->promiser,a_maintainedby,bundle->type,"system promise agent type");
+          Gr(consc,promise->promiser,a_hasrole,"promiser","system promise role");
 
           Gr(consc,bundle->name,a_contains,handle,"system promise bundle");
           Gr(consc,handle,a_maintainedby,bundle->type,"system promise handle");
-          Gr(consc,handle,a_hasrole,"promise handle","system promise");
+          Gr(consc,handle,a_hasrole,"promise handle","system promise handle");
           Gr(consc,handle,a_hasfunction,"promise handle","system promise handle");
 
           if (promise->comment)
              {
-             Gr(consc,handle,a_hasattr,promise->comment,"system promise");
+             Gr(consc,handle,a_hasattr,promise->comment,"system promise handle");
              }
 
           switch (promise->promisee.type)
              {
              case RVAL_TYPE_SCALAR:
-                 Gr(consc,handle,a_contains,promise->promisee.item,"system promise");
-                 Gr(consc,(char *)promise->promisee.item,a_depends,promise->promiser,"system promise");
-                 Gr(consc,(char *)promise->promisee.item,a_depends,handle,"system promise");
+                 Gr(consc,handle,a_contains,promise->promisee.item,"system promisee");
+                 Gr(consc,(char *)promise->promisee.item,a_depends,promise->promiser,"system promiser");
+                 Gr(consc,(char *)promise->promisee.item,a_depends,handle,"system promisee");
                  break;
 
              case RVAL_TYPE_LIST:
                  for (const Rlist *rp = promise->promisee.item; rp; rp = rp->next)
                     {
-                    Gr(consc,handle,a_contains,RlistScalarValue(rp),"system promise");
-                    Gr(consc,RlistScalarValue(rp),a_depends, promise->promiser,"system promise");
-                    Gr(consc,RlistScalarValue(rp),a_depends, handle,"system promise");
+                    Gr(consc,handle,a_contains,RlistScalarValue(rp),"system promisee");
+                    Gr(consc,RlistScalarValue(rp),a_depends, promise->promiser,"system promisee");
+                    Gr(consc,RlistScalarValue(rp),a_depends, handle,"system promise handle");
                     }
                  break;
 
@@ -292,6 +292,68 @@ void GrQ(FILE *consc,char *from, enum associations assoc, double to, char *conte
 
  free(sfrom);
  free(scontext); 
+}
+
+/**********************************************************************/
+
+char *RoleCluster(FILE *consc,char *compound_name, char *role, char *attributes, char *ex_context)
+
+/* Document a compound Split a comma separated list, with head
+   we can use it for context or for conceptual */
+    
+{ char *sp, word[255];
+
+ Gr(consc,compound_name,a_hasrole,role,ex_context);
+ 
+ if ((sp = attributes))
+    {
+    while (*sp != '\0')
+       {
+       if (*sp == ',')
+          {
+          sp++;
+          continue;
+          }
+       
+       word[0] = '\0';
+       sscanf(sp,"%250[^,]",word);
+       sp += strlen(word);
+
+       Gr(consc,compound_name,a_hasattr,word,"all contexts");
+       }
+    }
+
+return compound_name;
+}
+
+/**********************************************************************/
+
+char *ContextCluster(FILE *consc,char *compound_name)
+
+/* Document a compound Split a comma separated list, with head
+   we can use it for context or for conceptual */
+    
+{ char *sp, word[255];
+
+ if ((sp = compound_name))
+    {
+    while (*sp != '\0')
+       {
+       if (*sp == ' ')
+          {
+          sp++;
+          continue;
+          }
+       
+       word[0] = '\0';
+       sscanf(sp,"%250s",word);
+       sp += strlen(word);
+
+       Gr(consc,compound_name,a_contains,word,"all contexts");
+       }
+    }
+
+return compound_name;
 }
 
 /**********************************************************************/

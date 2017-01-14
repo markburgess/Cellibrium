@@ -400,8 +400,16 @@ char *GetBestConceptAssociations(char *best_association, char *concept,int atype
 
  if (i > 1)
     {
-    strcpy(best_association, "both ");
-    strcat(best_association, array[0].fwd);
+    if (strcmp(array[0].fwd,array[i].fwd) == 0)
+       {
+       strcpy(best_association, "both ");
+       strcat(best_association, array[0].fwd);
+       }
+    else
+       {
+       strcpy(best_association,array[0].fwd);
+       }
+
     if (strcmp(array[0].context,"all contexts") != 0)
        {
        snprintf(comment,CGN_BUFSIZE," (%s)", array[0].context);
@@ -612,6 +620,8 @@ int RelevantToCurrentContext(char *concept,char *assoc,char *nextconcept,char *c
 
 void SplitCompound(char *str, char *atoms[256], int len[256])
 
+// Split compound name into atoms that can permit a partial overlap match
+    
 { char *sp;
  int between_words = true;
  int atom = 0;

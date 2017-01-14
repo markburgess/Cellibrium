@@ -32,7 +32,7 @@ Association A[a_ass_dim+1] =
     {GR_EXPRESSES,"has the role of","is a role fulfilled by"},
     {GR_EXPRESSES,"has function","is the function of"},
     {GR_EXPRESSES,"has constraint","constrains"},
-    {-GR_FOLLOWS,"has interpretation","is interpreted from"},
+    {GR_EXPRESSES,"has interpretation","is interpreted from"},
     {GR_NEAR,"seen concurrently with","seen concurrently with"},
     {GR_NEAR,"also known as","also known as"},
     {GR_NEAR,"is approximately","is approximately"},
