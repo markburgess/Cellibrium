@@ -299,7 +299,9 @@ void GrQ(FILE *consc,char *from, enum associations assoc, double to, char *conte
 char *RoleCluster(FILE *consc,char *compound_name, char *role, char *attributes, char *ex_context)
 
 /* Document a compound Split a comma separated list, with head
-   we can use it for context or for conceptual */
+   we can use it for context or for conceptual
+   RoleCluster(fp, "compound name", "hasrole unique identifier", "hasttr part1,hasttr part2", "naming unique identity")
+*/
     
 { char *sp, word[255];
 
@@ -330,8 +332,9 @@ return compound_name;
 
 char *ContextCluster(FILE *consc,char *compound_name)
 
-/* Document a compound Split a comma separated list, with head
-   we can use it for context or for conceptual */
+/* Document a compound Split a space separated list, with head
+   we can use it for context or for conceptual - treat them as epitopes
+   for fuzzy matching by set overlap. Only type 1 associations. */
     
 { char *sp, word[255];
 
