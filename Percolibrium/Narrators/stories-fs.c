@@ -25,10 +25,10 @@
 #include <ctype.h>
 
 // cited from "../../RobIoTs/CGNgine/libpromises/graph_defs.c"
-#define GR_CONTAINS  1 // for membership
+#define GR_CONTAINS  3 // for membership
 #define GR_FOLLOWS   2 // i.e. influenced by
-#define GR_EXPRESSES 3 // naming/represents - do not use to label membership, only exterior promises
-#define GR_NEAR      4 // approx like
+#define GR_EXPRESSES 4 // naming/represents - do not use to label membership, only exterior promises
+#define GR_NEAR      1 // approx like
 // END
 
 #define BASEDIR "/home/a10004/KMdata"

@@ -6,10 +6,10 @@
 /*                                                                           */
 /*****************************************************************************/
 
-#define GR_CONTAINS  1 // for membership
+#define GR_CONTAINS  3 // for membership
 #define GR_FOLLOWS   2 // i.e. influenced by
-#define GR_EXPRESSES 3 // naming/represents - do not use to label membership, only exterior promises
-#define GR_NEAR      4 // approx like
+#define GR_EXPRESSES 4 // naming/represents - do not use to label membership, only exterior promises
+#define GR_NEAR      1 // approx like
 
 /* In this semantic basis, contains and exhibits are not completely orthogonal.
  Expresses implies an exterior promise from a sub-agent or from
@@ -26,10 +26,12 @@ Association A[a_ass_dim+1] =
     {GR_FOLLOWS,"may use","may be used by"},
     {GR_EXPRESSES,"is called","is a name for"},
     {GR_EXPRESSES,"expresses an attribute","is an attribute of"},
+    {GR_EXPRESSES,"promises","is promised by"},
     {GR_EXPRESSES,"has an instance or particular case","is a particular case of"},
     {GR_EXPRESSES,"has value or state","is the state or value of"},
     {GR_EXPRESSES,"has argument or parameter","is a parameter or argument of"},
     {GR_EXPRESSES,"has the role of","is a role fulfilled by"},
+    {GR_EXPRESSES,"has the outcome","is the outcome of"},
     {GR_EXPRESSES,"has function","is the function of"},
     {GR_EXPRESSES,"has constraint","constrains"},
     {GR_EXPRESSES,"has interpretation","is interpreted from"},

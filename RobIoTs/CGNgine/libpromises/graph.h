@@ -17,10 +17,12 @@ enum associations
     a_uses,
     a_name,
     a_hasattr,  // avoid this, it says nothing unambiguously
+    a_promises, 
     a_hasinstance,
     a_hasvalue,
     a_hasarg,
     a_hasrole,     // what is its function/object type? e.g. file,process..
+    a_hasoutcome,
     a_hasfunction,
     a_hasconstraint,
     a_interpreted,
@@ -54,8 +56,8 @@ char *ContextCluster(FILE *consc,char *compound_name);
 #ifndef GRAPH
 extern Association A[a_ass_dim+1];
 
-#define GR_CONTAINS  1 
+#define GR_CONTAINS  3 
 #define GR_FOLLOWS   2 // i.e. influenced by
-#define GR_EXPRESSES 3 // represents, etc
-#define GR_NEAR      4 // approx like
+#define GR_EXPRESSES 4 // represents, etc
+#define GR_NEAR      1 // approx like
 #endif

@@ -1,6 +1,6 @@
 /*****************************************************************************/
 /*                                                                           */
-/* File: generate_microservice_domain_knowledge.c                            */
+/* File: generate_binary_domain_knowledge.c                                     */
 /*                                                                           */
 /* Created: Mon Nov 21 14:10:46 2016                                         */
 /*                                                                           */
@@ -37,11 +37,10 @@ typedef int Policy;  // Hack to use CGNgine defs
 #include "../../RobIoTs/CGNgine/libpromises/graph.h"
 #include "../../RobIoTs/CGNgine/libpromises/graph_defs.c"
 
-
+void CrawlApplication(char *path, char *app, char *desc);
+void LddDependencies(char *app,char *file, char *context);
 
 /******************************************************************************/
-
-// Can we create a kind of crawler for microservices, e.g. in golang a single static binary
 
 void main()
 {
@@ -49,66 +48,82 @@ void main()
  // What menu of contexts can we describe and measure?
 
  ContextCluster(stdout, "application service");
- ContextCluster(stdout, "design write develop software");
- ContextCluster(stdout, "run execute software");
- ContextCluster(stdout, "software ops operations");
- ContextCluster(stdout, "use software");
- ContextCluster(stdout, "bug fault failure error");
 
- char *context = "software ops operations develop write";
- ContextCluster(stdout,context);
+ //RegisterMicroServiceP0("authenticator");
+ //RegisterMicroServiceP1("cgn-serverd","CGNgine copy and remote execution service");
+ //RegisterHosting(name,ipaddress,geography);
 
- // Roles etc.
+ CrawlApplication("/var/CGNgine/bin","cgn-agent","host configuration and maintenance agent for CGNgine");
+ //CrawlApplication("/var/CGNgine/bin","cgn-serverd","fileserver and remote execution service for CGNgine");
+ //CrawlApplication("/var/CGNgine/bin","cgn-monitord","host probe and monitoring service for CGNgine");
  
- RoleCluster(stdout,"application service","application", "component,software,service",context);
- RoleCluster(stdout,"microservice","application", "component,software,service",context);
+}
 
- RoleCluster(stdout,"service authentication","authentication", "component,software,application service,microservice,API authentication",context);
- RoleCluster(stdout,"user authentication","authentication", "component,software,application service,microservice,user authentication",context);
+/******************************************************************************/
 
- //
- 
- Gr(stdout, "ops",a_approx,"operations","software ops operations");
- Gr(stdout, "microservice",a_approx,"service",context);
- Gr(stdout, "service",a_uses,"service authentication",context);
- Gr(stdout, "service",a_uses,"user authentication",context);
- Gr(stdout, "service",a_depends,"software SOFTWARENAME",context);
- 
- RoleCluster(stdout,"software SOFTWARENAME VERSION","software", "SOFTWARENAME,VERSION",context);
- RoleCluster(stdout,"container CONTAINERNAME VERSION","container", "CONTAINERNAME,VERSION",context);
- RoleCluster(stdout,"package PACKAGENAME1 VERSION1","package", "PACKAGENAME1,VERSION1",context);
- RoleCluster(stdout,"package PACKAGENAME2 VERSION2","package", "PACKAGENAME2,VERSION2",context);
- RoleCluster(stdout,"package PACKAGENAME3 VERSION3","package", "PACKAGENAME3,VERSION3",context);
- 
- Gr(stdout, "software SOFTWARENAME",a_depends,"container CONTAINERNAME",context);
+void CrawlApplication(char *path, char *app, char *desc)
+{
+ // Most other services depend on this one (level 0)
 
- Gr(stdout, "container CONTAINERNAME",a_depends,"package PACKAGENAME1 VERSION1",context);
- Gr(stdout, "container CONTAINERNAME",a_depends,"package PACKAGENAME2 VERSION2",context);
- Gr(stdout, "container CONTAINERNAME",a_depends,"package PACKAGENAME3 VERSION3",context);
- Gr(stdout, "container CONTAINERNAME",a_depends,"hosting CONTAINERNAME",context);
- Gr(stdout, "container CONTAINERNAME",a_depends,"storage",context);
+ char name[CGN_BUFSIZE];
+ char fqname[CGN_BUFSIZE];
+ char context[CGN_BUFSIZE];
 
- // This comes from an orchestrator K8s, openstack etc?
+ strcpy(context,ContextCluster(stdout,"host application software dependencies security"));
+
+ snprintf(name, CGN_BUFSIZE, "application %s", app);
+ RoleCluster(stdout,name,"application", "component,CGNgine",context);
+
+ // Get the dependency graph
+
+ snprintf(fqname, CGN_BUFSIZE, "%s/%s",path,app);
+ LddDependencies(app,fqname,context);
  
- RoleCluster(stdout,"hosting CONTAINERNAME INSTANCE","hosting", "CONTAINERNAME,INSTANCE",context);
+ //Gr(stdout,name,a_hasfunction,"service authentication","software dependencies");
+
+ // Host 
+
+
+}
+
+/**********************************************************************/
+
+void LddDependencies(char *app, char *file, char *context)
+
+{ FILE *pp;
+  char line[CGN_BUFSIZE];
+  char name[CGN_BUFSIZE];
+  char path[CGN_BUFSIZE];
+  char cmd[CGN_BUFSIZE];
+
+  snprintf(cmd, CGN_BUFSIZE, "/usr/bin/ldd %s",file);
   
- // These should be scanned by internal scanner, etc
- 
- Gr(stdout, "package PACKAGENAME1 VERSION1",a_depends,"library LIB1",context);
- Gr(stdout, "package PACKAGENAME2 VERSION2",a_depends,"library LIB1",context);
- Gr(stdout, "package PACKAGENAME3 VERSION3",a_depends,"library LIB1",context);
+ if ((pp = popen(cmd,"r")) == NULL)
+    {
+    perror("popen");
+    return;
+    }
 
- 
- //
+ while (!feof(pp))
+    {
+    name[0] = '\0';
+    path[0] = '\0';
+    line[0] = '\0';
+    fgets(line,CGN_BUFSIZE,pp);
+    sscanf(line,"%s %*[^/]%s",name,path);
 
- Gr(stdout, "service", a_depends, "hosting","software ops operations");
- Gr(stdout, "hosting", a_depends, "host HOSTNAME","execute run software ops operations");
+    if (strstr(name,"lib"))
+       {
+       Gr(stdout,app,a_depends,name,context);
+       }
+    
+    if (path[0] == '/')
+       {
+       LddDependencies(name,path,context);
+       }
+    }
 
- RoleCluster(stdout,"host HOSTNAME IPADDRESS","host", "hostname HOSTNAME,ip address IPADDRESS",context);
-  
- Gr(stdout, "host", a_promises, "operating system","execute run software ops operations");
- Gr(stdout, "operating system",a_promises,"kernel","execute run software ops operations");
-
+ pclose(pp);
 }
 
 /**********************************************************************/
