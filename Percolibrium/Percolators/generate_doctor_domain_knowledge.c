@@ -9,7 +9,7 @@
  // Conceptual sketch for convergently updating graph knowledge representation
  // This marries/matches with Narrators/stories-fs.c
 
- // gcc -o gen_knowledge -g -std=c99 generate_cgn_domain_knowledge.c
+ // gcc -o gen_dsdk -g -std=c99 generate_doctor_domain_knowledge.c
 
  // Usage example: ./gen_knowledge > ExampleTupleData/domain_knowledge_graph
 
@@ -52,50 +52,50 @@ void main()
  
  // Compound (qualified) concepts
 
- RoleCluster(consc,"general practictioner doctor","doctor", "general practitioner", "patient health service");
- RoleCluster(consc,"surgeon doctor","doctor", "surgeon", "patient health service");
- RoleCluster(consc,"patient appointment","appointment", "doctor patient", "patient health service");
+ RoleCluster(stdout,"general practictioner doctor","doctor", "general practitioner", "patient health service");
+ RoleCluster(stdout,"surgeon doctor","doctor", "surgeon", "patient health service");
+ RoleCluster(stdout,"patient appointment","appointment", "doctor patient", "patient health service");
 
  // Record realtime state relationships (promises)
 
- RoleCluster(consc,"doctor authenticated","doctor", "authenticated", "patient health service");
- RoleCluster(consc,"patient authenticated","patient", "authenticated", "patient health service");
+ RoleCluster(stdout,"doctor authenticated","doctor", "authenticated", "patient health service");
+ RoleCluster(stdout,"patient authenticated","patient", "authenticated", "patient health service");
 
  // Note how fragile this is to difference between available,availability ... linguistically we could fuzzy match
  
- RoleCluster(consc,"general practictioner doctor available","doctor availability", "general,practitioner,doctor", "patient health service");
- RoleCluster(consc,"open for business","service availability", "open,available", "all contexts");
+ RoleCluster(stdout,"general practictioner doctor available","doctor availability", "general,practitioner,doctor", "patient health service");
+ RoleCluster(stdout,"open for business","service availability", "open,available", "all contexts");
 
- Gr(consc,"have public health service access",a_depends,"patient authenticated","need to visit a doctor";)
- Gr(consc,"have public health service access",a_depends,"patient appointment","need to visit a doctor");
- Gr(consc,"have public health service access",a_depends,"public health service available","need to visit a doctor");
+ Gr(stdout,"have public health service access",a_depends,"patient authenticated","need to visit a doctor");
+ Gr(stdout,"have public health service access",a_depends,"patient appointment","need to visit a doctor");
+ Gr(stdout,"have public health service access",a_depends,"public health service available","need to visit a doctor");
 
- Gr(consc,"public health service available",a_depends,"general practictioner doctor available","need to visit a doctor");
- Gr(consc,"public health service available",a_depends,"open for business","need to visit a doctor");
+ Gr(stdout,"public health service available",a_depends,"general practictioner doctor available","need to visit a doctor");
+ Gr(stdout,"public health service available",a_depends,"open for business","need to visit a doctor");
 
- Gr(consc,"public health service",a_depends,"public health service available","need to visit a doctor");
- Gr(consc,"public health service",a_depends,"patient uses appointment","need to visit a doctor");
- Gr(consc,"patient appointment",a_depends,"patient doctor register binding","need to visit a doctor");
+ Gr(stdout,"public health service",a_depends,"public health service available","need to visit a doctor");
+ Gr(stdout,"public health service",a_depends,"patient uses appointment","need to visit a doctor");
+ Gr(stdout,"patient appointment",a_depends,"patient doctor register binding","need to visit a doctor");
  
- Gr(consc,"patient doctor register binding",a_depends,"doctor patient binding service","patient doctor registration");
- Gr(consc,"doctor",a_promises,"public health service","need to visit a doctor"); 
- Gr(consc,"patient",a_promises,"patience","need to visit a doctor");
+ Gr(stdout,"patient doctor register binding",a_depends,"doctor patient binding service","patient doctor registration");
+ Gr(stdout,"doctor",a_promises,"public health service","need to visit a doctor"); 
+ Gr(stdout,"patient",a_promises,"patience","need to visit a doctor");
 
- Gr(consc,"public health service",a_depends,"doctor availability","need to visit a doctor");
+ Gr(stdout,"public health service",a_depends,"doctor availability","need to visit a doctor");
 
- Gr(consc,"accepted doctor patient binding",a_depends,"doctor","patient doctor registration");
- Gr(consc,"accepted doctor patient binding",a_depends,"patient","patient doctor registration");
- Gr(consc,"accepted doctor patient binding",a_depends,"doctor authorized","patient doctor registration");
- Gr(consc,"accepted doctor patient binding",a_depends,"doctor authenticated","patient doctor registration");
- Gr(consc,"accepted doctor patient binding",a_depends,"patient authenticated","patient doctor registration");
+ Gr(stdout,"accepted doctor patient binding",a_depends,"doctor","patient doctor registration");
+ Gr(stdout,"accepted doctor patient binding",a_depends,"patient","patient doctor registration");
+ Gr(stdout,"accepted doctor patient binding",a_depends,"doctor authorized","patient doctor registration");
+ Gr(stdout,"accepted doctor patient binding",a_depends,"doctor authenticated","patient doctor registration");
+ Gr(stdout,"accepted doctor patient binding",a_depends,"patient authenticated","patient doctor registration");
   
- Gr(consc,"doctor authenticated",a_depends,"identity credentials","identity authentication verification");
- Gr(consc,"patient authenticated",a_depends,"identity credentials","identity authentication verification");
+ Gr(stdout,"doctor authenticated",a_depends,"identity credentials","identity authentication verification");
+ Gr(stdout,"patient authenticated",a_depends,"identity credentials","identity authentication verification");
 
 // Wizard info gathered as public info, REST query etc
 
- Gr(consc,"identity credentials",a_origin,"https://url1/form/element1","identity authentication verification");
- Gr(consc,"identity credentials",a_origin,"https://url1/form/element2","identity authentication verification");
+ Gr(stdout,"identity credentials",a_origin,"https://url1/form/element1","identity authentication verification");
+ Gr(stdout,"identity credentials",a_origin,"https://url1/form/element2","identity authentication verification");
 
 //
 // dynamically changing observations (cognitive inputs)
@@ -103,18 +103,18 @@ void main()
 
 // User sensors - what am I doing now?
 
- Gr(consc,"doctor",a_promises,"accepted doctor patient binding","patient doctor registration");
- Gr(consc,"patient",a_promises,"accepted doctor patient binding","patient doctor registration");
+ Gr(stdout,"doctor",a_promises,"accepted doctor patient binding","patient doctor registration");
+ Gr(stdout,"patient",a_promises,"accepted doctor patient binding","patient doctor registration");
  
- Gr(consc,"entity authentication",a_promises,"doctor authenticated","patient doctor registration");
- Gr(consc,"entity authentication",a_promises,"patient authenticated","patient doctor registration");
- Gr(consc,"medical association",a_promises,"doctor authorized","doctor registration");
+ Gr(stdout,"entity authentication",a_promises,"doctor authenticated","patient doctor registration");
+ Gr(stdout,"entity authentication",a_promises,"patient authenticated","patient doctor registration");
+ Gr(stdout,"medical association",a_promises,"doctor authorized","doctor registration");
 
- Gr(consc,"doctor",a_promises,"doctor availability","patient doctor registration");
- Gr(consc,"patient uses appointment",a_hasoutcome,"promise kept",ContextCluster(consc,"public health service patient doctor registration"));
+ Gr(stdout,"doctor",a_promises,"doctor availability","patient doctor registration");
+ Gr(stdout,"patient uses appointment",a_hasoutcome,"promise kept",ContextCluster(stdout,"public health service patient doctor registration"));
 
- Gr(consc,"doctor",a_promises,"identity credentials","patient doctor registration");
- Gr(consc,"patient",a_promises,"identity credentials","patient doctor registration");
+ Gr(stdout,"doctor",a_promises,"identity credentials","patient doctor registration");
+ Gr(stdout,"patient",a_promises,"identity credentials","patient doctor registration");
 
 }
 

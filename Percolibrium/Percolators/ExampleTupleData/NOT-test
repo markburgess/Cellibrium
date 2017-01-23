@@ -1,8 +1,8 @@
 
 
-(facebook authentication,3,is a service offered by,facebook,offers service,logging in)
-(tidal,1,is generalized by,application,has instance,online services)
-(tidal,1,is generalized by,gravitational effect,has instance,physics gravity orbit moon satellite distortion)
+(facebook authentication,4,is a service offered by,facebook,offers service,logging in)
+(tidal,3,is generalized by,application,has instance,online services)
+(tidal,3,is generalized by,gravitational effect,has instance,physics gravity orbit moon satellite distortion)
 (gravitational effect,2,depends on,mass,affects,physics)
 (gravitational effect,2,depends on,distance,affects,physics)
 (tidal,2,is authenticated by,facebook authentication,authenticates,online services applications)

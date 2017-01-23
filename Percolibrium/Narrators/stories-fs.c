@@ -7,7 +7,7 @@
  // Conceptual sketch for exploring the graph knowledge representation
  // This marries/matches with Percolators/conceptualize-fs.c
 
- // gcc -o stories -std=c99 -g stories-fs.c
+ // gcc -o stories -g stories-fs.c
 
  // Usage example: ./stories "expectation value" 
 
@@ -105,7 +105,7 @@ enum hier
 
 void FollowContextualizedAssociations(char *concept, struct Concept *this, int atype, int prevtype, int level);
 void FollowUnqualifiedAssociation(int prevtype,int atype,int level, char *concept, char *nextconcept, struct Concept *next);
-char *GetBestConceptAssociations(char *best_association, char *concept,int atype,char *nextconcept,struct Concept *next);
+char *GetBestConceptAssociations(char *best_association, char *concept,int atype,char *nextconcept,struct Concept *next,char *ctx);
 void FindContextAssociations(char *array[MAX_ASSOC_ARRAY], char *basedir, char* concept, int atype);
 int RelevantToCurrentContext(char *concept,char *assoc,char *nextconcept,char *context);
 struct Story *NewStory(char *name);
@@ -306,17 +306,18 @@ void FollowContextualizedAssociations(char *concept, struct Concept *this, int a
 void FollowUnqualifiedAssociation(int prevtype,int atype,int level, char *concept, char *nextconcept, struct Concept *next)
 
 { char best_association[CGN_BUFSIZE];
+ char approx_context[CGN_BUFSIZE];
 
- if (GetBestConceptAssociations(best_association,concept,atype,nextconcept,next))
+ if (GetBestConceptAssociations(best_association,concept,atype,nextconcept,next,approx_context))
     {
     if ((atype == -prevtype) && (abs(atype) != GR_FOLLOWS))
        {
-       printf ("%s and also note \"%s\" %s \"%s\"\n", Indent(level), concept, best_association, nextconcept);
+       printf ("%s and also note \"%s\" %s \"%s\" (in the context of %s)\n", Indent(level), concept, best_association, nextconcept,approx_context);
        return; 
        }
     else
        {
-       printf ("%d:(%d) %s \"%s\" %s \"%s\"\n", level,atype, Indent(level), concept, best_association, nextconcept);
+       printf ("%d:(%d) %s \"%s\" %s \"%s\" (in the context of %s)\n", level,atype, Indent(level), concept, best_association, nextconcept,approx_context);
        }
 
     if (ATYPE_OPT != CGN_ROOT)
@@ -362,7 +363,7 @@ char *Indent(int level)
 
 /*****************************************************************************/
 
-char *GetBestConceptAssociations(char *best_association, char *concept,int atype,char *nextconcept,struct Concept *next)
+char *GetBestConceptAssociations(char *best_association, char *concept,int atype,char *nextconcept,struct Concept *next,char *context)
 
 { int i;
   FILE *fin;
@@ -370,6 +371,8 @@ char *GetBestConceptAssociations(char *best_association, char *concept,int atype
   char comment[CGN_BUFSIZE];
   LinkAssociation array[MAX_ASSOC_ARRAY];
 
+  *context = '\0';
+  
  snprintf(filename,CGN_BUFSIZE,"%s/%s/%d/%s",BASEDIR,concept,atype,nextconcept);
 
  if ((fin = fopen(filename, "r")) == NULL)
@@ -412,17 +415,16 @@ char *GetBestConceptAssociations(char *best_association, char *concept,int atype
 
     if (strcmp(array[0].context,"all contexts") != 0)
        {
-       snprintf(comment,CGN_BUFSIZE," (%s)", array[0].context);
-       strcat(best_association, comment);
+       strcat(context, array[0].context);
        }
     }
  else
     {
     strcpy(best_association, array[0].fwd);
+
     if (strcmp(array[0].context,"all contexts") != 0)
        {
-       snprintf(comment,CGN_BUFSIZE," (%s)", array[0].context);
-       strcat(best_association, comment);
+       strcat(context, array[0].context);
        }
     }
  
@@ -434,10 +436,10 @@ char *GetBestConceptAssociations(char *best_association, char *concept,int atype
        }
     strcat(best_association, " and ");
     strcat(best_association, array[i].fwd);
+
     if (strcmp(array[0].context,"all contexts") != 0)
        {
-       snprintf(comment,CGN_BUFSIZE," (%s)", array[i].context);
-       strcat(best_association, comment);
+       strcat(context, array[i].context);
        }
     }
 

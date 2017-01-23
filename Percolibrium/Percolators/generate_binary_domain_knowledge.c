@@ -9,7 +9,7 @@
  // Conceptual sketch for convergently updating graph knowledge representation
  // This marries/matches with Narrators/stories-fs.c
 
- // gcc -o gen_knowledge -g generate_binary_domain_knowledge.c
+ // gcc -o gen_bdk -g generate_binary_domain_knowledge.c
 
  // Usage example: ./gen_knowledge > ExampleTupleData/domain_knowledge_graph
 

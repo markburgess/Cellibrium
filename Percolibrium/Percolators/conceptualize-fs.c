@@ -55,7 +55,7 @@ void Canonify(char *str);
 
 void main(int argc, char** argv)
 {
- if (argc =! 2)
+ if (argc < 2)
     {
     printf("Syntax: conceptualize <input file>\n");
     exit(1);
@@ -64,8 +64,13 @@ void main(int argc, char** argv)
  mkdir(BASEDIR,0755);
  
  // foreach file
- 
- ReadTupleFile(argv[1]); 
+
+ int i;
+
+ for (i = 1; i < argc -1; i++)
+    {
+    ReadTupleFile(argv[i]);
+    }
 }
 
 /*****************************************************************************/
