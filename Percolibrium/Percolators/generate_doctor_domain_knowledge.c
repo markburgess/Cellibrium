@@ -56,10 +56,10 @@ void main()
  RoleCluster(stdout,"surgeon doctor","doctor", "surgeon", "patient health service");
  RoleCluster(stdout,"patient appointment","appointment", "doctor patient", "patient health service");
 
- // Record realtime state relationships (promises)
+ // Record realtime state relationships (promises) - note the role of a STATE is the state outcome, not the subject
 
- RoleCluster(stdout,"doctor authenticated","doctor", "authenticated", "patient health service");
- RoleCluster(stdout,"patient authenticated","patient", "authenticated", "patient health service");
+ RoleCluster(stdout,"doctor authenticated","authenticated","doctor", "patient health service");
+ RoleCluster(stdout,"patient authenticated","authenticated","patient", "patient health service");
 
  // Note how fragile this is to difference between available,availability ... linguistically we could fuzzy match
  
