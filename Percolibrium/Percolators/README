@@ -5,6 +5,13 @@
 cp ~/.CGNgine/state/env_graph ExampleTupleData/
 cp ~/.CGNgine/policy_graph ExampleTupleData/
 
+# Build
+
+gcc -o gen_bdk -g generate_binary_domain_knowledge.c
+gcc -o gen_dsdk -g -std=c99 generate_doctor_domain_knowledge.c
+gcc -o gen_cgndk -g -std=c99 generate_cgn_domain_knowledge.c
+gcc -o gen_msdk -g generate_microservice_domain_knowledge.c
+
 # Manual doman knowledge
 
 ./gen_bdk > ExampleTupleData/dependencies_graph

@@ -115,6 +115,7 @@ int PruneLoops(char *concept, struct Concept *this);
 static int cmpassoc(const void *p1, const void *p2);
 void SplitCompound(char *str, char *atoms[256], int len[256]);
 void ShowMatchingConcepts(char *context);
+char *Abbr(int n);
 
 /*****************************************************************************/
 
@@ -317,7 +318,7 @@ void FollowUnqualifiedAssociation(int prevtype,int atype,int level, char *concep
        }
     else
        {
-       printf ("%d:(%d) %s \"%s\" %s \"%s\" (in the context of %s)\n", level,atype, Indent(level), concept, best_association, nextconcept,approx_context);
+       printf ("%d:%s) %s \"%s\" %s \"%s\" (in the context of %s)\n", level,Abbr(atype), Indent(level), concept, best_association, nextconcept,approx_context);
        }
 
     if (ATYPE_OPT != CGN_ROOT)
@@ -371,7 +372,7 @@ char *GetBestConceptAssociations(char *best_association, char *concept,int atype
   char comment[CGN_BUFSIZE];
   LinkAssociation array[MAX_ASSOC_ARRAY];
 
-  *context = '\0';
+ *context = '\0';
   
  snprintf(filename,CGN_BUFSIZE,"%s/%s/%d/%s",BASEDIR,concept,atype,nextconcept);
 
@@ -397,7 +398,7 @@ char *GetBestConceptAssociations(char *best_association, char *concept,int atype
        }
     }
 
- //qsort(array,(size_t)i, sizeof(LinkAssociation *),cmpassoc);
+ // qsort(array,(size_t)i, sizeof(LinkAssociation *),cmpassoc);
 
  // The effect of this weight sorting will be small, but look for the best result(s)
 
@@ -413,19 +414,13 @@ char *GetBestConceptAssociations(char *best_association, char *concept,int atype
        strcpy(best_association,array[0].fwd);
        }
 
-    if (strcmp(array[0].context,"all contexts") != 0)
-       {
-       strcat(context, array[0].context);
-       }
+    strcat(context, array[0].context);
     }
  else
     {
     strcpy(best_association, array[0].fwd);
 
-    if (strcmp(array[0].context,"all contexts") != 0)
-       {
-       strcat(context, array[0].context);
-       }
+    strcat(context, array[0].context);
     }
  
  for (i = 1; (i < MAX_ASSOC_ARRAY) && (array[i].fwd[0] != '\0'); i++)
@@ -434,13 +429,12 @@ char *GetBestConceptAssociations(char *best_association, char *concept,int atype
        {
        continue;
        }
+
     strcat(best_association, " and ");
     strcat(best_association, array[i].fwd);
 
-    if (strcmp(array[0].context,"all contexts") != 0)
-       {
-       strcat(context, array[i].context);
-       }
+    strcat(context," ");
+    strcat(context, array[i].context);
     }
 
  // WARN: not checking for overflow here ... very unlikely but ...
@@ -613,9 +607,11 @@ int RelevantToCurrentContext(char *concept,char *assoc,char *nextconcept,char *c
        {
        return false;
        }
+
+    return true;
     }
- 
- return true;
+
+ return false;
 }
 
 /**********************************************************/
@@ -690,3 +686,29 @@ int Overlap(char *atom1[256],char *atom2[256], int len1[256], int len2[256])
  return score;
 }
 
+/**********************************************************/
+
+char *Abbr(int d)
+
+{
+ switch (d)
+    {
+    case GR_CONTAINS:
+        return "cntains";
+    case -GR_CONTAINS:
+        return "cntaind";
+    case GR_FOLLOWS:
+        return "follows";
+    case -GR_FOLLOWS:
+        return "preceds";
+    case GR_EXPRESSES:
+        return "hasprop";
+    case -GR_EXPRESSES:
+        return "expr-by";
+    case GR_NEAR:
+    case -GR_NEAR:
+        return "apprxnr";
+    default:
+        return "???";
+    }
+}
