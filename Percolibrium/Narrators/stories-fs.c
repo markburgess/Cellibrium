@@ -37,7 +37,7 @@
 #define true 1
 #define false 0
 #define CGN_BUFSIZE 1024
-#define MAX_ASSOC_ARRAY 128
+#define MAX_ASSOC_ARRAY 256
 #define CGN_ROOT 99
 
 /*****************************************************************************/
@@ -727,6 +727,10 @@ char *Abbr(int d)
     case GR_NEAR:
     case -GR_NEAR:
         return "apprxnr";
+    case GR_CONTEXT:
+    case -GR_CONTEXT:
+        return "context";
+
     default:
         return "???";
     }

@@ -156,10 +156,10 @@ void ReadTupleFile(char *filename)
     // Now create an introspective feedback to context as a scaled concept of its own
 
     UpdateConcept(context);
-    UpdateAssociation("all contexts",from,-GR_CONTEXT,"appears in the context of","is context for",context);
-    UpdateAssociation("all contexts",context,GR_CONTEXT,"is context for","appears in the context of",from);
-    UpdateAssociation("all contexts",to,-GR_CONTEXT,"appears in the context of","is context for",context);
-    UpdateAssociation("all contexts",context,GR_CONTEXT,"is context for","appears in the context of",to);
+    UpdateAssociation("all contexts",from,-GR_CONTEXT,"appears in the context of","mentions the story topic",context);
+    UpdateAssociation("all contexts",context,GR_CONTEXT,"mentions the story topic","appears in the context of",from);
+    UpdateAssociation("all contexts",to,-GR_CONTEXT,"appears in the context of","mentions the story topic",context);
+    UpdateAssociation("all contexts",context,GR_CONTEXT,"mentions the story topic","appears in the context of",to);
 
     UpdateAssociation("all contexts","all contexts",GR_CONTEXT,"contains","is contained by",context);
     UpdateAssociation("all contexts",context,-GR_CONTEXT,"is contained by","contains","all contexts");
