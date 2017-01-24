@@ -46,6 +46,7 @@ gen_dsdk
 gen_msdk
 stories
 conceptualize
+rpmvercmp
 
 # autogen
 cf3lex.c
