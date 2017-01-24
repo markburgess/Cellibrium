@@ -8,6 +8,7 @@
 Makefile
 Makefile.in
 stamp-h1
+gen_*
 
 /aclocal.m4
 /autom4te.cache
@@ -31,34 +32,6 @@ stamp-h1
 /tests/load/*.log
 
 /configure_flags.env
-
-# binaries
-/cf-agent/cf-agent
-/cf-agent/cf-agent.exe
-/cf-execd/cf-execd
-/cf-execd/cf-execd.exe
-/cf-key/cf-key
-/cf-key/cf-key.exe
-/cf-monitord/cf-monitord
-/cf-monitord/cf-monitord.exe
-/cf-promises/cf-promises
-/cf-promises/cf-promises.exe
-/cf-runagent/cf-runagent
-/cf-runagent/cf-runagent.exe
-/cf-serverd/cf-serverd
-/cf-serverd/cf-serverd.exe
-/cf-upgrade/cf-upgrade
-/cf-upgrade/cf-upgrade.exe
-/ext/rpmvercmp
-/ext/rpmvercmp.exe
-
-# autogen
-/libpromises/cf3lex.c
-/libpromises/cf3parse.c
-/libpromises/cf3parse.h
-/libutils/config.h
-/libutils/config.h.in
-/libutils/config.post.h
 
 # examples
 /examples/cfengine_stdlib.cf
