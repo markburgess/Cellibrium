@@ -32,19 +32,6 @@ stamp-h1
 
 /configure_flags.env
 
-# binaries
-/*****************************************************************************/
-/*                                                                           */
-/* File: generate_domain_knowledge.c                                         */
-/*                                                                           */
-/* Created: Tue Jan 24 18:39:17 2017                                         */
-/*                                                                           */
-/*****************************************************************************/
-
-#include "cf3.defs.h"
-#include "cf3.extern.h"
-
-
 cf-agent
 cf-execd
 cf-key
