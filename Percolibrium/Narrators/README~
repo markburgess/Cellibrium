@@ -1,7 +1,0 @@
-
-Examples (from example data):
-
-./stories -s "Cannot mix CIDR notation with xxx-yyy range notation *" |more
-
-./stories -t 2 -s "doctor service" |more
-
