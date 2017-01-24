@@ -57,6 +57,8 @@ gen_bdk
 gen_cgndk
 gen_dsdk
 gen_msdk
+stories
+conceptualize
 
 # autogen
 cf3lex.c
