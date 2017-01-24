@@ -60,4 +60,5 @@ extern Association A[a_ass_dim+1];
 #define GR_FOLLOWS   2 // i.e. influenced by
 #define GR_EXPRESSES 4 // represents, etc
 #define GR_NEAR      1 // approx like
+#define GR_CONTEXT   5 // approx like
 #endif

@@ -73,6 +73,8 @@ void main()
  Gr(stdout, "service",a_uses,"service authentication",context);
  Gr(stdout, "service",a_uses,"user authentication",context);
  Gr(stdout, "service",a_depends,"software SOFTWARENAME",context);
+ Gr(stdout, "service",a_depends,"application cgn-agent",context);
+
  
  RoleCluster(stdout,"software SOFTWARENAME VERSION","software", "SOFTWARENAME,VERSION",context);
  RoleCluster(stdout,"container CONTAINERNAME VERSION","container", "CONTAINERNAME,VERSION",context);

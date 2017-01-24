@@ -29,6 +29,7 @@ typedef int Policy; // Hack to use CGNgine defs
 #define false 0
 #define CGN_BUFSIZE 256
 #define MAX_ASSOC_ARRAY 128
+#define GR_CONTEXT 5
 
 // Import standard link definitions
 
@@ -69,6 +70,7 @@ void main(int argc, char** argv)
 
  for (i = 1; i < argc -1; i++)
     {
+    printf("Processing %s\n",argv[i]);
     ReadTupleFile(argv[i]);
     }
 }
@@ -154,13 +156,13 @@ void ReadTupleFile(char *filename)
     // Now create an introspective feedback to context as a scaled concept of its own
 
     UpdateConcept(context);
-    UpdateAssociation("all contexts",from,-1,"appears in the context of","is context for",context);
-    UpdateAssociation("all contexts",context,1,"is context for","appears in the context of",to);
-    UpdateAssociation("all contexts",from,-1,"appears in the context of","is context for",context);
-    UpdateAssociation("all contexts",context,1,"is context for","appears in the context of",to);
+    UpdateAssociation("all contexts",from,-GR_CONTEXT,"appears in the context of","is context for",context);
+    UpdateAssociation("all contexts",context,GR_CONTEXT,"is context for","appears in the context of",from);
+    UpdateAssociation("all contexts",to,-GR_CONTEXT,"appears in the context of","is context for",context);
+    UpdateAssociation("all contexts",context,GR_CONTEXT,"is context for","appears in the context of",to);
 
-    UpdateAssociation("all contexts","all contexts",1,"contains","is contained by",context);
-    UpdateAssociation("all contexts",context,-1,"is contained by","contains","all contexts");
+    UpdateAssociation("all contexts","all contexts",GR_CONTEXT,"contains","is contained by",context);
+    UpdateAssociation("all contexts",context,-GR_CONTEXT,"is contained by","contains","all contexts");
     
     line++;
     }

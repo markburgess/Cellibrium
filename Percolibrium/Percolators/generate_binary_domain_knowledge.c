@@ -47,15 +47,12 @@ void main()
 
  // What menu of contexts can we describe and measure?
 
- ContextCluster(stdout, "application service");
+ ContextCluster(stdout, "host configuration maintenance agent CGNgine");
 
- //RegisterMicroServiceP0("authenticator");
- //RegisterMicroServiceP1("cgn-serverd","CGNgine copy and remote execution service");
- //RegisterHosting(name,ipaddress,geography);
+ RoleCluster(stdout,"application cgn-agent","application", "cgn-agent,software,service","host configuration maintenance agent CGNgine");
 
- CrawlApplication("/var/CGNgine/bin","cgn-agent","host configuration and maintenance agent for CGNgine");
- //CrawlApplication("/var/CGNgine/bin","cgn-serverd","fileserver and remote execution service for CGNgine");
- //CrawlApplication("/var/CGNgine/bin","cgn-monitord","host probe and monitoring service for CGNgine");
+ Gr(stdout,"application cgn-agent",a_depends,"cgn-agent","host configuration maintenance agent CGNgine");
+ CrawlApplication("/var/CGNgine/bin","cgn-agent","host configuration maintenance agent CGNgine");
  
 }
 

@@ -29,6 +29,7 @@
 #define GR_FOLLOWS   2 // i.e. influenced by
 #define GR_EXPRESSES 4 // naming/represents - do not use to label membership, only exterior promises
 #define GR_NEAR      1 // approx like
+#define GR_CONTEXT   5 // approx like
 // END
 
 #define BASEDIR "/home/a10004/KMdata"
@@ -43,6 +44,12 @@
 
 extern char *optarg;
 extern int optind, opterr, optopt;
+
+// Global stats
+
+int STORYCOUNT = 0;
+int RELEVANCE = 0;
+int TOT_CONTEXTS = 0;
 
 // Global read-only policy
 
@@ -217,19 +224,26 @@ void main(int argc, char** argv)
     }
  else
     {
+    printf("=========== sequential, causal reasoning =======================\n\n");
     FollowContextualizedAssociations(subject, this, GR_FOLLOWS, CGN_ROOT, level);
     FollowContextualizedAssociations(subject, this, -GR_FOLLOWS, CGN_ROOT, level);
 
+    printf("=========== proximity reasoning =======================\n\n");
     FollowContextualizedAssociations(subject, this, GR_NEAR, CGN_ROOT, level);
     FollowContextualizedAssociations(subject, this, -GR_NEAR, CGN_ROOT, level);
 
+    printf("=========== boundary or enclosure reasoning =======================\n\n");
     FollowContextualizedAssociations(subject, this, GR_CONTAINS, CGN_ROOT, level);
     FollowContextualizedAssociations(subject, this, -GR_CONTAINS, CGN_ROOT, level);
 
-    // Has relevant properties...
+    printf("=========== property or promise based reasoning =======================\n\n");
     FollowContextualizedAssociations(subject, this, GR_EXPRESSES, CGN_ROOT, level);
     FollowContextualizedAssociations(subject, this, -GR_EXPRESSES, CGN_ROOT, level);
     }
+
+ printf("\n");
+ printf("Total independent outcomes/paths = %d\n", STORYCOUNT);
+ printf("Estimated relevance of outcomes %d/%d\n", RELEVANCE, TOT_CONTEXTS);
 }
 
 /**********************************************************/
@@ -242,7 +256,7 @@ void ShowMatchingConcepts(char *context)
 
  RECURSE_OPT = 1;
 
- FollowContextualizedAssociations("all contexts", this, GR_CONTAINS, CGN_ROOT, level);
+ FollowContextualizedAssociations("all contexts", this, GR_CONTEXT, CGN_ROOT, level);
 }
 
 /*****************************************************************************/
@@ -282,7 +296,8 @@ void FollowContextualizedAssociations(char *concept, struct Concept *this, int a
        if (count++ > 4)
           {
           printf("     ++ more ....\n");
-          break; // Truncate litany of similar things
+          STORYCOUNT++;   // If the path is truncated
+          break;
           }
        }
 
@@ -292,14 +307,15 @@ void FollowContextualizedAssociations(char *concept, struct Concept *this, int a
        {
        FollowUnqualifiedAssociation(prevtype, atype,level, concept, array[i], next);
        }
-
+    else
+       {
+       // If the paths ends...
+       STORYCOUNT++;
+       }
+    
     free(array[i]);
     }
-     
- if (level == 0)
-    {
-    printf("-------------------------------------------\n");
-    }
+
 }
 
 /*****************************************************************************/
@@ -676,6 +692,8 @@ int Overlap(char *atom1[256],char *atom2[256], int len1[256], int len2[256])
        {
        min = (len1[i] < len2[j]) ? len1[i] : len2[j];
 
+       TOT_CONTEXTS++;
+
        if (strncmp(atom1[i],atom2[j],min) == 0)
           {
           score++;
@@ -683,6 +701,7 @@ int Overlap(char *atom1[256],char *atom2[256], int len1[256], int len2[256])
        }
     }
 
+ RELEVANCE += score;
  return score;
 }
 

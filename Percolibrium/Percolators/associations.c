@@ -107,7 +107,7 @@ void UpdateAssociation(char *context, char *concept1, int atype, char *fwd, char
     {
     UpdateConceptAssociations(fp,array,MAX_ASSOC_ARRAY);
     fclose(fp);
-    printf("Wrote .. %s\n", filename);
+    //printf("Wrote .. %s\n", filename);
     }
 }
 

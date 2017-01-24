@@ -46,6 +46,7 @@
 (service,2,may use,service authentication,may be used by,software ops operations develop write)
 (service,2,may use,user authentication,may be used by,software ops operations develop write)
 (service,2,depends on,software SOFTWARENAME,partly determines,software ops operations develop write)
+(service,2,depends on,application cgn-agent,partly determines,software ops operations develop write)
 (software SOFTWARENAME VERSION,4,has the role of,software,is a role fulfilled by,software ops operations develop write)
 (software SOFTWARENAME VERSION,4,expresses an attribute,SOFTWARENAME,is an attribute of,all contexts)
 (software SOFTWARENAME VERSION,4,expresses an attribute,VERSION,is an attribute of,all contexts)
