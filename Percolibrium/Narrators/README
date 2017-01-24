@@ -5,10 +5,11 @@ Examples (from example data):
 
 ./stories -t 2 -s "doctor service" |more
 
-./stories -s "microservice" |more
+./stories -s "tidal" -c "gravity" | more
+./stories -s "tidal" -c "software" | more
 
-./stories -s "microservice" -c "software"|more
+./stories -s "microservice" | more
+./stories -s "microservice" -c "application software" | more
+./stories -s "microservice" -c "software" | more
 
-./stories -s "tidal" -c "gravity"|more
 
-./stories -s "tidal" -c "software"|more

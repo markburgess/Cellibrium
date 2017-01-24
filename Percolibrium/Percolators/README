@@ -16,7 +16,7 @@ gcc -o gen_msdk -g generate_microservice_domain_knowledge.c
 
 ./gen_bdk > ExampleTupleData/dependencies_graph
 ./gen_dsdk > ExampleTupleData/doctorservice_graph
-./gen_knowledge > ExampleTupleData/domain_knowledge_graph 
+./gen_cgndk > ExampleTupleData/domain_knowledge_graph 
 ./gen_msdk > ExampleTupleData/microservice_component_graph
 
 # Now build the graph
