@@ -40,6 +40,7 @@
 static GenericAgentConfig *CheckOpts(int argc, char **argv);
 static void ShowContextsFormatted(EvalContext *ctx);
 static void ShowVariablesFormatted(EvalContext *ctx);
+void GenerateSemanticsGraph(Policy *policy);
 
 /*******************************************************************/
 /* Command line options                                            */

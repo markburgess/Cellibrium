@@ -20,6 +20,7 @@
 
 static void MakeUniqueClusterName(char *lval,void *sorted,char type,char *buffer);
 static char *SanitizeString(char *s);
+void GenerateSemanticsGraph(Policy *policy);
 
 #include "graph_defs.c"
 
@@ -44,7 +45,7 @@ void GenerateSemanticsGraph(Policy *policy)
     return;
     }
 
- Gr(consc,"system policy", a_contains,"promise bundle","system policy");
+ Gr(consc,"CGNgine system policy", a_contains,"promise bundle","system policy");
  Gr(consc,"system policy", a_related_to,"promise","");
  Gr(consc,"system policy", a_contains,"namespace","system policy");
  Gr(consc,"promise bundle", a_contains,"promise","system policy");

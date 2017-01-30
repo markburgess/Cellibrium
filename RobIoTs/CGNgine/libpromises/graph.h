@@ -46,7 +46,6 @@ void Gr(FILE *consc,char *from, enum associations assoc, char *to, char *context
 void IGr(FILE *consc,char *from, enum associations assoc, char *to, char *context);
 void GrQ(FILE *consc,char *from, enum associations assoc, double to, char *context);
 void Number(FILE *consc, double q, char *context);
-void GenerateSemanticsGraph(Policy *policy);
 char *RoleCluster(FILE *consc,char *compound_name, char *role, char *attributes, char *ex_context);
 char *ContextCluster(FILE *consc,char *compound_name);
 #endif
@@ -55,10 +54,12 @@ char *ContextCluster(FILE *consc,char *compound_name);
 
 #ifndef GRAPH
 extern Association A[a_ass_dim+1];
+#endif
 
 #define GR_CONTAINS  3 
 #define GR_FOLLOWS   2 // i.e. influenced by
 #define GR_EXPRESSES 4 // represents, etc
 #define GR_NEAR      1 // approx like
 #define GR_CONTEXT   5 // approx like
-#endif
+#define ALL_CONTEXTS "searching looking"
+

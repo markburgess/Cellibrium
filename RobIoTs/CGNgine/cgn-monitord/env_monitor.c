@@ -1484,19 +1484,19 @@ char here_and_now[CF_BUFSIZE];
  // The name/context is a semantic coordinate for the instances (like an array index)
 
 snprintf(here_and_now, CF_BUFSIZE, "%s:%s",VFQNAME,now);
-Gr(consc,here_and_now,a_hasattr,now,ContextCluster(consc,"system state here now"));
-Gr(consc,here_and_now,a_hasattr,VFQNAME,"system state here now");
+Gr(consc,here_and_now,a_hasattr,now,ContextCluster(consc,"cgn-monitord system state here now"));
+Gr(consc,here_and_now,a_hasattr,VFQNAME,"cgn-monitord system state here now");
 
-Gr(consc,VUQNAME,a_contains,VFQNAME,"system state here now");
-Gr(consc,VFQNAME,a_hasinstance,here_and_now,"system state here now");
-Gr(consc,here_and_now,a_generalizes,now,"system state here now");
+Gr(consc,VUQNAME,a_contains,VFQNAME,"cgn-monitord system state here now");
+Gr(consc,VFQNAME,a_hasinstance,here_and_now,"cgn-monitord system state here now");
+Gr(consc,here_and_now,a_generalizes,now,"cgn-monitord system state here now");
 
 ClassTableIterator *iter = EvalContextClassTableIteratorNewGlobal(ctx, NULL, true, true);
 Class *cls = NULL;
 
 while ((cls = ClassTableIteratorNext(iter)))
    {
-   Gr(consc,here_and_now,a_hasattr,cls->name,"system state here now");
+   Gr(consc,here_and_now,a_hasattr,cls->name,"cgn-monitord system state here now");
    StringSet *tagset = EvalContextClassTags(ctx, cls->ns, cls->name);
    StringSetIterator iter = StringSetIteratorInit(tagset);
    char *name = NULL;
@@ -1507,7 +1507,7 @@ while ((cls = ClassTableIteratorNext(iter)))
       if (strstr(name,"=") == 0)
          {
          Gr(consc,name, a_generalizes,cls->name,ContextCluster(consc,"class context label"));
-         Gr(consc,cls->name,a_hasrole,"class or context label","system state here now");
+         Gr(consc,cls->name,a_hasrole,"class or context label","cgn-monitord system state here now");
 
          if (cls->ns)
             {
@@ -1523,12 +1523,12 @@ while ((cls = ClassTableIteratorNext(iter)))
          }
       else if (strncmp(name,"name=",5) == 0)
          {
-         Gr(consc,cls->name,a_hasrole,name+5,"system state here now");
+         Gr(consc,cls->name,a_hasrole,name+5,"cgn-monitord system state here now");
          }
       else if (strncmp(name,"source=",7) == 0)
          {
          snprintf(ns,CF_BUFSIZE,"%s namespace", name+7);
-         Gr(consc,cls->name,a_origin,ns,"system state here now");
+         Gr(consc,cls->name,a_origin,ns,"cgn-monitord system state here now");
          }
       else
          {

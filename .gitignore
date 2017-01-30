@@ -47,6 +47,8 @@ gen_msdk
 stories
 conceptualize
 rpmvercmp
+/Percolibrium/Percolators/conceptualize
+/Percolibrium/Narrators/stories
 
 # autogen
 cf3lex.c
@@ -99,3 +101,6 @@ cscope.*
 
 # Mac Finder
 .DS_Store
+stories
+conceptualize
+
