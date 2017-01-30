@@ -653,6 +653,8 @@ for (i = 0; i < MAX_CONTEXT && atomI[i]; i++)
          {
          continue;
          }
+
+      s = t = 0;
       
       for (k = 0; k < MAX_WORD_SZ; k++)
          {
@@ -689,7 +691,6 @@ for (i = 0; i < MAX_CONTEXT && atomI[i]; i++)
       }
    }
 
-printf("Total = %f\n",total);
 if (total > 0)
    {
    percent = score / total * 100.0;
