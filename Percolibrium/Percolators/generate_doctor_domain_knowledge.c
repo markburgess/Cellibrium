@@ -41,7 +41,7 @@ typedef int Policy;  // Hack to use CGNgine defs
 void main()
 {
 
- // What kinds of compound contexts can we expect?
+ // What kinds of compound contexts can we expect? State of mind...
  
  ContextCluster(stdout,"doctor service");
  ContextCluster(stdout,"patient appointment");
