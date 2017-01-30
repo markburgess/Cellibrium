@@ -37,7 +37,7 @@
 
 // Can we create a kind of crawler for microservices, e.g. in golang a single static binary
 
-void main()
+int main()
 {
 
  // What menu of contexts can we describe and measure?
@@ -104,6 +104,6 @@ void main()
   
  Gr(stdout, "host", a_promises, "operating system","execute run software ops operations");
  Gr(stdout, "operating system",a_promises,"kernel","execute run software ops operations");
-
+ return 0;
 }
 

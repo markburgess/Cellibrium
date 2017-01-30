@@ -35,7 +35,7 @@
 
 /******************************************************************************/
 
-void main()
+int main()
 {
  Gr(stdout,"operating system",a_generalizes,"linux",ALL_CONTEXTS);
 
@@ -120,4 +120,5 @@ Gr(stdout, "CGNgine class function", a_contains,"CGNgine function",ALL_CONTEXTS)
 Gr(stdout, "CGNgine policy language", a_contains, "CGNgine functions",ALL_CONTEXTS);
 Gr(stdout,"network policy",a_contains,"interfaces configuration","computer software CGNgine");
 
+return 0;
 }

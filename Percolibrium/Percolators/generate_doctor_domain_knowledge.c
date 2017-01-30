@@ -35,7 +35,7 @@
 
 /******************************************************************************/
 
-void main()
+int main()
 {
 
  // What kinds of compound contexts can we expect? State of mind...
@@ -113,5 +113,6 @@ void main()
  Gr(stdout,"doctor",a_promises,"identity credentials","patient doctor registration");
  Gr(stdout,"patient",a_promises,"identity credentials","patient doctor registration");
 
+ return 0;
 }
 

@@ -38,7 +38,7 @@ void LddDependencies(char *app,char *file, char *context);
 
 /******************************************************************************/
 
-void main()
+int main()
 {
 
  // What menu of contexts can we describe and measure?
@@ -49,7 +49,7 @@ void main()
 
  Gr(stdout,"application cgn-agent",a_depends,"cgn-agent","host configuration maintenance agent CGNgine");
  CrawlApplication("/var/CGNgine/bin","cgn-agent","host configuration maintenance agent CGNgine");
- 
+ return 0;
 }
 
 /******************************************************************************/

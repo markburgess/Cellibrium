@@ -54,7 +54,7 @@ void Canonify(char *str);
 
 /*****************************************************************************/
 
-void main(int argc, char** argv)
+int main(int argc, char** argv)
 {
  if (argc < 2)
     {
@@ -73,6 +73,8 @@ void main(int argc, char** argv)
     printf("Processing %s\n",argv[i]);
     ReadTupleFile(argv[i]);
     }
+
+ return 0;
 }
 
 /*****************************************************************************/
@@ -187,8 +189,9 @@ void UpdateConcept(char *name)
 
 void Canonify(char *str)
     
-{
- for (char *sp = str; *sp != '\0'; sp++)
+{ char *sp;
+ 
+ for (sp = str; *sp != '\0'; sp++)
     {
     if (*sp == '/' || *sp == '\\' || *sp == ',')
        {
