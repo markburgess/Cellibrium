@@ -48,6 +48,8 @@ void GrQ(FILE *consc,char *from, enum associations assoc, double to, char *conte
 void Number(FILE *consc, double q, char *context);
 char *RoleCluster(FILE *consc,char *compound_name, char *role, char *attributes, char *ex_context);
 char *ContextCluster(FILE *consc,char *compound_name);
+void MakeUniqueClusterName(char *lval,void *sorted,char type,char *buffer);
+char *SanitizeString(char *s);
 #endif
 
 /*****************************************************************************/

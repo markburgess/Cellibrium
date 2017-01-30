@@ -6,11 +6,8 @@
 /*                                                                           */
 /*****************************************************************************/
 
-#define GR_CONTAINS  3 // for membership
-#define GR_FOLLOWS   2 // i.e. influenced by
-#define GR_EXPRESSES 4 // naming/represents - do not use to label membership, only exterior promises
-#define GR_NEAR      1 // approx like
-
+#ifndef GRAPHDEF
+#define GRAPHDEF 1
 /* In this semantic basis, contains and exhibits are not completely orthogonal.
  Expresses implies an exterior promise from a sub-agent or from
  within, while contains alone is an interior agent membership property */
@@ -44,3 +41,152 @@ Association A[a_ass_dim+1] =
 
 /*****************************************************************************/
 
+void Gr(FILE *consc,char *from, enum associations assoc, char *to, char *context)
+{
+ char *sfrom = SanitizeString(from);
+ char *sto = SanitizeString(to);
+ char *scontext = SanitizeString(context);
+ 
+ if (context && strlen(context) > 0)
+    {
+    fprintf(consc,"(%s,%d,%s,%s,%s,%s)\n",sfrom,A[assoc].type,A[assoc].fwd,sto,A[assoc].bwd,scontext);
+    }
+ else
+    {
+    fprintf(consc,"(%s,%d,%s,%s,%s,%s)\n",sfrom,A[assoc].type,A[assoc].fwd,sto,A[assoc].bwd,"*");
+    }
+
+ free(sfrom);
+ free(sto);
+ free(scontext);
+}
+
+/**********************************************************************/
+
+void IGr(FILE *consc,char *from, enum associations assoc, char *to, char *context)
+{
+ char *sfrom = SanitizeString(from);
+ char *sto = SanitizeString(to);
+ char *scontext = SanitizeString(context);
+
+ fprintf(consc,"(%s,-%d,%s,%s,%s,%s)\n",sfrom,A[assoc].type,A[assoc].bwd,sto,A[assoc].fwd,scontext);
+
+ free(sfrom);
+ free(sto);
+ free(scontext);
+}
+
+/**********************************************************************/
+
+void Number(FILE *consc, double q, char *context)
+{
+ enum associations assoc = a_hasrole;
+ fprintf(consc,"(%.2lf,%d,%s,%s,%s,%s)\n",q,A[assoc].type,A[assoc].fwd,"number",A[assoc].bwd,context);
+}
+
+/**********************************************************************/
+
+void GrQ(FILE *consc,char *from, enum associations assoc, double to, char *context)
+{
+ char *sfrom = SanitizeString(from);
+ char *scontext = SanitizeString(context);
+
+ fprintf(consc,"(%s,%d,%s,%.2lf,%s,%s)\n",sfrom,A[assoc].type,A[assoc].fwd,to,A[assoc].bwd,scontext);
+
+ free(sfrom);
+ free(scontext); 
+}
+
+/**********************************************************************/
+
+char *RoleCluster(FILE *consc,char *compound_name, char *role, char *attributes, char *ex_context)
+
+/* Document a compound Split a comma separated list, with head
+   we can use it for context or for conceptual
+   RoleCluster(fp, "compound name", "hasrole unique identifier", "hasttr part1,hasttr part2", "naming unique identity")
+*/
+    
+{ char *sp, word[255];
+
+ Gr(consc,compound_name,a_hasrole,role,ex_context);
+ 
+ if ((sp = attributes))
+    {
+    while (*sp != '\0')
+       {
+       if (*sp == ',')
+          {
+          sp++;
+          continue;
+          }
+       
+       word[0] = '\0';
+       sscanf(sp,"%250[^,]",word);
+       sp += strlen(word);
+
+       Gr(consc,compound_name,a_hasattr,word,"all contexts");
+       }
+    }
+
+return compound_name;
+}
+
+/**********************************************************************/
+
+char *ContextCluster(FILE *consc,char *compound_name)
+
+/* Document a compound Split a space separated list, with head
+   we can use it for context or for conceptual - treat them as epitopes
+   for fuzzy matching by set overlap. Only type 1 associations. */
+    
+{ char *sp, word[255];
+
+ if ((sp = compound_name))
+    {
+    while (*sp != '\0')
+       {
+       if (*sp == ' ')
+          {
+          sp++;
+          continue;
+          }
+       
+       word[0] = '\0';
+       sscanf(sp,"%250s",word);
+       sp += strlen(word);
+
+       Gr(consc,compound_name,a_contains,word,"all contexts");
+       }
+    }
+
+return compound_name;
+}
+
+/**********************************************************************/
+
+char *SanitizeString(char *s)
+{
+ if (s == NULL)
+    {
+    return NULL;
+    }
+ 
+ char *sp, *str = strdup(s);
+ for (sp = str; *sp != '\0'; sp++)
+    {
+    switch (*sp)
+       {
+       case ',':
+       case '/':
+       case '\\':
+           *sp = '_';
+           break;
+       default:
+           break;
+       }
+    }
+ return str;
+}
+
+
+#endif
