@@ -37,7 +37,9 @@
 #define true 1
 #define false 0
 #define CGN_BUFSIZE 1024
-#define MAX_ASSOC_ARRAY 256
+#define MAX_ASSOC_ARRAY 1024
+#define MAX_WORD_SZ 265
+#define MAX_CONTEXT 265
 #define CGN_ROOT 99
 
 /*****************************************************************************/
@@ -48,8 +50,6 @@ extern int optind, opterr, optopt;
 // Global stats
 
 int STORYCOUNT = 0;
-int RELEVANCE = 0;
-int TOT_CONTEXTS = 0;
 
 // Global read-only policy
 
@@ -120,9 +120,10 @@ struct Concept *NewConcept(char *name, struct Concept *prev);
 char *Indent(int level);
 int PruneLoops(char *concept, struct Concept *this);
 static int cmpassoc(const void *p1, const void *p2);
-void SplitCompound(char *str, char *atoms[256], int len[256]);
+void SplitCompound(char *str, char *atoms[MAX_CONTEXT]);
 void ShowMatchingConcepts(char *context);
 char *Abbr(int n);
+int Overlap(char *set1, char *set2);
 
 /*****************************************************************************/
 
@@ -243,7 +244,6 @@ void main(int argc, char** argv)
 
  printf("\n");
  printf("Total independent outcomes/paths = %d\n", STORYCOUNT);
- printf("Estimated relevance of outcomes %d/%d\n", RELEVANCE, TOT_CONTEXTS);
 }
 
 /**********************************************************/
@@ -366,10 +366,10 @@ void FollowUnqualifiedAssociation(int prevtype,int atype,int level, char *concep
 
 char *Indent(int level)
 {
- static char indent[256];
+ static char indent[MAX_WORD_SZ];
  int i;
 
- for (i = 0; (i < 2*level) && (i < 256); i++)
+ for (i = 0; (i < 2*level) && (i < MAX_WORD_SZ); i++)
     {
     indent[i] = ' ';
     }
@@ -414,7 +414,7 @@ char *GetBestConceptAssociations(char *best_association, char *concept,int atype
        }
     }
 
- // qsort(array,(size_t)i, sizeof(LinkAssociation *),cmpassoc);
+ qsort(array,(size_t)i, sizeof(LinkAssociation *),cmpassoc);
 
  // The effect of this weight sorting will be small, but look for the best result(s)
 
@@ -570,7 +570,12 @@ void FindContextAssociations(char *array[MAX_ASSOC_ARRAY], char *basedir, char* 
 
 static int cmpassoc(const void *p1, const void *p2)
 {
- return (((LinkAssociation *)p1)->weight > ((LinkAssociation *)p2)->weight);
+ LinkAssociation *c1,*c2;
+
+ c1 = ((LinkAssociation *)p1);
+ c2 = ((LinkAssociation *)p2);
+ 
+ return (c1->weight  > c2->weight);
 }
 
 /**********************************************************/
@@ -578,20 +583,13 @@ static int cmpassoc(const void *p1, const void *p2)
 int RelevantToCurrentContext(char *concept,char *assoc,char *nextconcept,char *context)
 
 { int not = false;
- char *then[256] = {NULL};
- char *now[256] = {NULL};
- int tlen[256] = {0};
- int nlen[256] = {0};
 
 // We need a VERY good reason to actually EXCLUDE a path, because it could become relevant to lateral thinking
 // unless we have no subject, in which case CONTEXT is context hub and rules are different
 
  if (strcmp(context,"all contexts") == 0)
     {
-    SplitCompound(nextconcept,then,tlen);     // Look at the learned relevance
-    SplitCompound(CONTEXT_OPT,now,nlen); // Look at the current cognitive context
-    
-    if (Overlap(now,then,nlen,tlen))
+    if (Overlap(CONTEXT_OPT,nextconcept))
        {
        return true;
        }
@@ -614,10 +612,7 @@ int RelevantToCurrentContext(char *concept,char *assoc,char *nextconcept,char *c
 
   // -c context is in CONTEXT
 
- SplitCompound(context,then,tlen);     // Look at the learned relevance
- SplitCompound(CONTEXT_OPT,now,nlen); // Look at the current cognitive context
-
- if (Overlap(now,then,nlen,tlen))
+ if (Overlap(CONTEXT_OPT,context))
     {
     if (not)
        {
@@ -632,77 +627,123 @@ int RelevantToCurrentContext(char *concept,char *assoc,char *nextconcept,char *c
 
 /**********************************************************/
 
-void SplitCompound(char *str, char *atoms[256], int len[256])
+int Overlap(char *intended, char *actual)
 
-// Split compound name into atoms that can permit a partial overlap match
+// In looking for conceptual overlap, the two contexts are not equal.
+// The first is the intended one from the state of mind of the agent,
+// the latter is the recorded actual context acquired during learning.
     
-{ char *sp;
- int between_words = true;
- int atom = 0;
- int new_word, end_word, in_word;
- int this_len = 0;
+{ int i,j,k;
+  double s = 0, t = 0, score = 0, total = 0;
+  int end = false;
+  double percent;
+  char *atomI[MAX_CONTEXT] = {NULL};
+  char *atomA[MAX_CONTEXT] = {NULL};
 
- for (sp = str; *sp != '\0'; sp++)
-    {
-    new_word = between_words && isalnum(*sp); 
-    end_word = !between_words && !isalnum(*sp);
-    in_word = !between_words && isalnum(*sp); 
-        
-    if (new_word)
-       {
-       atoms[atom] = sp;
-       between_words = false;
-       this_len = 1;
-       }
+  const double cutoff_threshold = 3; // min frag match
 
-    if (end_word)
-       {
-       len[atom] = this_len;
-       between_words = true;
+SplitCompound(intended,atomI);     // Look at the learned relevance
+SplitCompound(actual,atomA); // Look at the current cognitive context
 
-       //printf("WORD(%s,%d)\n", atoms[atom],len[atom]);
-       
-       if (++atom >= 256)
-          {
-          printf("Compound context overflow\n");
-          return;
-          }
-       }
-    
-    if (in_word)
-       {
-       this_len++;
-       }
-    }
+for (i = 0; i < MAX_CONTEXT && atomI[i]; i++)
+   {
+   for (j = 0; j < MAX_CONTEXT && atomA[j]; j++)
+      {
+      if (atomI[i] == NULL || atomA[j] == NULL)
+         {
+         continue;
+         }
+      
+      for (k = 0; k < MAX_WORD_SZ; k++)
+         {
+         if (atomI[i][k] == '\0') // intended is a substring of actual
+            {
+            t += strlen(atomA[j]+k);
+            break;
+            }
+         
+         if (atomA[j][k] == '\0') // actual is a substring of intended
+            {
+            t = 0;
+            s = 0;
+            break;
+            }
 
- len[atom] = this_len;
- //printf("WORD(%s,%d)\n", atoms[atom],len[atom]);
+         if (atomI[i][k] != atomA[j][k]) // terminate on mismatch
+            {
+            t += strlen(atomA[j]+k);
+            }
+         else
+            {
+            s++;
+            t++;
+            }
+         }
+
+      if (s > cutoff_threshold)
+         {
+         score += s;
+         total += t;
+         printf(" *** Partial overlap in %s -> %s at conf %f\n",atomI[i],atomA[j],s/t);
+         }
+      }
+   }
+
+printf("Total = %f\n",total);
+if (total > 0)
+   {
+   percent = score / total * 100.0;
+   }
+else
+   {
+   percent = 1;
+   }
+
+for (i = 0; i < MAX_CONTEXT; i++)
+   {
+   if (atomI[i])
+      {
+      free(atomI[i]);
+      }
+   if (atomA[i])
+      {
+      free(atomA[i]);
+      }
+   }
+
+printf("******* [relevance = %d %% = %lf/%lf]\n",(int)percent,score,total);
+
+return (int)percent;
 }
 
 /**********************************************************/
 
-int Overlap(char *atom1[256],char *atom2[256], int len1[256], int len2[256])
+void SplitCompound(char *str, char *atoms[MAX_CONTEXT])
 
-{ int i,j,score = 0;
- int min;
-
- for (i = 0; i < 256 && atom1[i]; i++)
+// Split compound name into atoms that can permit a partial overlap match
+    
+{ char *sp = str;
+  char word[255];
+  int pos = 0;
+ 
+ while (*sp != '\0')
     {
-    for (j = 0; j < 256 && atom2[j]; j++)
+    if (*sp == ' ' || *sp == ',')
        {
-       min = (len1[i] < len2[j]) ? len1[i] : len2[j];
+       sp++;
+       continue;
+       }
+    
+    word[0] = '\0';
+    sscanf(sp,"%250[^ ,]",word);
+    sp += strlen(word);
 
-       TOT_CONTEXTS++;
-
-       if (strncmp(atom1[i],atom2[j],min) == 0)
-          {
-          score++;
-          }
+    if (pos < MAX_CONTEXT)
+       {
+       atoms[pos] = strdup(word);
+       pos++;
        }
     }
-
- RELEVANCE += score;
- return score;
 }
 
 /**********************************************************/
