@@ -23,9 +23,6 @@
 #include <sys/types.h>
 #include <utime.h>
 
-
-typedef int Policy;  // Hack to use CGNgine defs
-
 #define true 1
 #define false 0
 #define CGN_BUFSIZE 256
@@ -33,11 +30,8 @@ typedef int Policy;  // Hack to use CGNgine defs
 
 // Import standard link definitions
 
-#define GRAPH 1
 #include "../../RobIoTs/CGNgine/libpromises/graph.h"
 #include "../../RobIoTs/CGNgine/libpromises/graph_defs.c"
-
-
 
 /******************************************************************************/
 
@@ -111,84 +105,5 @@ void main()
  Gr(stdout, "host", a_promises, "operating system","execute run software ops operations");
  Gr(stdout, "operating system",a_promises,"kernel","execute run software ops operations");
 
-}
-
-/**********************************************************************/
-
-void Gr(FILE *consc,char *from, enum associations assoc, char *to, char *context)
-{
- fprintf(consc,"(%s,%d,%s,%s,%s,%s)\n",from,A[assoc].type,A[assoc].fwd,to,A[assoc].bwd,context);
-}
-
-/**********************************************************************/
-
-void GrNOT(FILE *consc,char *from, enum associations assoc, char *to, char *context)
-{
- fprintf(consc,"(%s,%d,NOT %s,%s,NOT %s,%s)\n",from,A[assoc].type,A[assoc].fwd,to,A[assoc].bwd,context);
-}
-
-/**********************************************************************/
-
-char *RoleCluster(FILE *consc,char *compound_name, char *role, char *attributes, char *ex_context)
-
-/* Document a compound Split a comma separated list, with head
-   we can use it for context or for conceptual
-   RoleCluster(fp, "compound name", "hasrole unique identifier", "hasttr part1,hasttr part2", "naming unique identity")
-*/
-    
-{ char *sp, word[255];
-
- Gr(consc,compound_name,a_hasrole,role,ex_context);
- 
- if ((sp = attributes))
-    {
-    while (*sp != '\0')
-       {
-       if (*sp == ',')
-          {
-          sp++;
-          continue;
-          }
-       
-       word[0] = '\0';
-       sscanf(sp,"%250[^,]",word);
-       sp += strlen(word);
-
-       Gr(consc,compound_name,a_hasattr,word,"all contexts");
-       }
-    }
-
-return compound_name;
-}
-
-/**********************************************************************/
-
-char *ContextCluster(FILE *consc,char *compound_name)
-
-/* Document a compound Split a space separated list, with head
-   we can use it for context or for conceptual - treat them as epitopes
-   for fuzzy matching by set overlap. Only type 1 associations. */
-    
-{ char *sp, word[255];
-
- if ((sp = compound_name))
-    {
-    while (*sp != '\0')
-       {
-       if (*sp == ' ')
-          {
-          sp++;
-          continue;
-          }
-       
-       word[0] = '\0';
-       sscanf(sp,"%250s",word);
-       sp += strlen(word);
-
-       Gr(consc,compound_name,a_contains,word,"all contexts");
-       }
-    }
-
-return compound_name;
 }
 
