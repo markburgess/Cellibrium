@@ -46,10 +46,6 @@ typedef int Policy; // Hack to use CGNgine defs
 
 void ReadTupleFile(char *filename);
 void UpdateConcept(char *name);
-void UpdateAssociation(char *context, char *concept1, int atype, char *fwd, char *bwd, char *concept2);
-void GetConceptAssociations(FILE *fp, LinkAssociation *array,int maxentries);
-void UpdateConceptAssociations(FILE *fp, LinkAssociation *array,int maxentries);
-void InitializeAssociations(LinkAssociation *array);
 void Canonify(char *str);
 
 /*****************************************************************************/

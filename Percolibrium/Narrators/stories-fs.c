@@ -28,17 +28,17 @@
 
 // Import standard link definitions
 
-#define GRAPH 1
-#include "../../RobIoTs/CGNgine/libpromises/graph.h"
-#include "../../RobIoTs/CGNgine/libpromises/graph_defs.c"
-
 #define true 1
 #define false 0
 #define CGN_BUFSIZE 1024
-#define MAX_ASSOC_ARRAY 1024
 #define MAX_WORD_SZ 265
 #define MAX_CONTEXT 265
 #define CGN_ROOT 99
+
+#include "../../RobIoTs/CGNgine/libpromises/graph.h"
+#include "../../RobIoTs/CGNgine/libpromises/graph_defs.c"
+#include "../Percolators/associations.h"
+#include "../Percolators/associations.c"
 
 /*****************************************************************************/
 
@@ -79,27 +79,6 @@ static const char *HINTS[6] =
 
 /*****************************************************************************/
 
-#include "../Percolators/associations.h"
-#include "../Percolators/associations.c"
-
-struct Concept
-{
-   char name[CGN_BUFSIZE];
-   int importance_rank;
-   struct Concept *next_concept;
-   struct Concept *prev_concept;
-   struct Concept *last_concept;
-};
-
-struct Story
-{
-   char name[CGN_BUFSIZE];
-   struct Concept *next_concept;
-   struct Story * next_story;
-   struct Story * last_story;
-}
-    *STORIES = NULL;
-
 enum hier
 {
     h_context,
@@ -108,20 +87,20 @@ enum hier
 
 /*****************************************************************************/
 
-void FollowContextualizedAssociations(char *concept, struct Concept *this, int atype, int prevtype, int level);
-void FollowUnqualifiedAssociation(int prevtype,int atype,int level, char *concept, char *nextconcept, struct Concept *next);
-int GetBestConceptAssociations(char *best_association, char *concept,int atype,char *nextconcept,struct Concept *next,char *ctx);
-void FindContextAssociations(char *array[MAX_ASSOC_ARRAY], char *basedir, char* concept, int atype);
+void SearchForContextualizedAssociations(char *concept, int atype, int prevtype, int level);
+void FollowNextAssociation(int prevtype,int atype,int level,char *concept,LinkAssociation *assoc);
+int GetBestAssoc(char *best_association, char *concept,int atype,char *nextconcept,char *context);
+int RankAssociationsByContext(LinkAssociation array[MAX_ASSOC_ARRAY], char *basedir, char* concept, int atype);
 int RelevantToCurrentContext(char *concept,char *assoc,char *nextconcept,char *context);
-struct Story *NewStory(char *name);
-struct Concept *NewConcept(char *name, struct Concept *prev);
+
 char *Indent(int level);
-int PruneLoops(char *concept, struct Concept *this);
-static int cmpassoc(const void *p1, const void *p2);
 void SplitCompound(char *str, char *atoms[MAX_CONTEXT]);
 void ShowMatchingConcepts(char *context);
 char *Abbr(int n);
 int Overlap(char *set1, char *set2);
+
+static int cmpassoc(const void *p1, const void *p2);
+static int cmprel(const void *p1, const void *p2);
 
 /*****************************************************************************/
 
@@ -131,7 +110,6 @@ void main(int argc, char** argv)
  int optindex = 0, i;
  char c;
  char *subject = NULL, *context = NULL;
- struct Concept *this = NULL;
  
   while ((c = getopt_long(argc, argv, "ht:s:c:r:", OPTIONS, &optindex)) != EOF)
     {
@@ -181,23 +159,27 @@ void main(int argc, char** argv)
 
   // validate input args
 
+  printf("\nExploring stories in knowledge bank at %s\n",BASEDIR);
+  
   if (CONTEXT_OPT)
      {
      printf("Found context: \"%s\"\n", CONTEXT_OPT);
      }
   else
      {
+     printf("No context provided, so entering full brainstorming\n");
      CONTEXT_OPT = strdup("*");
      }
 
   if (subject)
      {
-     printf("Found story subject: \"%s\"\n", subject);
+     printf("Found story subject: \"%s\"\n\n", subject);
      }
   else
      {
      if (strcmp(CONTEXT_OPT,"*") != 0)
         {
+        printf("No subject provided, so searching/looking for possibly relevant contexts\n\n");
         ShowMatchingConcepts(CONTEXT_OPT);
         return;
         }
@@ -215,29 +197,27 @@ void main(int argc, char** argv)
   
   // off we go
 
-  this = NewConcept(subject, NULL);
-
  if (ATYPE_OPT != CGN_ROOT)
     {
-    FollowContextualizedAssociations(subject, this, ATYPE_OPT, CGN_ROOT, level);
+    SearchForContextualizedAssociations(subject, ATYPE_OPT, CGN_ROOT, level);
     }
  else
     {
     printf("=========== sequential, causal reasoning =======================\n\n");
-    FollowContextualizedAssociations(subject, this, GR_FOLLOWS, CGN_ROOT, level);
-    FollowContextualizedAssociations(subject, this, -GR_FOLLOWS, CGN_ROOT, level);
+    SearchForContextualizedAssociations(subject, GR_FOLLOWS, CGN_ROOT, level);
+    SearchForContextualizedAssociations(subject, -GR_FOLLOWS, CGN_ROOT, level);
 
     printf("=========== proximity reasoning =======================\n\n");
-    FollowContextualizedAssociations(subject, this, GR_NEAR, CGN_ROOT, level);
-    FollowContextualizedAssociations(subject, this, -GR_NEAR, CGN_ROOT, level);
+    SearchForContextualizedAssociations(subject, GR_NEAR, CGN_ROOT, level);
+    SearchForContextualizedAssociations(subject, -GR_NEAR, CGN_ROOT, level);
 
     printf("=========== boundary or enclosure reasoning =======================\n\n");
-    FollowContextualizedAssociations(subject, this, GR_CONTAINS, CGN_ROOT, level);
-    FollowContextualizedAssociations(subject, this, -GR_CONTAINS, CGN_ROOT, level);
+    SearchForContextualizedAssociations(subject, GR_CONTAINS, CGN_ROOT, level);
+    SearchForContextualizedAssociations(subject, -GR_CONTAINS, CGN_ROOT, level);
 
     printf("=========== property or promise based reasoning =======================\n\n");
-    FollowContextualizedAssociations(subject, this, GR_EXPRESSES, CGN_ROOT, level);
-    FollowContextualizedAssociations(subject, this, -GR_EXPRESSES, CGN_ROOT, level);
+    SearchForContextualizedAssociations(subject, GR_EXPRESSES, CGN_ROOT, level);
+    SearchForContextualizedAssociations(subject, -GR_EXPRESSES, CGN_ROOT, level);
     }
 
  printf("\n");
@@ -250,56 +230,49 @@ void ShowMatchingConcepts(char *context)
 
 {
  int level = 0;
- struct Concept *this = NewConcept(ALL_CONTEXTS, NULL);
 
  RECURSE_OPT = 1;
 
- FollowContextualizedAssociations(ALL_CONTEXTS, this, GR_CONTEXT, CGN_ROOT, level);
+ SearchForContextualizedAssociations(ALL_CONTEXTS, GR_CONTEXT, CGN_ROOT, level);
 }
 
 /*****************************************************************************/
+/* L1                                                                        */
+/*****************************************************************************/
 
-void FollowContextualizedAssociations(char *concept, struct Concept *this, int atype, int prevtype, int level)
+void SearchForContextualizedAssociations(char *concept, int atype, int prevtype, int level)
 
 { int i, count = 0;
- char *array[MAX_ASSOC_ARRAY];
+  LinkAssociation array[MAX_ASSOC_ARRAY];
 
+//  printf("----------------------------%s------------------\n",concept);
+ InitializeAssociations(array);
+  
  if (STORYCOUNT > 5)
     {
     return;
     }
- 
- FindContextAssociations(array,BASEDIR,concept,atype);
+
+ if (!RankAssociationsByContext(array,BASEDIR,concept,atype))
+    {
+    return;
+    }
  
  for (i = 0; i < MAX_ASSOC_ARRAY; i++)
     {
-    if (array[i] == NULL)
+    if (array[i].relevance == 0)
        {
-       continue;
+       break;
        }
-   
-    // Don't prune NOT or context here, leave it to FollowUnqualifiedAssociation()
-   
-    if (PruneLoops(array[i],this))
-       {
-       continue;
-       }
-    
-    struct Concept *next = NewConcept(array[i], this); // next assoc
 
     // Similar attributes, but don't go back the way we came
     
     if (atype == -prevtype)
        {
+       continue;
        if (atype == GR_CONTAINS || atype == -GR_CONTAINS || atype == GR_EXPRESSES || atype == -GR_EXPRESSES)
           {
-          count += 1;
-          }
-       
-       if (count++ > 4)
-          {
-          STORYCOUNT++;   // If the path is truncated
-          break;
+          printf("CHECK FOR LOOPS\n");
           }
        }
 
@@ -307,65 +280,58 @@ void FollowContextualizedAssociations(char *concept, struct Concept *this, int a
 
     if (level < RECURSE_OPT+1) // Arbitrary curb on length of stories
        {
-       FollowUnqualifiedAssociation(prevtype, atype,level, concept, array[i], next);
+       FollowNextAssociation(prevtype,atype,level,concept,&(array[i]));
        }
     else
        {
        // If the paths ends...
        STORYCOUNT++;
        }
-    
-    free(array[i]);
     }
+
+ DeleteAssociations(array);
 }
 
 /*****************************************************************************/
 
-void FollowUnqualifiedAssociation(int prevtype,int atype,int level, char *concept, char *nextconcept, struct Concept *next)
+void FollowNextAssociation(int prevtype,int atype,int level,char *concept,LinkAssociation *assoc)
 
-{ char best_association[CGN_BUFSIZE];
-  char approx_context[CGN_BUFSIZE];
-  int relevance;
-  const int dontwanttoseethis = 0;
+{ int relevance;
+  const int dontwanttoseethis = 25;
 
- if (relevance = GetBestConceptAssociations(best_association,concept,atype,nextconcept,next,approx_context))
-    {
-    if (relevance > dontwanttoseethis)
-       {
-       if ((atype == -prevtype) && (abs(atype) != GR_FOLLOWS))
-          {
-          printf ("%s and also note \"%s\" %s \"%s\" (in the context of %s)\n", Indent(level), concept, best_association, nextconcept,approx_context);
-          return; 
-          }
-       else
-          {
-          printf ("%d:%s) %s \"%s\" %s \"%s\" (in the context of %s - %d%%)\n", level,Abbr(atype), Indent(level), concept, best_association, nextconcept,approx_context, relevance);
-          }
-       }
-    
-    if (ATYPE_OPT != CGN_ROOT)
-       {
-       FollowContextualizedAssociations(nextconcept, next, ATYPE_OPT, atype, level+1);
-       FollowContextualizedAssociations(nextconcept, next, -ATYPE_OPT, atype, level+1);
-       }
-    else
-       {
-       FollowContextualizedAssociations(nextconcept, next, GR_EXPRESSES, atype, level+1);
-       FollowContextualizedAssociations(nextconcept, next, -GR_EXPRESSES, atype, level+1);
-
-       FollowContextualizedAssociations(nextconcept, next, GR_FOLLOWS, atype, level+1);
-       FollowContextualizedAssociations(nextconcept, next, -GR_FOLLOWS, atype, level+1);
-       
-       FollowContextualizedAssociations(nextconcept, next, GR_NEAR, atype, level+1);
-       FollowContextualizedAssociations(nextconcept, next, -GR_NEAR, atype, level+1);
-       
-       // Exploring next, policy only if previous connection was also quasi-transitive
-       
-       
-       FollowContextualizedAssociations(nextconcept, next, GR_CONTAINS, atype, level+1);
-       FollowContextualizedAssociations(nextconcept, next, -GR_CONTAINS, atype, level+1);
-       }
-    }
+  if (assoc->relevance > dontwanttoseethis)
+     {
+     if ((atype == -prevtype) && (abs(atype) != GR_FOLLOWS)) // Don't double back
+        {
+        printf ("%s and also note \"%s\" %s \"%s\" (in the context of %s)\n", Indent(level), concept,assoc->fwd, assoc->concept,assoc->context);
+        return; 
+        }
+     else
+        {
+        printf ("%d:%s) %s \"%s\" %s \"%s\" (in the context of %s - %d%%)\n", level,Abbr(atype), Indent(level),concept,assoc->fwd, assoc->concept,assoc->context,assoc->relevance);
+        }
+     }
+  
+  if (ATYPE_OPT != CGN_ROOT)
+     {
+     SearchForContextualizedAssociations(assoc->concept,ATYPE_OPT, atype, level+1);
+     SearchForContextualizedAssociations(assoc->concept,-ATYPE_OPT, atype, level+1);
+     }
+  else
+     {
+     SearchForContextualizedAssociations(assoc->concept,GR_EXPRESSES, atype, level+1);
+     SearchForContextualizedAssociations(assoc->concept,-GR_EXPRESSES, atype, level+1);
+     
+     SearchForContextualizedAssociations(assoc->concept,GR_FOLLOWS, atype, level+1);
+     SearchForContextualizedAssociations(assoc->concept,-GR_FOLLOWS, atype, level+1);
+     
+     SearchForContextualizedAssociations(assoc->concept,GR_NEAR, atype, level+1);
+     SearchForContextualizedAssociations(assoc->concept,-GR_NEAR, atype, level+1);
+     
+     // Exploring next, policy only if previous connection was also quasi-transitive
+     SearchForContextualizedAssociations(assoc->concept,GR_CONTAINS, atype, level+1);
+     SearchForContextualizedAssociations(assoc->concept,-GR_CONTAINS, atype, level+1);
+     }
 }
 
 /*****************************************************************************/
@@ -384,9 +350,67 @@ char *Indent(int level)
  return indent;
 }
 
+/*************************************************************/
+
+int RankAssociationsByContext(LinkAssociation array[MAX_ASSOC_ARRAY], char *basedir, char* fromconcept, int atype)
+{
+ char filename[CGN_BUFSIZE];
+ DIR *dirh_context,*dirh_assocs;
+ struct dirent *dirp_c,*dirp_a;
+ int count;
+ 
+ count = 0;
+
+ // Open the directory and read the possible outgoing links
+ 
+ snprintf(filename,CGN_BUFSIZE,"%s/%s/%d",basedir,fromconcept,atype);
+
+ if ((dirh_assocs = opendir(filename)) == NULL)
+    {
+    return false; // Fail silently
+    }
+    
+ for (dirp_a = readdir(dirh_assocs); dirp_a != NULL; dirp_a = readdir(dirh_assocs))
+    {
+    if (dirp_a->d_name[0] == '.')
+       {
+       continue;
+       }
+
+    // Don't go back to places we've already been... (simplistic . could use atime as deadtime lock)
+    
+    char *nextconcept = dirp_a->d_name;
+       
+    if (count >= MAX_ASSOC_ARRAY)
+       {
+       printf("Ran out of slots...\n");
+       break;
+       }
+
+    char best_association[CGN_BUFSIZE];
+    char relevance_context[CGN_BUFSIZE];
+
+    best_association[0] = '\0';
+    relevance_context[0] = '\0';
+        
+    array[count].relevance = GetBestAssoc(best_association,fromconcept,atype,nextconcept,relevance_context);
+
+    array[count].concept = strdup(nextconcept);
+    array[count].context = strdup(relevance_context);
+    array[count].fwd = strdup(best_association);
+    array[count].bwd = strdup("n/a"); // Don't need this here
+    count++;
+    }
+
+ qsort(array,(size_t)count, sizeof(LinkAssociation),cmprel);
+
+ closedir(dirh_assocs);
+ return true;
+}
+
 /*****************************************************************************/
 
-int GetBestConceptAssociations(char *best_association, char *concept,int atype,char *nextconcept,struct Concept *next,char *context)
+int GetBestAssoc(char *best_association, char *fromconcept,int atype,char *nextconcept,char *relevance_context)
 
 { int i, relevance = 0;
   FILE *fin;
@@ -394,35 +418,40 @@ int GetBestConceptAssociations(char *best_association, char *concept,int atype,c
   char comment[CGN_BUFSIZE];
   LinkAssociation array[MAX_ASSOC_ARRAY];
 
- *context = '\0';
+ *relevance_context = '\0';
   
- snprintf(filename,CGN_BUFSIZE,"%s/%s/%d/%s",BASEDIR,concept,atype,nextconcept);
+ snprintf(filename,CGN_BUFSIZE,"%s/%s/%d/%s",BASEDIR,fromconcept,atype,nextconcept);
 
  if ((fin = fopen(filename, "r")) == NULL)
     {
     return 0;
     }
 
- GetConceptAssociations(fin,array,MAX_ASSOC_ARRAY);
+ GetConceptAssociations(fin,fromconcept,array,MAX_ASSOC_ARRAY);
  fclose(fin);
+
+ if (array[0].fwd == NULL)
+    {
+    return 0;
+    }
 
  for (i = 0; (i < MAX_ASSOC_ARRAY); i++)
     {
-    if (array[i].fwd[0] == '\0')
+    if (array[i].fwd == NULL)
        {
        break;
        }
     
-    relevance = RelevantToCurrentContext(concept,array[i].fwd,nextconcept,array[i].context);
+    array[i].relevance = RelevantToCurrentContext(fromconcept,array[i].fwd,nextconcept,array[i].context);
     }
 
- qsort(array,(size_t)i, sizeof(LinkAssociation *),cmpassoc);
+ qsort(array,(size_t)i, sizeof(LinkAssociation *),cmprel);
 
  // The effect of this weight sorting will be small, but look for the best result(s)
 
- if (i > 1)
+ if (--i > 0)
     {
-    if (strcmp(array[0].fwd,array[i].fwd) == 0)
+    if (strcmp(array[0].fwd,array[i].fwd) != 0)
        {
        strcpy(best_association, "both ");
        strcat(best_association, array[0].fwd);
@@ -432,16 +461,15 @@ int GetBestConceptAssociations(char *best_association, char *concept,int atype,c
        strcpy(best_association,array[0].fwd);
        }
 
-    strcat(context, array[0].context);
+    strcat(relevance_context, array[0].context);
     }
  else
     {
     strcpy(best_association, array[0].fwd);
-
-    strcat(context, array[0].context);
+    strcat(relevance_context, array[0].context);
     }
  
- for (i = 1; (i < MAX_ASSOC_ARRAY) && (array[i].fwd[0] != '\0'); i++)
+ for (i = 1; (i < MAX_ASSOC_ARRAY) && array[i].fwd; i++)
     {
     if (strcmp(array[0].fwd,array[i].fwd) == 0)
        {
@@ -451,121 +479,15 @@ int GetBestConceptAssociations(char *best_association, char *concept,int atype,c
     strcat(best_association, " and ");
     strcat(best_association, array[i].fwd);
 
-    strcat(context," ");
-    strcat(context, array[i].context);
+    strcat(relevance_context," ");
+    strcat(relevance_context, array[i].context);
     }
 
  // WARN: not checking for overflow here ... very unlikely but ...
 
+ relevance = array[0].relevance;
+ DeleteAssociations(array);
  return relevance;
-}
-
-/*****************************************************************************/
-
-struct Story *NewStory(char *name)
-
-{ struct Story *new;
-
- new = (struct Story *)malloc(sizeof(struct Story));
-
- strcpy(new->name,name);
- new->next_concept = NULL;
- new->next_story = NULL;
- return new;
-}
-
-/*****************************************************************************/
-
-struct Concept *NewConcept(char *name, struct Concept *prev)
-
-{ struct Concept *new;
-
- new = (struct Concept *)malloc(sizeof(struct Concept));
-  
- if (name)
-    {
-    strncpy(new->name,name,CGN_BUFSIZE);
-    }
- else
-    {
-    new->name[0] = '\0';
-    }
-
- if (prev)
-    {
-    prev->next_concept = new;
-    }
-
- new->importance_rank = 0;
- new->prev_concept = prev;
-
- // Association assoc only applies if next_concept != NULL;
-
- return new;
-}
-
-/*****************************************************************************/
-
-int PruneLoops(char *concept, struct Concept *this)
-
-{ struct Concept *prev;
-
- // Is this concept already a part of the story?
- 
- for (prev = this->prev_concept; prev != NULL; prev = prev->prev_concept)
-    {
-    if (strcmp(concept, prev->name) == 0)
-       {
-       return true;
-       }
-    }
-
- return false;
-}
-
-
-/*************************************************************/
-
-void FindContextAssociations(char *array[MAX_ASSOC_ARRAY], char *basedir, char* concept, int atype)
-{
- char filename[CGN_BUFSIZE];
- DIR *dirh_context,*dirh_assocs;
- struct dirent *dirp_c,*dirp_a;
- int count;
-
- for (count = 0; count < MAX_ASSOC_ARRAY; count++)
-    {
-    array[count] = NULL;
-    }
-
- count = 0;
- 
- snprintf(filename,CGN_BUFSIZE,"%s/%s/%d",basedir,concept,atype);
-
- if ((dirh_assocs = opendir(filename)) == NULL)
-    {
-    return; // Fail silently
-    }
-    
- for (dirp_a = readdir(dirh_assocs); dirp_a != NULL; dirp_a = readdir(dirh_assocs))
-    {
-    if (dirp_a->d_name[0] == '.')
-       {
-       continue;
-       }
-    
-       // prune already if possible to eliminate pathways
-       
-    array[count] = strdup(dirp_a->d_name);
-
-    if (++count > MAX_ASSOC_ARRAY)
-       {
-       printf("Ran out of slots...\n");
-       return;
-       }
-    }
- 
- closedir(dirh_assocs);
 }
 
 /**********************************************************/
@@ -582,10 +504,22 @@ static int cmpassoc(const void *p1, const void *p2)
 
 /**********************************************************/
 
+static int cmprel(const void *p1, const void *p2)
+{
+ LinkAssociation *c1,*c2;
+
+ c1 = ((LinkAssociation *)p1);
+ c2 = ((LinkAssociation *)p2);
+
+ return (c1->relevance  < c2->relevance);
+}
+
+/**********************************************************/
+
 int RelevantToCurrentContext(char *concept,char *assoc,char *nextconcept,char *context)
 
 { int not = false;
-  int relevance;
+  int relevance = 0;
 
 // We need a VERY good reason to actually EXCLUDE a path, because it could become relevant to lateral thinking
 // unless we have no subject, in which case CONTEXT is context hub and rules are different
