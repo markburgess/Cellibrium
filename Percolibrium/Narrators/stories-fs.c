@@ -23,6 +23,7 @@
 #include <utime.h>
 #include <getopt.h>
 #include <ctype.h>
+#include <fcntl.h>
 
 #define BASEDIR "/home/a10004/KMdata"
 
@@ -45,15 +46,13 @@
 extern char *optarg;
 extern int optind, opterr, optopt;
 
-// Global stats
-
-int STORYCOUNT = 0;
-
 // Global read-only policy
 
 int ATYPE_OPT = CGN_ROOT;
 int RECURSE_OPT = 10;
 char *CONTEXT_OPT;
+
+char MANY_WORLDS_CONTEXT[CGN_BUFSIZE];
 
 /*****************************************************************************/
 
@@ -79,20 +78,14 @@ static const char *HINTS[6] =
 
 /*****************************************************************************/
 
-enum hier
-{
-    h_context,
-    h_association
-};
-
-/*****************************************************************************/
-
+void NewManyWorldsContext(char *concept, char *context);
+void DeleteManyWorldsContext(void);
 void SearchForContextualizedAssociations(char *concept, int atype, int prevtype, int level);
 void FollowNextAssociation(int prevtype,int atype,int level,char *concept,LinkAssociation *assoc);
 int GetBestAssoc(char *best_association, char *concept,int atype,char *nextconcept,char *context);
 int RankAssociationsByContext(LinkAssociation array[MAX_ASSOC_ARRAY], char *basedir, char* concept, int atype);
 int RelevantToCurrentContext(char *concept,char *assoc,char *nextconcept,char *context);
-
+int ConceptAlreadyUsed(char *concept);
 char *Indent(int level);
 void SplitCompound(char *str, char *atoms[MAX_CONTEXT]);
 void ShowMatchingConcepts(char *context);
@@ -197,6 +190,8 @@ void main(int argc, char** argv)
   
   // off we go
 
+  NewManyWorldsContext(subject,CONTEXT_OPT);
+  
  if (ATYPE_OPT != CGN_ROOT)
     {
     SearchForContextualizedAssociations(subject, ATYPE_OPT, CGN_ROOT, level);
@@ -221,9 +216,69 @@ void main(int argc, char** argv)
     }
 
  printf("\n");
- printf("Total independent outcomes/paths = %d\n", STORYCOUNT);
+ DeleteManyWorldsContext();
 }
 
+/**********************************************************/
+
+void NewManyWorldsContext(char *concept, char *context)
+{
+ char name[CGN_BUFSIZE];
+
+ umask(0); 
+ snprintf(MANY_WORLDS_CONTEXT,CGN_BUFSIZE,"/tmp/story_world_%s_%s",concept,context);
+ mkdir(MANY_WORLDS_CONTEXT,((mode_t)0755));
+
+ DIR *dirh;
+ struct dirent *dirp;
+ 
+ if ((dirh = opendir(MANY_WORLDS_CONTEXT)) == NULL)
+    {
+    return;
+    }
+
+ for (dirp = readdir(dirh); dirp != NULL; dirp = readdir(dirh))
+    {
+    if (dirp->d_name[0] == '.')
+       {
+       continue;
+       }
+
+    snprintf(name,CGN_BUFSIZE,"%s/%s",MANY_WORLDS_CONTEXT,dirp->d_name);
+    unlink(name);
+    }
+ 
+ closedir(dirh);
+}
+    
+/**********************************************************/
+
+void DeleteManyWorldsContext(void)
+{
+ char name[CGN_BUFSIZE];
+ DIR *dirh;
+ struct dirent *dirp;
+ 
+ if ((dirh = opendir(MANY_WORLDS_CONTEXT)) == NULL)
+    {
+    return;
+    }
+ 
+ for (dirp = readdir(dirh); dirp != NULL; dirp = readdir(dirh))
+    {
+    if (dirp->d_name[0] == '.')
+       {
+       continue;
+       }
+
+    snprintf(name,CGN_BUFSIZE,"%s/%s",MANY_WORLDS_CONTEXT,dirp->d_name);
+    unlink(name);
+    }
+ closedir(dirh);
+
+ rmdir(MANY_WORLDS_CONTEXT);
+}
+    
 /**********************************************************/
 
 void ShowMatchingConcepts(char *context)
@@ -232,7 +287,7 @@ void ShowMatchingConcepts(char *context)
  int level = 0;
 
  RECURSE_OPT = 1;
-
+ CONTEXT_OPT = strdup(context);
  SearchForContextualizedAssociations(ALL_CONTEXTS, GR_CONTEXT, CGN_ROOT, level);
 }
 
@@ -244,15 +299,11 @@ void SearchForContextualizedAssociations(char *concept, int atype, int prevtype,
 
 { int i, count = 0;
   LinkAssociation array[MAX_ASSOC_ARRAY];
-
-//  printf("----------------------------%s------------------\n",concept);
+  const int threshold_for_relevance = 1;
+  const int max_stories = 5;
+  
  InitializeAssociations(array);
   
- if (STORYCOUNT > 5)
-    {
-    return;
-    }
-
  if (!RankAssociationsByContext(array,BASEDIR,concept,atype))
     {
     return;
@@ -260,11 +311,11 @@ void SearchForContextualizedAssociations(char *concept, int atype, int prevtype,
  
  for (i = 0; i < MAX_ASSOC_ARRAY; i++)
     {
-    if (array[i].relevance == 0)
+    if (array[i].relevance < threshold_for_relevance)
        {
-       break;
+       continue;
        }
-
+    
     // Similar attributes, but don't go back the way we came
     
     if (atype == -prevtype)
@@ -281,11 +332,12 @@ void SearchForContextualizedAssociations(char *concept, int atype, int prevtype,
     if (level < RECURSE_OPT+1) // Arbitrary curb on length of stories
        {
        FollowNextAssociation(prevtype,atype,level,concept,&(array[i]));
-       }
-    else
-       {
-       // If the paths ends...
-       STORYCOUNT++;
+
+       if (count++ > max_stories)
+          {
+          printf(" ++ more....\n");
+          break;
+          }
        }
     }
 
@@ -294,24 +346,49 @@ void SearchForContextualizedAssociations(char *concept, int atype, int prevtype,
 
 /*****************************************************************************/
 
+int ConceptAlreadyUsed(char *concept)
+{
+ struct stat statbuf;
+ char name[CGN_BUFSIZE];
+
+ snprintf(name,CGN_BUFSIZE,"%s/%s",MANY_WORLDS_CONTEXT,concept);
+ 
+ if (stat(name,&statbuf) != -1)
+    {
+    return true;
+    }
+ else
+    {
+    creat(name,0644);
+    return false;
+    }
+}
+
+/*****************************************************************************/
+
 void FollowNextAssociation(int prevtype,int atype,int level,char *concept,LinkAssociation *assoc)
 
 { int relevance;
-  const int dontwanttoseethis = 25;
+  const int dontwanttoseethis = 1;
 
   if (assoc->relevance > dontwanttoseethis)
      {
      if ((atype == -prevtype) && (abs(atype) != GR_FOLLOWS)) // Don't double back
         {
         printf ("%s and also note \"%s\" %s \"%s\" (in the context of %s)\n", Indent(level), concept,assoc->fwd, assoc->concept,assoc->context);
-        return; 
+        //return; 
         }
      else
         {
         printf ("%d:%s) %s \"%s\" %s \"%s\" (in the context of %s - %d%%)\n", level,Abbr(atype), Indent(level),concept,assoc->fwd, assoc->concept,assoc->context,assoc->relevance);
         }
      }
-  
+
+  if (ConceptAlreadyUsed(concept))
+     {
+     return;
+     }
+
   if (ATYPE_OPT != CGN_ROOT)
      {
      SearchForContextualizedAssociations(assoc->concept,ATYPE_OPT, atype, level+1);
@@ -523,18 +600,24 @@ int RelevantToCurrentContext(char *concept,char *assoc,char *nextconcept,char *c
 
 // We need a VERY good reason to actually EXCLUDE a path, because it could become relevant to lateral thinking
 // unless we have no subject, in which case CONTEXT is context hub and rules are different
+//  printf("SHOW %s / %s / %s / %s = %d\n",context, CONTEXT_OPT, concept, nextconcept,Overlap(CONTEXT_OPT,nextconcept));
 
- if (strcmp(context,ALL_CONTEXTS) == 0)
-    {
-    return Overlap(CONTEXT_OPT,nextconcept);
-    }
+//  printf("\n(( intcontext = %s, extcontext = %s, concept =%s, nextconcept = %s\n", context,CONTEXT_OPT,concept,nextconcept);
 
+  if (strcmp(concept,ALL_CONTEXTS) == 0) // if we are looking for unknown subject
+     {
+     return 20;
+     }
+  
 // Get current search contexts and see whether strings seem compatible by some measure
 // Want to know if there are common genes in these context strings, leading to significant overlap
+
+
+  // -c context is in CONTEXT_OPT - if no context is given (all are assumed)
  
  if (strcmp(CONTEXT_OPT,"*") == 0)
     {
-    return 1;
+    relevance = 40;
     }
  
  if (strncmp(assoc,"NOT",3) == 0)
@@ -542,10 +625,18 @@ int RelevantToCurrentContext(char *concept,char *assoc,char *nextconcept,char *c
     not = true;
     }
 
-  // -c context is in CONTEXT
+ // If the next concept is related to the search concept (must exist exactly), recursively
+ relevance += Overlap(concept,nextconcept);
 
- if (relevance = Overlap(CONTEXT_OPT,context))
+ // If the next subject contains the search context 
+ relevance += Overlap(CONTEXT_OPT,nextconcept);
+
+ // Finally, if the current context overlaps with the learnt context
+ relevance += Overlap(CONTEXT_OPT,context);
+     
+ if (relevance > 0)
     {
+    // Check this, handle NOT
     if (not)
        {
        return 0;
@@ -598,14 +689,14 @@ for (i = 0; i < MAX_CONTEXT && atomI[i]; i++)
          
          if (atomA[j][k] == '\0') // actual is a substring of intended
             {
-            t = 0;
-            s = 0;
+            t += strlen(atomI[i]+k);
             break;
             }
 
          if (atomI[i][k] != atomA[j][k]) // terminate on mismatch
             {
             t += strlen(atomA[j]+k);
+            break;
             }
          else
             {
@@ -628,8 +719,10 @@ if (total > 0)
    }
 else
    {
-   percent = 1;
+   percent = 0;
    }
+
+//printf("SCORE %f (%s,%s)\n",percent,intended,actual);
 
 for (i = 0; i < MAX_CONTEXT; i++)
    {
