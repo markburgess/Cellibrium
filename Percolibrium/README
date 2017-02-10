@@ -4,25 +4,7 @@ engine and knowledge representation.  The files marked "fs" for
 filesystem use a simple file representation which makes the logic and
 code simple, but has some limitations.
 
-To test, 
-
- cd Percolators
- gcc -o conceptualize -g -std=c99 conceptualize-fs.c
- ./conceptualize ExampleTupleData/env_graph
- ./conceptualize ExampleTupleData/policy_graph
- ./conceptualize ExampleTupleData/domain_knowledge_graph
-
- cd ..
- cd Narrators
- gcc -o stories -g -std=c99 stories-fs.c
- ./stories "expectation value"
- ./stories linux 
+See ../README for general destructions
 
 
-
-The files in CGNgine which generate the semantic tuples are
-
-libpromises/graph.c
-libpromises/graph.h
-libpromises/graph_defs.c
 
