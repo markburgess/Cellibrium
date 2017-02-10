@@ -32,3 +32,26 @@ computing model
     -Narrators
 
 Details to be shared gradually, for interested parties.
+
+---
+
+Build example on GNU/Linux:
+
+# Build the cognitive management agent
+(cd RobIoTs/CGNgine; ./autogen --with-tokyocabinet; make -j9)
+
+# You will need to compile a policy file and build graph data - e.g. the example provided
+(cd RobIoTs/CGNgine; cgn-promises/cgn-promises -f ../CGNgineExample/promises.cf -g)
+
+# Then create some monitoring data
+(cd RobIoTs/CGNgine; cgn-monitord/cgn-monitord -f ../CGNgineExample/promises.cf)
+
+# Then build the knowledge representation
+(cd Percolibrium/Percolators/; make)
+(cd Percolibrium/Narrators/; make)
+
+Then see instructions:
+
+cd Percolibrium/Narrators/
+more README
+
