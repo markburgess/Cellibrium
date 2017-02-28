@@ -17,7 +17,6 @@
 #include <files_names.h>
 #include <files_lib.h>
 
-static char *SanitizeString(char *s);
 #include "graph_defs.c"
 
 /**********************************************************************/
