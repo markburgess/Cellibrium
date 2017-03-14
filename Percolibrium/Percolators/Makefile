@@ -13,9 +13,10 @@ build:
 	gcc $(INCLUDES) -o gen_dsdk -g generate_doctor_domain_knowledge.c
 	gcc $(INCLUDES) -o gen_cgndk -g generate_cgn_domain_knowledge.c
 	gcc $(INCLUDES) -o gen_msdk -g generate_microservice_domain_knowledge.c
+	gcc $(INCLUDES) -o gen_movie -g generate_movie.c
 	gcc -o conceptualize -g conceptualize-fs.c
 
-generate: microservice doctor lddscan monitord
+generate: microservice doctor lddscan monitord movies
 
 lddscan:
 	./gen_bdk > ExampleTupleData/dependencies_graph
@@ -25,6 +26,8 @@ monitord:
 	./gen_cgndk > ExampleTupleData/domain_knowledge_graph
 microservice:
 	./gen_msdk > ExampleTupleData/microservice_component_graph
+movies:
+	./gen_movie > ExampleTupleData/movie_graph
 graph:
 	./conceptualize ExampleTupleData/*
 

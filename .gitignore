@@ -44,6 +44,7 @@ gen_bdk
 gen_cgndk
 gen_dsdk
 gen_msdk
+gen_movie
 stories
 conceptualize
 rpmvercmp

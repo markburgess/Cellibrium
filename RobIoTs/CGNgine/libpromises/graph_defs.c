@@ -35,7 +35,7 @@ Association A[a_ass_dim+1] =
     {GR_NEAR,"seen concurrently with","seen concurrently with"},
     {GR_NEAR,"also known as","also known as"},
     {GR_NEAR,"is approximately","is approximately"},
-    {GR_NEAR,"is related to","is related to"},
+    {GR_NEAR,"may be related to","may be related to"},
     {0, NULL, NULL},
 };
 
