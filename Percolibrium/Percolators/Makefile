@@ -6,8 +6,8 @@ all: update build generate graph
 
 update:
 # CGNgine data, generated internally
-	cp ~/.CGNgine/state/env_graph ExampleTupleData/
-	cp ~/.CGNgine/policy_graph ExampleTupleData/
+	cp ~/.CGNgine/state/env_graph ExampleTupleData/ || true
+	cp ~/.CGNgine/policy_graph ExampleTupleData/ || true
 build:
 	gcc $(INCLUDES) -o gen_bdk -g generate_binary_domain_knowledge.c
 	gcc $(INCLUDES) -o gen_dsdk -g generate_doctor_domain_knowledge.c

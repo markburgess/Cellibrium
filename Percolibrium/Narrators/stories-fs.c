@@ -300,7 +300,7 @@ void SearchForContextualizedAssociations(char *concept, int atype, int prevtype,
 { int i, count = 0;
   LinkAssociation array[MAX_ASSOC_ARRAY];
   const int threshold_for_relevance = 1;
-  const int max_stories = 10;
+  const int max_stories = 5;
   
  InitializeAssociations(array);
   
@@ -386,7 +386,6 @@ void FollowNextAssociation(int prevtype,int atype,int level,char *concept,LinkAs
 
   if (ConceptAlreadyUsed(assoc->concept))
      {
-     printf("Already used %s\n",assoc->concept);
      return;
      }
 

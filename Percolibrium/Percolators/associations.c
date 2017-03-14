@@ -120,9 +120,11 @@ void UpdateAssociation(char *context, char *concept1, int atype, char *fwd, char
 
  done = false;
 
- for (i = 0; (i < MAX_ASSOC_ARRAY) && array[i].fwd; i++)
+ // Update all the aliases for this association
+ 
+ for (i = 0; (i < MAX_ASSOC_ARRAY) && (array[i].fwd != NULL); i++)
     {
-    if ((strcmp(fwd,array[i].fwd) == 0) && (strcmp(context,array[i].context) == 0)) // too strong/specific?
+    if ((strcmp(fwd,array[i].fwd) == 0))
        {
        array[i].weight = (0.6+0.4*array[i].weight);
        array[i].lastseen = now;
@@ -131,24 +133,12 @@ void UpdateAssociation(char *context, char *concept1, int atype, char *fwd, char
        }
     }
 
- if (!done)
+ // If Not already registered, add a new line
+ 
+ if (!done && (i < MAX_ASSOC_ARRAY))
     {
-    if (array[i].fwd)
-       {
-       free(array[i].fwd);
-       }
     array[i].fwd = strdup(fwd);
-
-    if (array[i].bwd)
-       {
-       free(array[i].bwd);
-       }
     array[i].bwd = strdup(bwd);
-
-    if (array[i].context)
-       {
-       free(array[i].context);
-       }
     array[i].context = strdup(context);
     array[i].weight = 0.7;
     array[i].lastseen = now;
