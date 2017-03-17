@@ -38,7 +38,20 @@ Details to be shared gradually, for interested parties.
 Build example on GNU/Linux:
 
 # Build the cognitive management agent
+
+You will need dependencies (check your system names): 
+ - libtokyocabinet-dev
+ - libssl-dev
+ - libpcre-dev
+ - flex
+ - bison
+ - automake
+ - autoconf
+ - libtool
+ - C tools (gcc etc)
+
 (cd RobIoTs/CGNgine; ./autogen --with-tokyocabinet; make -j9)
+(cd RobIoTs/CGNgine/cgn-keygen/cgn-keygen)
 
 # You will need to compile a policy file and build graph data - e.g. the example provided
 (cd RobIoTs/CGNgine; cgn-promises/cgn-promises -f ../CGNgineExample/promises.cf -g)

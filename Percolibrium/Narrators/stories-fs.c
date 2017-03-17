@@ -25,8 +25,6 @@
 #include <ctype.h>
 #include <fcntl.h>
 
-#define BASEDIR "/home/a10004/KMdata"
-
 // Import standard link definitions
 
 #define true 1

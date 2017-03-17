@@ -65,3 +65,7 @@ extern Association A[a_ass_dim+1];
 #define GR_CONTEXT   5 // approx like
 #define ALL_CONTEXTS "searching looking"
 
+// Don't like using /tmp but keep is simple here - personalize to make non-shared etc
+
+#define BASEDIR "/tmp/KMdata"
+

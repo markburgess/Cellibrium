@@ -21,8 +21,6 @@
 #include <sys/types.h>
 #include <utime.h>
 
-#define BASEDIR "/home/a10004/KMdata"
-
 typedef int Policy; // Hack to use CGNgine defs
 
 #define true 1
