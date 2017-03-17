@@ -50,7 +50,7 @@ You will need dependencies (check your system names):
  - libtool
  - C tools (gcc etc)
 
-(cd RobIoTs/CGNgine; ./autogen --with-tokyocabinet; make -j9)
+(cd RobIoTs/CGNgine; ./autogen --with-tokyocabinet --without-pam; make -j9)
 (cd RobIoTs/CGNgine/cgn-keygen/cgn-keygen)
 
 # You will need to compile a policy file and build graph data - e.g. the example provided
