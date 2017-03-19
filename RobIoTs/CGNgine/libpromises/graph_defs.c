@@ -124,7 +124,7 @@ char *RoleCluster(FILE *consc,char *compound_name, char *role, char *attributes,
        sscanf(sp,"%250[^,]",word);
        sp += strlen(word);
 
-       Gr(consc,compound_name,a_hasattr,word,"all contexts");
+       Gr(consc,compound_name,a_hasattr,word,ALL_CONTEXTS);
        }
     }
 
@@ -137,7 +137,7 @@ char *ContextCluster(FILE *consc,char *compound_name)
 
 /* Document a compound Split a space separated list, with head
    we can use it for context or for conceptual - treat them as epitopes
-   for fuzzy matching by set overlap. Only type 1 associations. */
+   for fuzzy matching by set overlap. Only type 4 associations. */
     
 { char *sp, word[255];
 
@@ -155,7 +155,38 @@ char *ContextCluster(FILE *consc,char *compound_name)
        sscanf(sp,"%250s",word);
        sp += strlen(word);
 
-       Gr(consc,compound_name,a_contains,word,"all contexts");
+       Gr(consc,compound_name,a_contains,word,ALL_CONTEXTS);
+       }
+    }
+
+return compound_name;
+}
+
+/**********************************************************************/
+
+char *NamedContextCluster(FILE *consc,char *compound_name,char *list)
+
+/* Document a compound Split a space separated list, with head
+   we can use it for context or for conceptual - treat them as epitopes
+   for fuzzy matching by set overlap. Only type 4 associations. */
+    
+{ char *sp, word[255];
+
+ if ((sp = list))
+    {
+    while (*sp != '\0')
+       {
+       if (*sp == ' ')
+          {
+          sp++;
+          continue;
+          }
+       
+       word[0] = '\0';
+       sscanf(sp,"%250s",word);
+       sp += strlen(word);
+
+       Gr(consc,compound_name,a_contains,word,ALL_CONTEXTS);
        }
     }
 

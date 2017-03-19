@@ -154,13 +154,20 @@ void main(int argc, char** argv)
   
   if (CONTEXT_OPT)
      {
-     printf("Found context: \"%s\"\n", CONTEXT_OPT);
+     
+
+
+     // Should we add the subject and first order connections to the context list?
+
+     // What kind of an agent am I?
+     // Whta kinds of things do I think about?
      }
   else
      {
-     printf("No context provided, so entering full brainstorming\n");
-     CONTEXT_OPT = strdup("*");
+     CONTEXT_OPT = strdup(ALL_CONTEXTS);
      }
+
+  printf("Found context: \"%s\"\n", CONTEXT_OPT);
 
   if (subject)
      {
@@ -168,7 +175,7 @@ void main(int argc, char** argv)
      }
   else
      {
-     if (strcmp(CONTEXT_OPT,"*") != 0)
+     if (strcmp(CONTEXT_OPT,ALL_CONTEXTS) != 0)
         {
         printf("No subject provided, so searching/looking for possibly relevant contexts\n\n");
         ShowMatchingConcepts(CONTEXT_OPT);
@@ -297,7 +304,7 @@ void SearchForContextualizedAssociations(char *concept, int atype, int prevtype,
 
 { int i, count = 0;
   LinkAssociation array[MAX_ASSOC_ARRAY];
-  const int threshold_for_relevance = 1;
+  const int threshold_for_relevance = 0;
   const int max_stories = 5;
   
  InitializeAssociations(array);
@@ -306,8 +313,8 @@ void SearchForContextualizedAssociations(char *concept, int atype, int prevtype,
     {
     return;
     }
- 
- for (i = 0; i < MAX_ASSOC_ARRAY; i++)
+
+ for (i = 0; (i < MAX_ASSOC_ARRAY) && (array[i].fwd != NULL); i++)
     {
     if (array[i].relevance < threshold_for_relevance)
        {
@@ -367,18 +374,18 @@ int ConceptAlreadyUsed(char *concept)
 void FollowNextAssociation(int prevtype,int atype,int level,char *concept,LinkAssociation *assoc)
 
 { int relevance;
-  const int dontwanttoseethis = 1;
+  const int dontwanttoseethis = 0;
 
   if (assoc->relevance > dontwanttoseethis)
      {
      if ((atype == -prevtype) && (abs(atype) != GR_FOLLOWS)) // Don't double back
         {
-        printf ("%s and also note \"%s\" %s \"%s\" (in the context of %s)\n", Indent(level), concept,assoc->fwd, assoc->concept,assoc->context);
+        printf ("%s and also note \"%s\" %s \"%s\" (intended in the context of %s)\n", Indent(level), concept,assoc->fwd, assoc->concept,assoc->context);
         //return; 
         }
      else
         {
-        printf ("%d:%s) %s \"%s\" %s \"%s\" (in the context of %s - %d%%)\n", level,Abbr(atype), Indent(level),concept,assoc->fwd, assoc->concept,assoc->context,assoc->relevance);
+        printf ("%d:%s) %s \"%s\" %s \"%s\" (intended context: %s - %d%%)\n", level,Abbr(atype), Indent(level),concept,assoc->fwd, assoc->concept,assoc->context,assoc->relevance);
         }
      }
 
@@ -396,10 +403,10 @@ void FollowNextAssociation(int prevtype,int atype,int level,char *concept,LinkAs
      {
      SearchForContextualizedAssociations(assoc->concept,GR_EXPRESSES, atype, level+1);
      SearchForContextualizedAssociations(assoc->concept,-GR_EXPRESSES, atype, level+1);
-     
+
      SearchForContextualizedAssociations(assoc->concept,GR_FOLLOWS, atype, level+1);
      SearchForContextualizedAssociations(assoc->concept,-GR_FOLLOWS, atype, level+1);
-     
+
      SearchForContextualizedAssociations(assoc->concept,GR_NEAR, atype, level+1);
      SearchForContextualizedAssociations(assoc->concept,-GR_NEAR, atype, level+1);
      
@@ -433,7 +440,7 @@ int RankAssociationsByContext(LinkAssociation array[MAX_ASSOC_ARRAY], char *base
  DIR *dirh_context,*dirh_assocs;
  struct dirent *dirp_c,*dirp_a;
  int count;
- 
+ int threshold = 0;
  count = 0;
 
  // Open the directory and read the possible outgoing links
@@ -470,6 +477,11 @@ int RankAssociationsByContext(LinkAssociation array[MAX_ASSOC_ARRAY], char *base
         
     array[count].relevance = GetBestAssoc(best_association,fromconcept,atype,nextconcept,relevance_context);
 
+    if (array[count].relevance < threshold)
+       {
+       continue;
+       }
+    
     array[count].concept = strdup(nextconcept);
     array[count].context = strdup(relevance_context);
     array[count].fwd = strdup(best_association);
@@ -516,11 +528,9 @@ int GetBestAssoc(char *best_association, char *fromconcept,int atype,char *nextc
        {
        break;
        }
-    
-    array[i].relevance = RelevantToCurrentContext(fromconcept,array[i].fwd,nextconcept,array[i].context);
     }
 
- qsort(array,(size_t)i, sizeof(LinkAssociation *),cmprel);
+ //qsort(array,(size_t)i, sizeof(LinkAssociation *),cmprel);
 
  // The effect of this weight sorting will be small, but look for the best result(s)
 
@@ -560,7 +570,7 @@ int GetBestAssoc(char *best_association, char *fromconcept,int atype,char *nextc
 
  // WARN: not checking for overflow here ... very unlikely but ...
 
- relevance = array[0].relevance;
+ relevance = RelevantToCurrentContext(fromconcept,best_association,nextconcept,relevance_context);
  DeleteAssociations(array);
  return relevance;
 }
@@ -598,52 +608,38 @@ int RelevantToCurrentContext(char *concept,char *assoc,char *nextconcept,char *c
 
 // We need a VERY good reason to actually EXCLUDE a path, because it could become relevant to lateral thinking
 // unless we have no subject, in which case CONTEXT is context hub and rules are different
-//  printf("SHOW %s / %s / %s / %s = %d\n",context, CONTEXT_OPT, concept, nextconcept,Overlap(CONTEXT_OPT,nextconcept));
 
-//  printf("\n(( intcontext = %s, extcontext = %s, concept =%s, nextconcept = %s\n", context,CONTEXT_OPT,concept,nextconcept);
+if (strcmp(CONTEXT_OPT,ALL_CONTEXTS) == 0) // if we are looking for unknown subject
+   {
+   relevance += 80;
+   }
 
-  if (strcmp(concept,ALL_CONTEXTS) == 0) // if we are looking for unknown subject
-     {
-     return 20;
-     }
-  
-// Get current search contexts and see whether strings seem compatible by some measure
-// Want to know if there are common genes in these context strings, leading to significant overlap
+if (strncmp(assoc,"NOT",3) == 0)
+   {
+   not = true;
+   }
 
-
-  // -c context is in CONTEXT_OPT - if no context is given (all are assumed)
- 
- if (strcmp(CONTEXT_OPT,"*") == 0)
-    {
-    relevance = 40;
-    }
- 
- if (strncmp(assoc,"NOT",3) == 0)
-    {
-    not = true;
-    }
-
- // If the next concept is related to the search concept (must exist exactly), recursively
- relevance += Overlap(concept,nextconcept);
+// If the next concept is related to the search concept (must exist exactly), recursively
+relevance += Overlap(concept,nextconcept);
 
  // If the next subject contains the search context 
- relevance += Overlap(CONTEXT_OPT,nextconcept);
+relevance += Overlap(CONTEXT_OPT,nextconcept);
 
- // Finally, if the current context overlaps with the learnt context
- relevance += Overlap(CONTEXT_OPT,context);
-     
- if (relevance > 0)
-    {
-    // Check this, handle NOT
-    if (not)
-       {
-       return 0;
-       }
+// Finally, if the current context overlaps with the learnt context
+relevance += Overlap(CONTEXT_OPT,context);
 
-    return relevance;
-    }
+if (relevance > 0)
+   {
+   // Check this, handle NOT
+   if (not)
+      {
+      return 0;
+      }
+   
+   return relevance;
+   }
 
- return 0;
+return 0;
 }
 
 /**********************************************************/
@@ -661,10 +657,10 @@ int Overlap(char *intended, char *actual)
   char *atomI[MAX_CONTEXT] = {NULL};
   char *atomA[MAX_CONTEXT] = {NULL};
 
-  const double cutoff_threshold = 3; // min frag match
+  const double frag_cutoff_threshold = 3; // min frag match
 
-SplitCompound(intended,atomI);     // Look at the learned relevance
-SplitCompound(actual,atomA); // Look at the current cognitive context
+SplitCompound(intended,atomI); // Look at the learned relevance
+SplitCompound(actual,atomA);   // Look at the current cognitive context
 
 for (i = 0; i < MAX_CONTEXT && atomI[i]; i++)
    {
@@ -681,18 +677,21 @@ for (i = 0; i < MAX_CONTEXT && atomI[i]; i++)
          {
          if (atomI[i][k] == '\0') // intended is a substring of actual
             {
+            //printf("match %s %s\n", atomI[i], atomA[j]);
             t += strlen(atomA[j]+k);
             break;
             }
          
          if (atomA[j][k] == '\0') // actual is a substring of intended
             {
+            //printf("match %s %s\n", atomI[i], atomA[j]);
             t += strlen(atomI[i]+k);
             break;
             }
 
          if (atomI[i][k] != atomA[j][k]) // terminate on mismatch
             {
+            //printf("mismatch %s %s\n", atomI[i], atomA[j]);
             t += strlen(atomA[j]+k);
             break;
             }
@@ -703,10 +702,16 @@ for (i = 0; i < MAX_CONTEXT && atomI[i]; i++)
             }
          }
 
-      if (s > cutoff_threshold)
+      if (s > frag_cutoff_threshold)
          {
          score += s;
          total += t;
+         }
+      else
+         {
+         // If there is no significant word overlap, then add the length of
+         // the non-matching string to scale the fractional overlap
+         total += strlen(atomI[i]);
          }
       }
    }
@@ -720,7 +725,7 @@ else
    percent = 0;
    }
 
-//printf("SCORE %f (%s,%s)\n",percent,intended,actual);
+//printf("  - SCORE %f (%s,%s)\n",percent,intended,actual);
 
 for (i = 0; i < MAX_CONTEXT; i++)
    {
@@ -746,6 +751,11 @@ void SplitCompound(char *str, char *atoms[MAX_CONTEXT])
 { char *sp = str;
   char word[255];
   int pos = 0;
+
+ if (str == NULL)
+    {
+    return;
+    }  
  
  while (*sp != '\0')
     {

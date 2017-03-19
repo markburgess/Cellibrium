@@ -61,7 +61,7 @@ int main()
  // Note how fragile this is to difference between available,availability ... linguistically we could fuzzy match
  
  RoleCluster(stdout,"general practictioner doctor available","doctor availability", "general,practitioner,doctor", "patient health service");
- RoleCluster(stdout,"open for business","service availability", "open,available", ALL_CONTEXTS);
+ RoleCluster(stdout,"open for business","service availability", "open,available", "need to visit a doctor");
 
  Gr(stdout,"have public health service access",a_depends,"patient authenticated","need to visit a doctor");
  Gr(stdout,"have public health service access",a_depends,"patient appointment","need to visit a doctor");

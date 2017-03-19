@@ -64,12 +64,10 @@
 #define CF_GRAPHNEW_FILE "env_graph.new"
 #define CF_GRAPH_FILE    "env_graph"
 
-
 /*****************************************************************************/
 
 static char ENVFILE_NEW[CF_BUFSIZE] = "";
 static char ENVFILE[CF_BUFSIZE] = "";
-
 static char GRAPHFILE_NEW[CF_BUFSIZE] = "";
 static char GRAPHFILE[CF_BUFSIZE] = "";
 
@@ -665,7 +663,7 @@ static void BuildConsciousState(EvalContext *ctx, Averages av, Timescales t)
     char cname[CF_BUFSIZE],dstring[CF_BUFSIZE];
     snprintf(cname,CF_BUFSIZE,"measurement called %s",name);
     snprintf(dstring,CF_BUFSIZE,"%s,measurement",name);
-    RoleCluster(consc,cname, "measurement type", dstring, ContextCluster(consc,"system monitoring data sample"));
+    RoleCluster(consc,cname, "measurement type", dstring, ContextCluster(consc,"system monitoring measuring data sample"));
     Gr(consc,cname,a_interpreted,desc,"system monitoring data sample");
     Gr(consc,"system monitoring measurements",a_contains,cname,"system monitoring data sample");
 
