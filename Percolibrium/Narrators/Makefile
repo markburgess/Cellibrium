@@ -1,5 +1,8 @@
 
-all: stories
+all: stories stories2
 
 stories: stories-fs.c
 	gcc -o stories -g stories-fs.c
+
+stories2: stories-fs2.c
+	gcc -o stories2 -g stories-fs2.c
