@@ -76,8 +76,6 @@ static const char *HINTS[6] =
 
 /*****************************************************************************/
 
-void NewManyWorldsContext(char *concept, char *context);
-void DeleteManyWorldsContext(void);
 void SearchForContextualizedAssociations(char *concept, int atype, int prevtype, int level);
 void FollowNextAssociation(int prevtype,int atype,int level,char *concept,LinkAssociation *assoc);
 int GetBestAssoc(char *best_association, char *concept,int atype,char *nextconcept,char *context);
@@ -195,8 +193,6 @@ void main(int argc, char** argv)
   
   // off we go
 
-  NewManyWorldsContext(subject,CONTEXT_OPT);
-  
  if (ATYPE_OPT != CGN_ROOT)
     {
     SearchForContextualizedAssociations(subject, ATYPE_OPT, CGN_ROOT, level);
@@ -221,69 +217,8 @@ void main(int argc, char** argv)
     }
 
  printf("\n");
- DeleteManyWorldsContext();
 }
 
-/**********************************************************/
-
-void NewManyWorldsContext(char *concept, char *context)
-{
- char name[CGN_BUFSIZE];
-
- umask(0); 
- snprintf(MANY_WORLDS_CONTEXT,CGN_BUFSIZE,"/tmp/story_world_%s_%s",concept,context);
- mkdir(MANY_WORLDS_CONTEXT,((mode_t)0755));
-
- DIR *dirh;
- struct dirent *dirp;
- 
- if ((dirh = opendir(MANY_WORLDS_CONTEXT)) == NULL)
-    {
-    return;
-    }
-
- for (dirp = readdir(dirh); dirp != NULL; dirp = readdir(dirh))
-    {
-    if (dirp->d_name[0] == '.')
-       {
-       continue;
-       }
-
-    snprintf(name,CGN_BUFSIZE,"%s/%s",MANY_WORLDS_CONTEXT,dirp->d_name);
-    unlink(name);
-    }
- 
- closedir(dirh);
-}
-    
-/**********************************************************/
-
-void DeleteManyWorldsContext(void)
-{
- char name[CGN_BUFSIZE];
- DIR *dirh;
- struct dirent *dirp;
- 
- if ((dirh = opendir(MANY_WORLDS_CONTEXT)) == NULL)
-    {
-    return;
-    }
- 
- for (dirp = readdir(dirh); dirp != NULL; dirp = readdir(dirh))
-    {
-    if (dirp->d_name[0] == '.')
-       {
-       continue;
-       }
-
-    snprintf(name,CGN_BUFSIZE,"%s/%s",MANY_WORLDS_CONTEXT,dirp->d_name);
-    unlink(name);
-    }
- closedir(dirh);
-
- rmdir(MANY_WORLDS_CONTEXT);
-}
-    
 /**********************************************************/
 
 void ShowMatchingConcepts(char *context)
