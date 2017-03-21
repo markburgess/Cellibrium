@@ -365,7 +365,11 @@ int ConceptAlreadyUsed(char *concept, int pathposition)
     fscanf(fp, "%d", &level);
     fclose(fp);
 
-    if (pathposition > level)
+    // This assumption that a concept holds a position may not be accurate,
+    // we should rather count the number of times used along each path
+    // this also modifies context along the path
+    
+    if (pathposition > level) 
        {
        return true;
        }

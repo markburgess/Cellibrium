@@ -30,7 +30,7 @@
 (general practictioner doctor available,4,expresses an attribute,general,is an attribute of,searching looking)
 (general practictioner doctor available,4,expresses an attribute,practitioner,is an attribute of,searching looking)
 (general practictioner doctor available,4,expresses an attribute,doctor,is an attribute of,searching looking)
-(open for business,4,has the role of,service availability,is a role fulfilled by,searching looking)
+(open for business,4,has the role of,service availability,is a role fulfilled by,need to visit a doctor)
 (open for business,4,expresses an attribute,open,is an attribute of,searching looking)
 (open for business,4,expresses an attribute,available,is an attribute of,searching looking)
 (have public health service access,2,depends on,patient authenticated,partly determines,need to visit a doctor)

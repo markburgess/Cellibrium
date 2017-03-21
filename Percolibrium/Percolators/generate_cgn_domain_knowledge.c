@@ -103,18 +103,19 @@ Gr(stdout,"pattern matching", a_contains, "wildcards","*");
 Gr(stdout,"pattern matching", a_contains, "regular expressions","*");
 
 
-Gr(stdout, "iprange" ,a_uses,"FuzzySetMatch","software");
-Gr(stdout, "iprange" ,a_depends,"network pattern matching","software");
+Gr(stdout, "function iprange" ,a_uses,"FuzzySetMatch","software");
+Gr(stdout, "function iprange" ,a_promises,"network pattern matching","software");
 
 
-Gr(stdout, "iprange" ,a_hasrole,"CGNgine class function","software");
-Gr(stdout, "iprange" ,a_hasrole,"host classifier","software");
-Gr(stdout, "iprange" ,a_hasattr,"host","software");
-Gr(stdout, "iprange" ,a_hasattr,"host classifier","software");
+Gr(stdout, "function iprange" ,a_hasrole,"CGNgine class function","software");
+Gr(stdout, "function iprange" ,a_hasrole,"host classifier","software");
+Gr(stdout, "function iprange" ,a_hasattr,"host","software");
+Gr(stdout, "function iprange" ,a_hasattr,"host classifier","software");
+
+Gr(stdout, "label promise at line 25 of file promises.cf" ,a_uses,"function iprange","system policy declaration");
 
 Gr(stdout, "class or context label" ,a_alias,"host classifier","system monitoring");
 
-Gr(stdout, ContextCluster(stdout,"CGNgine class function"),a_contains,"iprange","software");
 Gr(stdout, "system policy", a_contains, "CGNgine class function","software");
 Gr(stdout, "CGNgine class function", a_contains,"CGNgine function",ALL_CONTEXTS);
 Gr(stdout, "CGNgine policy language", a_contains, "CGNgine functions",ALL_CONTEXTS);
