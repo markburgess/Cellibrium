@@ -433,6 +433,8 @@ void FollowNextAssociation(int prevtype,int atype,int level,char *concept,LinkAs
      SearchForContextualizedAssociations(assoc->concept,GR_CONTAINS, atype, level+1);
      SearchForContextualizedAssociations(assoc->concept,-GR_CONTAINS, atype, level+1);
      }
+
+  printf("          %s [%d]---------------------------------------------------------------------------------\n",Indent(level),level);
 }
 
 /*****************************************************************************/
