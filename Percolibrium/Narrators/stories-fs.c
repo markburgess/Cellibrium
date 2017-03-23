@@ -79,7 +79,7 @@ static const char *HINTS[6] =
 void NewManyWorldsContext(char *concept, char *context);
 void DeleteManyWorldsContext(void);
 void SearchForContextualizedAssociations(char *concept, int atype, int prevtype, int level);
-void FollowNextAssociation(int prevtype,int atype,int level,char *concept,LinkAssociation *assoc);
+int FollowNextAssociation(int prevtype,int atype,int level,char *concept,LinkAssociation *assoc);
 int GetBestAssoc(char *best_association, char *concept,int atype,char *nextconcept,char *context);
 int RankAssociationsByContext(LinkAssociation array[MAX_ASSOC_ARRAY], char *basedir, char* concept, int atype);
 int RelevantToCurrentContext(char *concept,char *assoc,char *nextconcept,char *context);
@@ -336,11 +336,14 @@ void SearchForContextualizedAssociations(char *concept, int atype, int prevtype,
 
     if (level < RECURSE_OPT+1) // Arbitrary curb on length of stories
        {
-       FollowNextAssociation(prevtype,atype,level,concept,&(array[i]));
+       if (!FollowNextAssociation(prevtype,atype,level,concept,&(array[i])))
+          {
+          printf("          %s << End of unique story\n",Indent(level));
+          }
 
        if (count++ > max_stories)
           {
-          printf(" ++ more....\n");
+          printf("          %s  ++ more similar....\n",Indent(level));
           break;
           }
        }
@@ -390,7 +393,7 @@ int ConceptAlreadyUsed(char *concept, int pathposition)
 
 /*****************************************************************************/
 
-void FollowNextAssociation(int prevtype,int atype,int level,char *concept,LinkAssociation *assoc)
+int FollowNextAssociation(int prevtype,int atype,int level,char *concept,LinkAssociation *assoc)
 
 { int relevance;
   const int dontwanttoseethis = 0;
@@ -410,7 +413,7 @@ void FollowNextAssociation(int prevtype,int atype,int level,char *concept,LinkAs
 
   if (ConceptAlreadyUsed(assoc->concept, level))
      {
-     return;
+     return false;
      }
 
   if (ATYPE_OPT != CGN_ROOT)
@@ -435,6 +438,7 @@ void FollowNextAssociation(int prevtype,int atype,int level,char *concept,LinkAs
      }
 
   printf("          %s [%d]---------------------------------------------------------------------------------\n",Indent(level),level);
+  return true;
 }
 
 /*****************************************************************************/
