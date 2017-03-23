@@ -1,15 +1,15 @@
 /*****************************************************************************/
 /*                                                                           */
-/* File: stories-fs.c                                                        */
+/* File: stories-fs2.c                                                       */
 /*                                                                           */
 /*****************************************************************************/
 
- // Conceptual sketch for exploring the graph knowledge representation
+ // Alternative version using branching process to separate then collate stories
  // This marries/matches with Percolators/conceptualize-fs.c
 
- // gcc -o stories -g stories-fs.c
+ // gcc -o stories2 -g stories-fs2.c
 
- // Usage example: ./stories "expectation value" 
+ // Usage example: ./stories2 "expectation value" 
 
 #include <string.h>
 #include <stdlib.h>
@@ -30,9 +30,12 @@
 #define true 1
 #define false 0
 #define CGN_BUFSIZE 1024
-#define MAX_WORD_SZ 265
-#define MAX_CONTEXT 265
+#define MAX_WORD_SZ 256
+#define MAX_CONTEXT 256
+#define MAX_STORIES 128
 #define CGN_ROOT 99
+#define MAX_STORY_LEN 16
+
 
 #include "../../RobIoTs/CGNgine/libpromises/graph.h"
 #include "../../RobIoTs/CGNgine/libpromises/graph_defs.c"
@@ -40,6 +43,13 @@
 #include "../Percolators/associations.c"
 
 /*****************************************************************************/
+
+typedef struct
+{
+   LinkAssociation *episode[MAX_STORY_LEN];  // Can be shared
+   int score;
+
+} Story;
 
 extern char *optarg;
 extern int optind, opterr, optopt;
@@ -50,7 +60,10 @@ int ATYPE_OPT = CGN_ROOT;
 int RECURSE_OPT = 10;
 char *CONTEXT_OPT;
 
-char MANY_WORLDS_CONTEXT[CGN_BUFSIZE];
+// Global story list for collating and ranking all branches
+
+Story ALLSTORIES[MAX_STORIES];
+int STORY_COUNTER = 0;
 
 /*****************************************************************************/
 
@@ -76,14 +89,15 @@ static const char *HINTS[6] =
 
 /*****************************************************************************/
 
-void NewManyWorldsContext(char *concept, char *context);
-void DeleteManyWorldsContext(void);
-void SearchForContextualizedAssociations(char *concept, int atype, int prevtype, int level);
-void FollowNextAssociation(int prevtype,int atype,int level,char *concept,LinkAssociation *assoc);
+void CopyStory(Story *to, Story *from);
+void InitializeStory(Story *s);
+void InitializeStories(Story all[MAX_STORIES]);
+void SearchForContextualizedAssociations(char *concept, int atype, int prevtype, int level, Story this);
+int FollowNextAssociation(int prevtype,int atype,int level,char *concept,LinkAssociation *assoc, Story this);
 int GetBestAssoc(char *best_association, char *concept,int atype,char *nextconcept,char *context);
 int RankAssociationsByContext(LinkAssociation array[MAX_ASSOC_ARRAY], char *basedir, char* concept, int atype);
 int RelevantToCurrentContext(char *concept,char *assoc,char *nextconcept,char *context);
-int ConceptAlreadyUsed(char *concept);
+int ConceptAlreadyUsed(char *concept,Story *story);
 char *Indent(int level);
 void SplitCompound(char *str, char *atoms[MAX_CONTEXT]);
 void ShowMatchingConcepts(char *context);
@@ -92,13 +106,14 @@ int Overlap(char *set1, char *set2);
 
 static int cmpassoc(const void *p1, const void *p2);
 static int cmprel(const void *p1, const void *p2);
+static int cmpst(const void *p1, const void *p2);
 
 /*****************************************************************************/
 
 void main(int argc, char** argv)
 {
  int level = 0;
- int optindex = 0, i;
+ int optindex = 0, i,j;
  char c;
  char *subject = NULL, *context = NULL;
  
@@ -155,8 +170,6 @@ void main(int argc, char** argv)
   if (CONTEXT_OPT)
      {
      
-
-
      // Should we add the subject and first order connections to the context list?
 
      // What kind of an agent am I?
@@ -195,115 +208,69 @@ void main(int argc, char** argv)
   
   // off we go
 
-  NewManyWorldsContext(subject,CONTEXT_OPT);
+  Story thisstory;
+  InitializeStory(&thisstory);
+  InitializeStories(ALLSTORIES);
+
+  // choose a search algorithm
   
- if (ATYPE_OPT != CGN_ROOT)
-    {
-    SearchForContextualizedAssociations(subject, ATYPE_OPT, CGN_ROOT, level);
-    }
- else
-    {
-    printf("=========== sequential, causal reasoning =======================\n\n");
-    SearchForContextualizedAssociations(subject, GR_FOLLOWS, CGN_ROOT, level);
-    SearchForContextualizedAssociations(subject, -GR_FOLLOWS, CGN_ROOT, level);
+  if (ATYPE_OPT != CGN_ROOT)
+     {
+     SearchForContextualizedAssociations(subject, ATYPE_OPT, CGN_ROOT, level, thisstory);
+     }
+  else
+     {
+     SearchForContextualizedAssociations(subject, GR_FOLLOWS, CGN_ROOT, level, thisstory);
+     SearchForContextualizedAssociations(subject, -GR_FOLLOWS, CGN_ROOT, level, thisstory);
+     
+     SearchForContextualizedAssociations(subject, GR_NEAR, CGN_ROOT, level, thisstory);
+     SearchForContextualizedAssociations(subject, -GR_NEAR, CGN_ROOT, level, thisstory);
+     
+     SearchForContextualizedAssociations(subject, GR_CONTAINS, CGN_ROOT, level, thisstory);
+     SearchForContextualizedAssociations(subject, -GR_CONTAINS, CGN_ROOT, level, thisstory);
+     
+     SearchForContextualizedAssociations(subject, GR_EXPRESSES, CGN_ROOT, level, thisstory);
+     SearchForContextualizedAssociations(subject, -GR_EXPRESSES, CGN_ROOT, level, thisstory);
+     }
+  
+  printf("\n\n");
 
-    printf("=========== proximity reasoning =======================\n\n");
-    SearchForContextualizedAssociations(subject, GR_NEAR, CGN_ROOT, level);
-    SearchForContextualizedAssociations(subject, -GR_NEAR, CGN_ROOT, level);
-
-    printf("=========== boundary or enclosure reasoning =======================\n\n");
-    SearchForContextualizedAssociations(subject, GR_CONTAINS, CGN_ROOT, level);
-    SearchForContextualizedAssociations(subject, -GR_CONTAINS, CGN_ROOT, level);
-
-    printf("=========== property or promise based reasoning =======================\n\n");
-    SearchForContextualizedAssociations(subject, GR_EXPRESSES, CGN_ROOT, level);
-    SearchForContextualizedAssociations(subject, -GR_EXPRESSES, CGN_ROOT, level);
-    }
-
- printf("\n");
- DeleteManyWorldsContext();
+  qsort(ALLSTORIES,(size_t)STORY_COUNTER, sizeof(Story),cmpst);
+  
+  for (i = 0; (i < MAX_STORIES)&&(ALLSTORIES[i].episode[0] != NULL); i++)
+     {
+     printf("--STORY RATED %d %% relevance ----\n", ALLSTORIES[i].score);
+     for (j = 0; (j < MAX_STORY_LEN)&&(ALLSTORIES[i].episode[j] != NULL); j++)
+        {
+        printf(" - %s %s (in the context %s)\n",ALLSTORIES[i].episode[j]->fwd,ALLSTORIES[i].episode[j]->concept,ALLSTORIES[i].episode[j]->context );
+        }
+     }
 }
 
-/**********************************************************/
-
-void NewManyWorldsContext(char *concept, char *context)
-{
- char name[CGN_BUFSIZE];
-
- umask(0); 
- snprintf(MANY_WORLDS_CONTEXT,CGN_BUFSIZE,"/tmp/story_world_%s_%s",concept,context);
- mkdir(MANY_WORLDS_CONTEXT,((mode_t)0755));
-
- DIR *dirh;
- struct dirent *dirp;
- 
- if ((dirh = opendir(MANY_WORLDS_CONTEXT)) == NULL)
-    {
-    return;
-    }
-
- for (dirp = readdir(dirh); dirp != NULL; dirp = readdir(dirh))
-    {
-    if (dirp->d_name[0] == '.')
-       {
-       continue;
-       }
-
-    snprintf(name,CGN_BUFSIZE,"%s/%s",MANY_WORLDS_CONTEXT,dirp->d_name);
-    unlink(name);
-    }
- 
- closedir(dirh);
-}
-    
-/**********************************************************/
-
-void DeleteManyWorldsContext(void)
-{
- char name[CGN_BUFSIZE];
- DIR *dirh;
- struct dirent *dirp;
- 
- if ((dirh = opendir(MANY_WORLDS_CONTEXT)) == NULL)
-    {
-    return;
-    }
- 
- for (dirp = readdir(dirh); dirp != NULL; dirp = readdir(dirh))
-    {
-    if (dirp->d_name[0] == '.')
-       {
-       continue;
-       }
-
-    snprintf(name,CGN_BUFSIZE,"%s/%s",MANY_WORLDS_CONTEXT,dirp->d_name);
-    unlink(name);
-    }
- closedir(dirh);
-
- rmdir(MANY_WORLDS_CONTEXT);
-}
-    
 /**********************************************************/
 
 void ShowMatchingConcepts(char *context)
 
 {
  int level = 0;
-
+ Story thisstory;
+ InitializeStory(&thisstory);
  RECURSE_OPT = 1;
  CONTEXT_OPT = strdup(context);
- SearchForContextualizedAssociations(ALL_CONTEXTS, GR_CONTEXT, CGN_ROOT, level);
+ SearchForContextualizedAssociations(ALL_CONTEXTS, GR_CONTEXT, CGN_ROOT, level,thisstory);
 }
 
 /*****************************************************************************/
 /* L1                                                                        */
 /*****************************************************************************/
 
-void SearchForContextualizedAssociations(char *concept, int atype, int prevtype, int level)
+
+// FindPathBranches
+
+void SearchForContextualizedAssociations(char *concept, int atype, int prevtype, int level, Story thisstory)
 
 { int i, count = 0;
-  LinkAssociation array[MAX_ASSOC_ARRAY];
+  LinkAssociation *array = malloc(sizeof(LinkAssociation)*MAX_ASSOC_ARRAY);
   const int threshold_for_relevance = 0;
   const int max_stories = 5;
   
@@ -321,99 +288,88 @@ void SearchForContextualizedAssociations(char *concept, int atype, int prevtype,
        continue;
        }
     
-    // Similar attributes, but don't go back the way we came
+    // Don't retrace the way we came, or similar (breadcrumbs)
     
     if (atype == -prevtype)
        {
        continue;
-       if (atype == GR_CONTAINS || atype == -GR_CONTAINS || atype == GR_EXPRESSES || atype == -GR_EXPRESSES)
-          {
-          printf("CHECK FOR LOOPS\n");
-          }
        }
 
     // Explore next level, if context and everything matches
 
-    if (level < RECURSE_OPT+1) // Arbitrary curb on length of stories
+    if ((level < RECURSE_OPT+1) && (level < MAX_STORY_LEN)) // Arbitrary curb on length of stories
        {
-       FollowNextAssociation(prevtype,atype,level,concept,&(array[i]));
+       if (!FollowNextAssociation(prevtype,atype,level,concept,&(array[i]),thisstory))
+          {
+          if (STORY_COUNTER < MAX_STORIES-1)
+             {
+             CopyStory(&(ALLSTORIES[STORY_COUNTER++]),&thisstory);
+             }
+          }
 
        if (count++ > max_stories)
           {
-          printf(" ++ more....\n");
+          //printf(" ++ more....\n");
           break;
           }
        }
     }
-
- DeleteAssociations(array);
+ // Don't DeleteAssociations(array), because we use the references to collate all stories;
 }
 
 /*****************************************************************************/
 
-int ConceptAlreadyUsed(char *concept)
+int ConceptAlreadyUsed(char *concept, Story *story)
 {
- struct stat statbuf;
- char name[CGN_BUFSIZE];
+ int i;
 
- snprintf(name,CGN_BUFSIZE,"%s/%s",MANY_WORLDS_CONTEXT,concept);
- 
- if (stat(name,&statbuf) != -1)
+ for (i = 0; (i < MAX_STORY_LEN) && (story->episode[i] != NULL); i++)
     {
-    return true;
+    if (strcmp(concept,story->episode[i]->concept) == 0)
+       {
+       return true;
+       }
     }
- else
-    {
-    creat(name,0644);
-    return false;
-    }
+
+ return false;
 }
 
 /*****************************************************************************/
 
-void FollowNextAssociation(int prevtype,int atype,int level,char *concept,LinkAssociation *assoc)
+int FollowNextAssociation(int prevtype,int atype,int level,char *concept,LinkAssociation *assoc, Story thisstory)
 
 { int relevance;
   const int dontwanttoseethis = 0;
 
-  if (assoc->relevance > dontwanttoseethis)
+  if (ConceptAlreadyUsed(assoc->concept,&thisstory))
      {
-     if ((atype == -prevtype) && (abs(atype) != GR_FOLLOWS)) // Don't double back
-        {
-        printf ("%s and also note \"%s\" %s \"%s\" (intended in the context of %s)\n", Indent(level), concept,assoc->fwd, assoc->concept,assoc->context);
-        //return; 
-        }
-     else
-        {
-        printf ("%d:%s) %s \"%s\" %s \"%s\" (intended context: %s - %d%%)\n", level,Abbr(atype), Indent(level),concept,assoc->fwd, assoc->concept,assoc->context,assoc->relevance);
-        }
+     return false;
      }
 
-  if (ConceptAlreadyUsed(assoc->concept))
-     {
-     return;
-     }
-
+  // Append this path step in this private branch
+  thisstory.episode[level] = assoc;
+  
   if (ATYPE_OPT != CGN_ROOT)
      {
-     SearchForContextualizedAssociations(assoc->concept,ATYPE_OPT, atype, level+1);
-     SearchForContextualizedAssociations(assoc->concept,-ATYPE_OPT, atype, level+1);
+     SearchForContextualizedAssociations(assoc->concept,ATYPE_OPT, atype, level+1, thisstory);
+     SearchForContextualizedAssociations(assoc->concept,-ATYPE_OPT, atype, level+1, thisstory);
      }
   else
      {
-     SearchForContextualizedAssociations(assoc->concept,GR_EXPRESSES, atype, level+1);
-     SearchForContextualizedAssociations(assoc->concept,-GR_EXPRESSES, atype, level+1);
+     SearchForContextualizedAssociations(assoc->concept,GR_EXPRESSES, atype, level+1, thisstory);
+     SearchForContextualizedAssociations(assoc->concept,-GR_EXPRESSES, atype, level+1, thisstory);
 
-     SearchForContextualizedAssociations(assoc->concept,GR_FOLLOWS, atype, level+1);
-     SearchForContextualizedAssociations(assoc->concept,-GR_FOLLOWS, atype, level+1);
+     SearchForContextualizedAssociations(assoc->concept,GR_FOLLOWS, atype, level+1, thisstory);
+     SearchForContextualizedAssociations(assoc->concept,-GR_FOLLOWS, atype, level+1, thisstory);
 
-     SearchForContextualizedAssociations(assoc->concept,GR_NEAR, atype, level+1);
-     SearchForContextualizedAssociations(assoc->concept,-GR_NEAR, atype, level+1);
+     SearchForContextualizedAssociations(assoc->concept,GR_NEAR, atype, level+1, thisstory);
+     SearchForContextualizedAssociations(assoc->concept,-GR_NEAR, atype, level+1, thisstory);
      
-     // Exploring next, policy only if previous connection was also quasi-transitive
-     SearchForContextualizedAssociations(assoc->concept,GR_CONTAINS, atype, level+1);
-     SearchForContextualizedAssociations(assoc->concept,-GR_CONTAINS, atype, level+1);
+     SearchForContextualizedAssociations(assoc->concept,GR_CONTAINS, atype, level+1, thisstory);
+     SearchForContextualizedAssociations(assoc->concept,-GR_CONTAINS, atype, level+1, thisstory);
      }
+
+  return true;
 }
 
 /*****************************************************************************/
@@ -530,8 +486,6 @@ int GetBestAssoc(char *best_association, char *fromconcept,int atype,char *nextc
        }
     }
 
- //qsort(array,(size_t)i, sizeof(LinkAssociation *),cmprel);
-
  // The effect of this weight sorting will be small, but look for the best result(s)
 
  if (--i > 0)
@@ -597,6 +551,18 @@ static int cmprel(const void *p1, const void *p2)
  c2 = ((LinkAssociation *)p2);
 
  return (c1->relevance  < c2->relevance);
+}
+
+/**********************************************************/
+
+static int cmpst(const void *p1, const void *p2)
+{
+ Story *c1,*c2;
+
+ c1 = ((Story *)p1);
+ c2 = ((Story *)p2);
+
+ return (c1->score  < c2->score);
 }
 
 /**********************************************************/
@@ -725,8 +691,6 @@ else
    percent = 0;
    }
 
-//printf("  - SCORE %f (%s,%s)\n",percent,intended,actual);
-
 for (i = 0; i < MAX_CONTEXT; i++)
    {
    if (atomI[i])
@@ -805,5 +769,47 @@ char *Abbr(int d)
 
     default:
         return "???";
+    }
+}
+
+/**********************************************************/
+
+void CopyStory(Story *to, Story *from)
+
+{ int i;
+ double sum = 0, num = 0;
+ 
+ for (i = 0; (i < MAX_STORY_LEN) && (from->episode[i] != NULL); i++)
+    {
+    to->episode[i] = from->episode[i];
+    sum += (double) from->episode[i]->relevance;
+    num ++;
+    }
+
+ to->score = (int)(sum/num+0.5);
+}
+
+/**********************************************************/
+
+void InitializeStory(Story *s)
+{
+ int j;
+ 
+ s->score = 0;
+ 
+ for (j = 0; j < MAX_STORY_LEN; j++)
+    {
+    s->episode[j] = NULL;
+    }
+}
+/**********************************************************/
+
+void InitializeStories(Story all[MAX_STORIES])
+{
+ int i,j;
+
+ for (i = 0; i < MAX_STORIES; i++)
+    {
+    InitializeStory(&(all[i]));
     }
 }
