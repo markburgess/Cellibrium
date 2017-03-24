@@ -2,7 +2,6 @@
 
 CELLIBRIUM Project
 
-
 This project expands on, and reworks, the latent AI/AR ideas that were
 intoduced in CFEngine between 1998-2012, and were since abandoned for
 the commercial activity. This work modifies and extends the concepts,
@@ -20,7 +19,10 @@ Code here is based on research into Semantic Spaces, found at
 http://markburgess.org/spacetime.html
 
 For now, think of this as an experimental proof of concept cognitive
-computing model
+computing model. Code mavens be warned, this is not intended as robust
+production-style code; it puts clarity of intent ahead of edge-case
+nitpicking, because it is not yet always clear exactly what the intent
+may be!
 
 - Cellibrium
     -RobIoTs
