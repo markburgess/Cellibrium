@@ -12,11 +12,8 @@ typedef struct
 {
    char *concept;
    char *fwd;
-   
    char *bwd;      // unneeded?
-
    char *context;
-
    int relevance;
    time_t lastseen;
    double weight;

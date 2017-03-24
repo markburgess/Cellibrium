@@ -6,7 +6,7 @@
 (gravitational effect,2,depends on,mass,affects,physics)
 (gravitational effect,2,depends on,distance,affects,physics)
 (tidal,2,is authenticated by,facebook authentication,authenticates,online services applications)
-(tidal,2,depends on,facebook,provides a service for,online services applications)
+(tidal,2,depends on,facebook authentication,provides a service for,online services applications)
 
 (tidal,2,NOT depends on,facebook,NOT provides a service for,physics gravity orbit moon satellite distortion)
 

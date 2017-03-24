@@ -31,8 +31,8 @@
 #define false 0
 #define CGN_BUFSIZE 1024
 #define MAX_WORD_SZ 256
-#define MAX_CONTEXT 256
-#define MAX_STORIES 128
+#define MAX_CONTEXT 2048
+#define MAX_STORIES 256
 #define CGN_ROOT 99
 #define MAX_STORY_LEN 16
 
@@ -41,6 +41,8 @@
 #include "../../RobIoTs/CGNgine/libpromises/graph_defs.c"
 #include "../Percolators/associations.h"
 #include "../Percolators/associations.c"
+#include "context.h"
+#include "context.c"
 
 /*****************************************************************************/
 
@@ -103,7 +105,6 @@ void SplitCompound(char *str, char *atoms[MAX_CONTEXT]);
 void ShowMatchingConcepts(char *context);
 char *Abbr(int n);
 int Overlap(char *set1, char *set2);
-
 static int cmpassoc(const void *p1, const void *p2);
 static int cmprel(const void *p1, const void *p2);
 static int cmpst(const void *p1, const void *p2);
@@ -167,20 +168,9 @@ void main(int argc, char** argv)
 
   printf("\nExploring stories in knowledge bank at %s\n",BASEDIR);
   
-  if (CONTEXT_OPT)
-     {
-     
-     // Should we add the subject and first order connections to the context list?
+  AppendStateOfMind(CONTEXT_OPT,ALL_CONTEXTS,"");
 
-     // What kind of an agent am I?
-     // Whta kinds of things do I think about?
-     }
-  else
-     {
-     CONTEXT_OPT = strdup(ALL_CONTEXTS);
-     }
-
-  printf("Found context: \"%s\"\n", CONTEXT_OPT);
+  printf("Found starting context: \"%s\"\n", POSITIVE_CONTEXT);
 
   if (subject)
      {
@@ -235,14 +225,26 @@ void main(int argc, char** argv)
   
   printf("\n\n");
 
+  // Collate all the stories and rank by relevance score
+  
   qsort(ALLSTORIES,(size_t)STORY_COUNTER, sizeof(Story),cmpst);
   
   for (i = 0; (i < MAX_STORIES)&&(ALLSTORIES[i].episode[0] != NULL); i++)
      {
-     printf("--STORY RATED %d %% relevance ----\n", ALLSTORIES[i].score);
-     for (j = 0; (j < MAX_STORY_LEN)&&(ALLSTORIES[i].episode[j] != NULL); j++)
+     if (ALLSTORIES[i].score > 0)
         {
-        printf(" - %s %s (in the context %s)\n",ALLSTORIES[i].episode[j]->fwd,ALLSTORIES[i].episode[j]->concept,ALLSTORIES[i].episode[j]->context );
+        printf("\nSTORY rated %d %% relevance ---- for context: %s", ALLSTORIES[i].score, POSITIVE_CONTEXT);
+
+        if (strlen(NEGATIVE_CONTEXT) > 2)
+           {
+           printf(" but not %s",NEGATIVE_CONTEXT);
+           }
+        
+        printf("\n %s ...\n",subject);
+        for (j = 0; (j < MAX_STORY_LEN)&&(ALLSTORIES[i].episode[j] != NULL); j++)
+           {
+           printf(" - which %s %s (in the context %s %d%%)\n",ALLSTORIES[i].episode[j]->fwd,ALLSTORIES[i].episode[j]->concept,ALLSTORIES[i].episode[j]->context, ALLSTORIES[i].episode[j]->relevance);
+           }
         }
      }
 }
@@ -348,6 +350,8 @@ int FollowNextAssociation(int prevtype,int atype,int level,char *concept,LinkAss
 
   // Append this path step in this private branch
   thisstory.episode[level] = assoc;
+
+  AppendStateOfMind(assoc->context,"",""); // Do we want to think about NOT here?
   
   if (ATYPE_OPT != CGN_ROOT)
      {
@@ -441,7 +445,6 @@ int RankAssociationsByContext(LinkAssociation array[MAX_ASSOC_ARRAY], char *base
     array[count].concept = strdup(nextconcept);
     array[count].context = strdup(relevance_context);
     array[count].fwd = strdup(best_association);
-    array[count].bwd = strdup("n/a"); // Don't need this here
     count++;
     }
 
@@ -802,6 +805,7 @@ void InitializeStory(Story *s)
     s->episode[j] = NULL;
     }
 }
+
 /**********************************************************/
 
 void InitializeStories(Story all[MAX_STORIES])
@@ -813,3 +817,4 @@ void InitializeStories(Story all[MAX_STORIES])
     InitializeStory(&(all[i]));
     }
 }
+

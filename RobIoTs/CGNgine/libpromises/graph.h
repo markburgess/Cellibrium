@@ -64,7 +64,7 @@ extern Association A[a_ass_dim+1];
 #define GR_EXPRESSES 4 // represents, etc
 #define GR_NEAR      1 // approx like
 #define GR_CONTEXT   5 // approx like
-#define ALL_CONTEXTS "searching looking"
+#define ALL_CONTEXTS "any"
 
 // Don't like using /tmp but keep is simple here - personalize to make non-shared etc
 
