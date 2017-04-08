@@ -6,84 +6,145 @@
 /*                                                                           */
 /*****************************************************************************/
 
+#define MAX_CONTEXT 2048
+#define POSDIR "/tmp/CellibriumPC"
+#define NEGDIR "/tmp/CellibriumNC"
+
 static char *Trim(char *s);
 static void Chop(char *s);
-static void sstrcat(char *s,char *n);
 
 // Context accumulation of "state of mind"
 
-char *POSITIVE_CONTEXT = NULL;
-char *NEGATIVE_CONTEXT = NULL;
+char *POSITIVE_CONTEXT[MAX_CONTEXT] = { NULL };
+char *NEGATIVE_CONTEXT[MAX_CONTEXT] = { NULL };
 
+/*****************************************************************************/
+
+void InitializeStateOfMind(void)
+{
+ char filename[CGN_BUFSIZE];
+
+ // Using idempotent files is the simplest way to get a hash table
+ 
+ // positive context cache
+ snprintf(filename,CGN_BUFSIZE,POSDIR);
+ mkdir(filename,0755);
+ 
+ // negative context cache
+ snprintf(filename,CGN_BUFSIZE,NEGDIR);
+ mkdir(filename,0755); 
+  
+}
 
 /*****************************************************************************/
 
 void AppendStateOfMind(char *mix, char *pos, char *neg)
 
-{ char mixpos[CGN_BUFSIZE],mixneg[CGN_BUFSIZE];
- char *oldpos, *oldneg, *sp;
+{ char mixpos[CGN_BUFSIZE],mixneg[CGN_BUFSIZE], name[CGN_BUFSIZE];
+  FILE *fp;
+  int i;
+  DIR *dirh;
+  struct dirent *dirp;
 
-  // Don't pass NULL, pass "" for empty
-  // append new / possibly mixed context data into the current +/- global state
-
-  oldpos = POSITIVE_CONTEXT;
-  oldneg = NEGATIVE_CONTEXT;
-
-  if (oldpos == NULL)
-     {
-     oldpos = strdup("");
-     }
-
-  if (oldneg == NULL)
-     {
-     oldneg = strdup("");
-     }
-  
   SplitPNContext(mix,mixpos,mixneg);
 
-  POSITIVE_CONTEXT = malloc(strlen(oldpos)+strlen(mixpos)+strlen(pos)+2);
-  POSITIVE_CONTEXT[0] = '\0';
-
-  strcat(POSITIVE_CONTEXT,Trim(pos));
-  Chop(POSITIVE_CONTEXT);
-
-  sstrcat(POSITIVE_CONTEXT,Trim(oldpos));
-  Chop(POSITIVE_CONTEXT);
-
-  sstrcat(POSITIVE_CONTEXT,Trim(mixpos));
-  Chop(POSITIVE_CONTEXT);
-      
-  NEGATIVE_CONTEXT = malloc(strlen(oldneg)+strlen(mixneg)+strlen(neg)+2);
-  NEGATIVE_CONTEXT[0] = '\0';
+  // Map to an indempotent set, source of truth
   
-  strcat(NEGATIVE_CONTEXT,Trim(neg));
-  Chop(NEGATIVE_CONTEXT);
-  
-  sstrcat(NEGATIVE_CONTEXT,Trim(oldneg));
-  Chop(NEGATIVE_CONTEXT);
+  snprintf(name, CGN_BUFSIZE, "%s/%s", POSDIR,pos);
 
-  sstrcat(NEGATIVE_CONTEXT,Trim(mixneg));
-  Chop(NEGATIVE_CONTEXT);
+  if ((fp = fopen(name,"w")) != NULL)
+     {
+     fclose(fp);
+     }
+
+  snprintf(name, CGN_BUFSIZE, "%s/%s", NEGDIR,neg);
+
+  if ((fp = fopen(name,"w")) != NULL)
+     {
+     fclose(fp);
+     }
+
+  snprintf(name, CGN_BUFSIZE, "%s/%s", POSDIR,mixpos);
+
+  if ((fp = fopen(name,"w")) != NULL)
+     {
+     fclose(fp);
+     }
+
+  snprintf(name, CGN_BUFSIZE, "%s/%s", NEGDIR,mixneg);
+
+  if ((fp = fopen(name,"w")) != NULL)
+     {
+     fclose(fp);
+     }
+
+  // Flush cache
+
+  for (i = 0; i < MAX_CONTEXT; i++)
+     {
+     free(POSITIVE_CONTEXT[i]);
+     free(NEGATIVE_CONTEXT[i]);
+     }
+
+  // Now cache in memory for efficiency
+
+  i = 0;
   
-  free(oldpos);
-  free(oldneg);
+  if ((dirh = opendir(POSDIR)) != NULL)
+     {
+     for (dirp = readdir(dirh); dirp != NULL; dirp = readdir(dirh))
+        {
+        if (dirp->d_name[0] == '.')
+           {
+           continue;
+           }
+        
+        POSITIVE_CONTEXT[i++] = strdup(dirp->d_name);
+        }
+     
+     closedir(dirh);
+     }
+  
+  // Check explicitly negated
+
+  i = 0;
+
+  if ((dirh = opendir(NEGDIR)) != NULL)
+     {
+     for (dirp = readdir(dirh); dirp != NULL; dirp = readdir(dirh))
+        {
+        if (dirp->d_name[0] == '.')
+           {
+           continue;
+           }
+        
+        NEGATIVE_CONTEXT[i++] = strdup(dirp->d_name);
+        }
+     
+     closedir(dirh);
+     }
 }
 
 /**********************************************************/
 
-void SplitPNContext(char *CONTEXT_OPT,char *pos,char *neg)
+void SplitPNContext(char *context_opt,char *pos,char *neg)
 
 { char *sp;
 
- if (sp = strstr(CONTEXT_OPT,"but not"))
+ if (context_opt == NULL)
     {
-    strncpy(pos,CONTEXT_OPT,sp-CONTEXT_OPT);
-    pos[sp-CONTEXT_OPT-1] = '\0';
+    neg[0] = '\0';
+    strcpy(pos,"any");
+    }
+ else if (sp = strstr(context_opt,"but not"))
+    {
+    strncpy(pos,context_opt,sp-context_opt);
+    pos[sp-context_opt-1] = '\0';
     strcpy(neg,sp+strlen("but not "));
     }
  else
     {
-    strcpy(pos,CONTEXT_OPT);
+    strcpy(pos,context_opt);
     strcpy(neg,"");
     }
 }
@@ -114,12 +175,169 @@ static void Chop(char *s)
 
 /**********************************************************/
 
-static void sstrcat(char *s,char *n)
-{
- if (strlen(s) > 0 && n[0] != '\0')
+int RelevantToCurrentContext(char *concept,char *assoc,char *nextconcept,char *context)
+
+{ int not = false;
+  int relevance = 0;
+  int i;
+  double r, setcount = 0;
+  
+  for (i = 0; i < MAX_CONTEXT && POSITIVE_CONTEXT[i] != NULL; i++)
+     {
+     // If the next subject contains the search context 
+     r += Overlap(POSITIVE_CONTEXT[i],nextconcept);
+     
+     // Finally, if the current context overlaps with the learnt context
+     r += Overlap(POSITIVE_CONTEXT[i],context);
+
+     setcount++;
+     }
+
+  // Check explicitly negated
+
+  for (i = 0; i < MAX_CONTEXT && NEGATIVE_CONTEXT[i] != NULL; i++)
+     {
+     r -= Overlap(NEGATIVE_CONTEXT[i],context);
+     setcount++;
+     }
+
+  relevance = (int) (r/setcount + 0.5);
+  return relevance;
+}
+
+/**********************************************************/
+
+int Overlap(char *intended, char *actual)
+
+// In looking for conceptual overlap, the two contexts are not equal.
+// The first is the intended one from the state of mind of the agent,
+// the latter is the recorded actual context acquired during learning.
+    
+{ int i,j,k;
+  double s = 0, t = 0, score = 0, total = 0;
+  int end = false;
+  double percent;
+  char *atomI[MAX_CONTEXT] = {NULL};
+  char *atomA[MAX_CONTEXT] = {NULL};
+
+  const double frag_cutoff_threshold = 3; // min frag match
+
+SplitCompound(intended,atomI); // Look at the learned relevance
+SplitCompound(actual,atomA);   // Look at the current cognitive context
+
+for (i = 0; i < MAX_CONTEXT && atomI[i]; i++)
+   {
+   for (j = 0; j < MAX_CONTEXT && atomA[j]; j++)
+      {
+      if (atomI[i] == NULL || atomA[j] == NULL)
+         {
+         continue;
+         }
+
+      s = t = 0;
+      
+      for (k = 0; k < MAX_WORD_SZ; k++)
+         {
+         if (atomI[i][k] == '\0') // intended is a substring of actual
+            {
+            //printf("match %s %s\n", atomI[i], atomA[j]);
+            t += strlen(atomA[j]+k);
+            break;
+            }
+         
+         if (atomA[j][k] == '\0') // actual is a substring of intended
+            {
+            //printf("match %s %s\n", atomI[i], atomA[j]);
+            t += strlen(atomI[i]+k);
+            break;
+            }
+
+         if (atomI[i][k] != atomA[j][k]) // terminate on mismatch
+            {
+            //printf("mismatch %s %s\n", atomI[i], atomA[j]);
+            t += strlen(atomA[j]+k);
+            break;
+            }
+         else
+            {
+            s++;
+            t++;
+            }
+         }
+
+      if (s > frag_cutoff_threshold)
+         {
+         score += s;
+         total += t;
+         }
+      else
+         {
+         // If there is no significant word overlap, then add the length of
+         // the non-matching string to scale the fractional overlap
+         total += strlen(atomI[i]);
+         }
+      }
+   }
+
+total = strlen(actual);
+
+if (total > 0)
+   {
+   percent = score / total * 100.0;
+   }
+else
+   {
+   percent = 0;
+   }
+
+for (i = 0; i < MAX_CONTEXT; i++)
+   {
+   if (atomI[i])
+      {
+      free(atomI[i]);
+      }
+   if (atomA[i])
+      {
+      free(atomA[i]);
+      }
+   }
+
+//printf("Overlap(%s/%s) = %d%% \n",intended,actual,(int)percent);
+return (int)percent;
+}
+
+/**********************************************************/
+
+void SplitCompound(char *str, char *atoms[MAX_CONTEXT])
+
+// Split compound name into atoms that can permit a partial overlap match
+    
+{ char *sp = str;
+  char word[255];
+  int pos = 0;
+
+ if (str == NULL)
     {
-    strcat(s," ");
+    return;
+    }  
+ 
+ while (*sp != '\0')
+    {
+    if (*sp == ' ' || *sp == ',')
+       {
+       sp++;
+       continue;
+       }
+    
+    word[0] = '\0';
+    sscanf(sp,"%250[^ ,]",word);
+    sp += strlen(word);
+
+    if (pos < MAX_CONTEXT)
+       {
+       atoms[pos] = strdup(word);
+       pos++;
+       }
     }
- strcat(s,n);
 }
 

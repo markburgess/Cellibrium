@@ -7,4 +7,7 @@
 /*****************************************************************************/
 
 void AppendStateOfMind(char *old, char *pos, char *neg);
-void SplitPNContext(char *CONTEXT_OPT,char *pos,char *neg);
+void SplitPNContext(char *context_opt,char *pos,char *neg);
+int RelevantToCurrentContext(char *concept,char *assoc,char *nextconcept,char *context);
+void SplitCompound(char *str, char *atoms[MAX_CONTEXT]);
+int Overlap(char *set1, char *set2);
