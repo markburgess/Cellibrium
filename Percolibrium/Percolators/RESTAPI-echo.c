@@ -45,16 +45,63 @@ fastcgi.server = (
 
 static void PrintEnv(char *label, char **envp)
 {
-    printf("%s:<br>\n<pre>\n", label);
-    for ( ; *envp != NULL; envp++) {
-        printf("%s\n", *envp);
-    }
-    printf("</pre><p>\n");
+    printf("%s:\n", label);
+
+    for ( ; *envp != NULL; envp++)
+       {
+       printf("%s\n", *envp);
+       }
+
+    printf("\n");
 }
 
 /********************************************************************************/
 
-static void DecodeCGI(char *addr)
+void Convert(char *s)
+{
+ char *sp;
+ 
+ for (sp = s; *sp != '\0'; sp++)
+    {
+    if (*sp == '+')
+       {
+       *sp = ' ';
+       }
+    }
+}
+/********************************************************************************/
+
+static void DecodeCGITextQuery(char *query, char *context)
+{
+ FILE *pp;
+ char cmd[4000];
+ snprintf(cmd,2000,"/var/CGNgine/bin/stories -s \"%s\" -c \"%s\"", query, context);
+ 
+ if ((pp = popen(cmd,"r")) != NULL)
+    {
+    printf("EXEC stories  %s\n", cmd);
+    cmd[0] = '\0';
+    
+    while (!feof(pp))
+       {
+       fgets(cmd,256,pp);
+       printf("%s\n",cmd);
+       }
+    
+    pclose(pp);
+    }
+}
+
+/********************************************************************************/
+
+static void DecodeCGIJsonQuery(char *query, char *context)
+{
+
+}
+
+/********************************************************************************/
+
+static void DecodeCGIPost(char *addr)
 {
  char ch;
  char hex[3],buffer[CGN_BUFSIZE];
@@ -79,6 +126,9 @@ static void DecodeCGI(char *addr)
 
 memset(buffer,0,CGN_BUFSIZE);
 snprintf(filename,256,"/tmp/post_%s",addr);
+
+printf("OPENED...\n");
+
 
 if ((fout=fopen(filename,"w")) == NULL)
    {
@@ -112,9 +162,9 @@ if ((fout=fopen(filename,"w")) == NULL)
                  {
                  //for (index = 0; index < 6; index++)
                  //   {
-                 //   printf("%d. %s<br>\n",index,tuple[index]);
+                 //   printf("%d. %s\n",index,tuple[index]);
                  //   }
-                 //printf("<br>");
+                 //printf("\n");
                  fprintf(fout,"(%s,%s,%s,%s,%s,%s)\n",tuple[0],tuple[1],tuple[2],tuple[3],tuple[4],tuple[5],tuple[6]);
                  index = 0;
                  }
@@ -158,14 +208,17 @@ if ((fout=fopen(filename,"w")) == NULL)
  // Now write the temporary file to the CGN data
 
  char cmd[4000];
- snprintf(cmd,2000,"/var/CGNgine/bin/conceptualize %s", filename);
+ snprintf(cmd,2000,"/var/CGNgine/bin/conceptualize %s %s", filename, filename); // bug in args??
  
  if ((pp = popen(cmd,"r")) != NULL)
     {
+    printf("EXEC %s\n", cmd);
+    cmd[0] = '\0';
+    
     while (!feof(pp))
        {
        fgets(cmd,256,pp);
-       printf("%s\n",cmd);
+       printf("out %s\n",cmd);
        }
     
     pclose(pp);
@@ -177,59 +230,73 @@ if ((fout=fopen(filename,"w")) == NULL)
 int main(void)
 {
  int count = 0, i;
- char *v,*m;
+ char *v;
  FILE *pp;
  extern char **environ;
 
  while (FCGI_Accept() >= 0)
     {
-    printf("Content-Type: text/html\r\n\r\n");
+    printf("Content-type: text/plain\r\n\r\n");
+    PrintEnv("Request environment", environ); // DEBUG
 
-    // PrintEnv("Request environment", environ); // DEBUG
-
-    m = getenv("REQUEST_METHOD");
-    
-    if (strcmp(m,"POST") != 0)
-       {
-       printf("{ cgn_error : \"No data posted\"; }\n");
-       return 0;
-       }
-    else
+    if (strcmp(getenv("REQUEST_METHOD"),"POST") == 0)
        {
        if (v = getenv("REQUEST_URI"))
           {
           if (strcmp(v,"/cgn/associations") != 0)
              {
-             printf("Unknown operation");
+             printf("Unknown POST operation");
              return 1;
              }
-          
-          DecodeCGI(getenv("REMOTE_ADDR"));
+
+          printf("Content-Type: text/html\r\n\r\n");
+          DecodeCGIPost(getenv("REMOTE_ADDR"));
           }
        
        return 0;
        }
 
-    if (strcmp(m,"GET") != 0)
+    if (strcmp(getenv("REQUEST_METHOD"),"GET") == 0)
        {
-       // story in text or JSON  /cgn/stories/text
-       if (v = getenv("REQUEST_URI"))
-          {
-          if (strcmp(v,"/cgn/stories/text") == 0)
-             {
-             return 0;
-             }
-          }
+       char *sp,*qs,query[256] = {0},context[256] = {0};
        
-       if (v = getenv("REQUEST_URI"))
+       qs = getenv("QUERY_STRING");
+
+       for (sp = qs; *sp != '\0'; sp++)
           {
-          if (strcmp(v,"/cgn/stories/text") == 0)
+          if (strncmp(sp,"query=",5) == 0)
              {
-             return 0;
+             sscanf(sp+6,"%255[^&]",query);
+             sp += 6;
+             Convert(query);
+             }
+          
+          if (strncmp(sp,"context=",7) == 0)
+             {
+             sscanf(sp+8,"%255[^&]",context);
+             sp += 8;
+             Convert(context);
              }
           }
 
-       printf("Unknown operation");
+       v = getenv("REQUEST_URI");
+       
+       // story in text or JSON  /cgn/stories/text
+       if (strncmp(v,"/cgn/stories/json",strlen("/cgn/stories/json")) == 0)
+          {
+          printf("Content-type: application/json\r\n\r\n");
+          DecodeCGIJsonQuery(query,context);
+          return 0;
+          }
+
+       if (strncmp(v,"/cgn/stories/text",strlen("/cgn/stories/text")) == 0)
+          {
+          printf("Content-type: text/plain\r\n\r\n");
+          DecodeCGITextQuery(query,context);
+          return 0;
+          }
+
+       printf("Unknown GET operation");
        return 1;
        }
     
