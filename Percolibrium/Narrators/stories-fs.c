@@ -206,18 +206,19 @@ void main(int argc, char** argv)
     printf("=========== sequential, causal reasoning =======================\n\n");
     SearchForContextualizedAssociations(subject, GR_FOLLOWS, CGN_ROOT, level);
     SearchForContextualizedAssociations(subject, -GR_FOLLOWS, CGN_ROOT, level);
-
+    printf("==END\n");
     printf("=========== proximity reasoning =======================\n\n");
     SearchForContextualizedAssociations(subject, GR_NEAR, CGN_ROOT, level);
     SearchForContextualizedAssociations(subject, -GR_NEAR, CGN_ROOT, level);
-
+    printf("==END\n");
     printf("=========== boundary or enclosure reasoning =======================\n\n");
     SearchForContextualizedAssociations(subject, GR_CONTAINS, CGN_ROOT, level);
     SearchForContextualizedAssociations(subject, -GR_CONTAINS, CGN_ROOT, level);
-
+    printf("==END\n");
     printf("=========== property or promise based reasoning =======================\n\n");
     SearchForContextualizedAssociations(subject, GR_EXPRESSES, CGN_ROOT, level);
     SearchForContextualizedAssociations(subject, -GR_EXPRESSES, CGN_ROOT, level);
+    printf("==END\n");
     }
 
  printf("\n");
