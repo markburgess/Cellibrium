@@ -45,6 +45,8 @@ void ReadTupleFile(char *filename);
 void UpdateConcept(char *name);
 void Canonify(char *str);
 
+char VBASEDIR[256];
+
 /*****************************************************************************/
 
 int main(int argc, char** argv)
@@ -55,7 +57,8 @@ int main(int argc, char** argv)
     exit(1);
     }
 
- mkdir(BASEDIR,0755);
+ snprintf(VBASEDIR,255,"%s-%d",BASEDIR,getuid());
+ mkdir(VBASEDIR,0755);
  
  // foreach file
 
@@ -173,7 +176,7 @@ void UpdateConcept(char *name)
 
  // Represent a concept as a directory of associations (idempotent)
  
- snprintf(filename,CGN_BUFSIZE,"%s/%s",BASEDIR,name);
+ snprintf(filename,CGN_BUFSIZE,"%s/%s",VBASEDIR,name);
  mkdir(filename,0755); 
  utime(filename, NULL);
 }

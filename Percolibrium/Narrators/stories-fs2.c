@@ -66,6 +66,7 @@ char *CONTEXT_OPT;
 
 Story ALLSTORIES[MAX_STORIES];
 int STORY_COUNTER = 0;
+char VBASEDIR[256];
 
 /*****************************************************************************/
 
@@ -163,7 +164,8 @@ void main(int argc, char** argv)
 
   // validate input args
 
-  printf("\nExploring stories in knowledge bank at %s\n",BASEDIR);
+  snprintf(VBASEDIR,255,"%s-%d",BASEDIR,getuid());
+  printf("\nExploring stories in knowledge bank at %s\n",VBASEDIR);
 
   InitializeStateOfMind();
   AppendStateOfMind(CONTEXT_OPT,ALL_CONTEXTS,"");
@@ -274,7 +276,7 @@ void SearchForContextualizedAssociations(char *concept, int atype, int prevtype,
   
  InitializeAssociations(array);
   
- if (!RankAssociationsByContext(array,BASEDIR,concept,atype))
+ if (!RankAssociationsByContext(array,VBASEDIR,concept,atype))
     {
     return;
     }
@@ -462,7 +464,7 @@ int GetBestAssoc(char *best_association, char *fromconcept,int atype,char *nextc
 
  *relevance_context = '\0';
   
- snprintf(filename,CGN_BUFSIZE,"%s/%s/%d/%s",BASEDIR,fromconcept,atype,nextconcept);
+ snprintf(filename,CGN_BUFSIZE,"%s/%s/%d/%s",VBASEDIR,fromconcept,atype,nextconcept);
 
  if ((fin = fopen(filename, "r")) == NULL)
     {
