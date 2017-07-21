@@ -51,6 +51,7 @@ conceptualize
 rpmvercmp
 /Percolibrium/Percolators/conceptualize
 /Percolibrium/Narrators/stories
+/Percolibrium/Percolators/echo.fcgi
 
 # autogen
 cf3lex.c

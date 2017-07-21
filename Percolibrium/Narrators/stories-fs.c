@@ -235,9 +235,8 @@ void NewManyWorldsContext(char *concept, char *context)
  char name[CGN_BUFSIZE];
 
  umask(0); 
- snprintf(MANY_WORLDS_CONTEXT,CGN_BUFSIZE,"/tmp/story_world_%s_%s",concept,context);
+ snprintf(MANY_WORLDS_CONTEXT,CGN_BUFSIZE,"/tmp/story_world_%s_%s_%d",concept,context,getuid());
  mkdir(MANY_WORLDS_CONTEXT,((mode_t)0755));
-
  DIR *dirh;
  struct dirent *dirp;
  
@@ -310,7 +309,7 @@ void SearchForContextualizedAssociations(char *concept, int atype, int prevtype,
   LinkAssociation array[MAX_ASSOC_ARRAY];
   const int threshold_for_relevance = 0;
   const int max_stories = 5;
-  
+
  InitializeAssociations(array);
   
  if (!RankAssociationsByContext(array,VBASEDIR,concept,atype))
@@ -480,7 +479,7 @@ int RankAssociationsByContext(LinkAssociation array[MAX_ASSOC_ARRAY], char *base
     {
     return false; // Fail silently
     }
-    
+
  for (dirp_a = readdir(dirh_assocs); dirp_a != NULL; dirp_a = readdir(dirh_assocs))
     {
     if (dirp_a->d_name[0] == '.')

@@ -97,6 +97,7 @@ void UpdateAssociation(char *context, char *concept1, int atype, char *fwd, char
  FILE *fp;
  int i, done;
  time_t now = time(NULL);
+ extern char VBASEDIR[256];
  
  // (fwd,bwd,lastseen,weight)
 
@@ -107,10 +108,10 @@ void UpdateAssociation(char *context, char *concept1, int atype, char *fwd, char
 
  InitializeAssociations(array);
  
- snprintf(filename,CGN_BUFSIZE,"%s/%s/%d",BASEDIR,concept1,atype);
+ snprintf(filename,CGN_BUFSIZE,"%s/%s/%d",VBASEDIR,concept1,atype);
  mkdir(filename,0755);
 
- snprintf(filename,CGN_BUFSIZE,"%s/%s/%d/%s",BASEDIR,concept1,atype,concept2);
+ snprintf(filename,CGN_BUFSIZE,"%s/%s/%d/%s",VBASEDIR,concept1,atype,concept2);
 
  if ((fp = fopen(filename,"r")) != NULL)
     {
