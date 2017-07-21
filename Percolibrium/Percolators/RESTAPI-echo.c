@@ -25,6 +25,8 @@
 
 The configuration for fastcgi in lighttpd: (don't put sockets in /tmp if there are login users)
 
+/etc/lighttpd/conf.d/fastcgi.conf
+
 fastcgi.debug = 1
 
 fastcgi.server = (
