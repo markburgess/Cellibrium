@@ -69,8 +69,15 @@ void IGr(FILE *consc,char *from, enum associations assoc, char *to, char *contex
  char *sto = SanitizeString(to);
  char *scontext = SanitizeString(context);
 
- fprintf(consc,"(%s,-%d,%s,%s,%s,%s)\n",sfrom,A[assoc].type,A[assoc].bwd,sto,A[assoc].fwd,scontext);
-
+ if (context && strlen(context) > 0)
+    {
+    fprintf(consc,"(%s,-%d,%s,%s,%s,%s)\n",sfrom,A[assoc].type,A[assoc].bwd,sto,A[assoc].fwd,scontext);
+    }
+ else
+    {
+    fprintf(consc,"(%s,-%d,%s,%s,%s,%s)\n",sfrom,A[assoc].type,A[assoc].bwd,sto,A[assoc].fwd,"*");
+    }
+     
  free(sfrom);
  free(sto);
  free(scontext);
@@ -81,7 +88,15 @@ void IGr(FILE *consc,char *from, enum associations assoc, char *to, char *contex
 void Number(FILE *consc, double q, char *context)
 {
  enum associations assoc = a_hasrole;
- fprintf(consc,"(%.2lf,%d,%s,%s,%s,%s)\n",q,A[assoc].type,A[assoc].fwd,"number",A[assoc].bwd,context);
+
+ if (context && strlen(context) > 0)
+    {
+    fprintf(consc,"(%.2lf,%d,%s,%s,%s,%s)\n",q,A[assoc].type,A[assoc].fwd,"number",A[assoc].bwd,context);
+    }
+ else
+    {
+    fprintf(consc,"(%.2lf,%d,%s,%s,%s,%s)\n",q,A[assoc].type,A[assoc].fwd,"number",A[assoc].bwd,"*");
+    }
 }
 
 /**********************************************************************/
@@ -91,8 +106,15 @@ void GrQ(FILE *consc,char *from, enum associations assoc, double to, char *conte
  char *sfrom = SanitizeString(from);
  char *scontext = SanitizeString(context);
 
- fprintf(consc,"(%s,%d,%s,%.2lf,%s,%s)\n",sfrom,A[assoc].type,A[assoc].fwd,to,A[assoc].bwd,scontext);
-
+ if (context && strlen(context) > 0)
+    {
+    fprintf(consc,"(%s,%d,%s,%.2lf,%s,%s)\n",sfrom,A[assoc].type,A[assoc].fwd,to,A[assoc].bwd,scontext);
+    }
+ else
+    {
+    fprintf(consc,"(%s,%d,%s,%.2lf,%s,%s)\n",sfrom,A[assoc].type,A[assoc].fwd,to,A[assoc].bwd,"*");
+    }
+ 
  free(sfrom);
  free(scontext); 
 }
@@ -142,37 +164,6 @@ char *ContextCluster(FILE *consc,char *compound_name)
 { char *sp, word[255];
 
  if ((sp = compound_name))
-    {
-    while (*sp != '\0')
-       {
-       if (*sp == ' ')
-          {
-          sp++;
-          continue;
-          }
-       
-       word[0] = '\0';
-       sscanf(sp,"%250s",word);
-       sp += strlen(word);
-
-       Gr(consc,compound_name,a_contains,word,ALL_CONTEXTS);
-       }
-    }
-
-return compound_name;
-}
-
-/**********************************************************************/
-
-char *NamedContextCluster(FILE *consc,char *compound_name,char *list)
-
-/* Document a compound Split a space separated list, with head
-   we can use it for context or for conceptual - treat them as epitopes
-   for fuzzy matching by set overlap. Only type 4 associations. */
-    
-{ char *sp, word[255];
-
- if ((sp = list))
     {
     while (*sp != '\0')
        {
