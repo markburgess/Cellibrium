@@ -199,33 +199,34 @@ void main(int argc, char** argv)
   // off we go
 
   NewManyWorldsContext(subject,CONTEXT_OPT);
+  ConceptAlreadyUsed(subject, 0);
   
- if (ATYPE_OPT != CGN_ROOT)
-    {
-    SearchForContextualizedAssociations(subject, ATYPE_OPT, CGN_ROOT, level);
-    }
- else
-    {
-    printf("=========== sequential, causal reasoning =======================\n\n");
-    SearchForContextualizedAssociations(subject, GR_FOLLOWS, CGN_ROOT, level);
-    SearchForContextualizedAssociations(subject, -GR_FOLLOWS, CGN_ROOT, level);
-    printf("==END\n");
-    printf("=========== proximity reasoning =======================\n\n");
-    SearchForContextualizedAssociations(subject, GR_NEAR, CGN_ROOT, level);
-    SearchForContextualizedAssociations(subject, -GR_NEAR, CGN_ROOT, level);
-    printf("==END\n");
-    printf("=========== boundary or enclosure reasoning =======================\n\n");
-    SearchForContextualizedAssociations(subject, GR_CONTAINS, CGN_ROOT, level);
-    SearchForContextualizedAssociations(subject, -GR_CONTAINS, CGN_ROOT, level);
-    printf("==END\n");
-    printf("=========== property or promise based reasoning =======================\n\n");
-    SearchForContextualizedAssociations(subject, GR_EXPRESSES, CGN_ROOT, level);
-    SearchForContextualizedAssociations(subject, -GR_EXPRESSES, CGN_ROOT, level);
-    printf("==END\n");
-    }
-
- printf("\n");
- DeleteManyWorldsContext();
+  if (ATYPE_OPT != CGN_ROOT)
+     {
+     SearchForContextualizedAssociations(subject, ATYPE_OPT, CGN_ROOT, level);
+     }
+  else
+     {
+     printf("=========== sequential, causal reasoning =======================\n\n");
+     SearchForContextualizedAssociations(subject, GR_FOLLOWS, CGN_ROOT, level);
+     SearchForContextualizedAssociations(subject, -GR_FOLLOWS, CGN_ROOT, level);
+     printf("==END\n");
+     printf("=========== proximity reasoning =======================\n\n");
+     SearchForContextualizedAssociations(subject, GR_NEAR, CGN_ROOT, level);
+     SearchForContextualizedAssociations(subject, -GR_NEAR, CGN_ROOT, level);
+     printf("==END\n");
+     printf("=========== boundary or enclosure reasoning =======================\n\n");
+     SearchForContextualizedAssociations(subject, GR_CONTAINS, CGN_ROOT, level);
+     SearchForContextualizedAssociations(subject, -GR_CONTAINS, CGN_ROOT, level);
+     printf("==END\n");
+     printf("=========== property or promise based reasoning =======================\n\n");
+     SearchForContextualizedAssociations(subject, GR_EXPRESSES, CGN_ROOT, level);
+     SearchForContextualizedAssociations(subject, -GR_EXPRESSES, CGN_ROOT, level);
+     printf("==END\n");
+     }
+  
+  printf("\n");
+  DeleteManyWorldsContext();
 }
 
 /**********************************************************/
@@ -371,19 +372,7 @@ int ConceptAlreadyUsed(char *concept, int pathposition)
     {
     fscanf(fp, "%d", &level);
     fclose(fp);
-
-    // This assumption that a concept holds a position may not be accurate,
-    // we should rather count the number of times used along each path
-    // this also modifies context along the path
-    
-    if (pathposition > level) 
-       {
-       return true;
-       }
-    else
-       {
-       return false;
-       }
+    return true;
     }
 
  if ((fp = fopen(name,"w")) != NULL)
