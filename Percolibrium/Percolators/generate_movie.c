@@ -141,16 +141,20 @@ RoleCluster(stdout,"character in James Bond movie", "movie character", "James Bo
 
 // Service Phenomena
 
-
 RoleCluster(stdout,"web connections to Jaws.com high", "web connections", "find, food, restaurant", "location");
 RoleCluster(stdout,"web connections to Jaws.com", "web connections", "Jaws.com", "location");
 Gr(stdout,"web connections for jaws", a_related_to, "web connections to Jaws.com", "online web");
 Gr(stdout,"web connections for jaws", a_related_to, "web searches for sushi", "online web");
 
-// Causation
+// Causation ///////////////////////////////////////////////////////////////////////////////////////////////////
 
+// Intentional motivation for state
 Gr(stdout, "web connections for jaws", a_caused_by, "Interest in Film Festival", "culture online web");
+
+// state anomaly depends on an ingredient
 Gr(stdout, "high web traffic", a_caused_by, "web connections", "online web");
+
+// Derivative concept
 Gr(stdout, "restaurant web traffic", a_caused_by, "web connections", "online web");
 
  // Specifically, monitoring tells us that ... (forming a temporary context bridge)

@@ -352,6 +352,7 @@ void SearchForContextualizedAssociations(char *concept, int atype, int prevtype,
        }
     }
 
+ DeleteManyWorldsContext();
  DeleteAssociations(array);
 }
 
@@ -416,6 +417,7 @@ int FollowNextAssociation(int prevtype,int atype,int level,char *concept,LinkAss
 
   if (ConceptAlreadyUsed(assoc->concept, level))
      {
+     printf("\nxxxxxxxxxx   (Concept %s repeat)\n",assoc->concept);
      return false;
      }
 
