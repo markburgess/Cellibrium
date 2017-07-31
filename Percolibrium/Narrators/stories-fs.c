@@ -84,7 +84,8 @@ int FollowNextAssociation(int prevtype,int atype,int level,char *concept,LinkAss
 int GetBestAssoc(char *best_association, char *concept,int atype,char *nextconcept,char *context);
 int RankAssociationsByContext(LinkAssociation array[MAX_ASSOC_ARRAY], char *basedir, char* concept, int atype);
 int RelevantToCurrentContext(char *concept,char *assoc,char *nextconcept,char *context);
-int ConceptAlreadyUsed(char *concept, int level);
+int ConceptAlreadyUsed(char *concept);
+void DeleteConcept(char *concept);
 char *Indent(int level);
 void SplitCompound(char *str, char *atoms[MAX_CONTEXT]);
 void ShowMatchingConcepts(char *context);
@@ -199,7 +200,7 @@ void main(int argc, char** argv)
   // off we go
 
   NewManyWorldsContext(subject,CONTEXT_OPT);
-  ConceptAlreadyUsed(subject, 0);
+  ConceptAlreadyUsed(subject);
   
   if (ATYPE_OPT != CGN_ROOT)
      {
@@ -210,19 +211,15 @@ void main(int argc, char** argv)
      printf("=========== sequential, causal reasoning =======================\n\n");
      SearchForContextualizedAssociations(subject, GR_FOLLOWS, CGN_ROOT, level);
      SearchForContextualizedAssociations(subject, -GR_FOLLOWS, CGN_ROOT, level);
-     printf("==END\n");
      printf("=========== proximity reasoning =======================\n\n");
      SearchForContextualizedAssociations(subject, GR_NEAR, CGN_ROOT, level);
      SearchForContextualizedAssociations(subject, -GR_NEAR, CGN_ROOT, level);
-     printf("==END\n");
      printf("=========== boundary or enclosure reasoning =======================\n\n");
      SearchForContextualizedAssociations(subject, GR_CONTAINS, CGN_ROOT, level);
      SearchForContextualizedAssociations(subject, -GR_CONTAINS, CGN_ROOT, level);
-     printf("==END\n");
      printf("=========== property or promise based reasoning =======================\n\n");
      SearchForContextualizedAssociations(subject, GR_EXPRESSES, CGN_ROOT, level);
      SearchForContextualizedAssociations(subject, -GR_EXPRESSES, CGN_ROOT, level);
-     printf("==END\n");
      }
   
   printf("\n");
@@ -353,13 +350,13 @@ void SearchForContextualizedAssociations(char *concept, int atype, int prevtype,
        }
     }
 
- DeleteManyWorldsContext();
+ DeleteConcept(concept);
  DeleteAssociations(array);
 }
 
 /*****************************************************************************/
 
-int ConceptAlreadyUsed(char *concept, int pathposition)
+int ConceptAlreadyUsed(char *concept)
 
 { FILE *fp;
   struct stat statbuf;
@@ -386,10 +383,28 @@ int ConceptAlreadyUsed(char *concept, int pathposition)
 
 /*****************************************************************************/
 
+void DeleteConcept(char *concept)
+
+{ FILE *fp;
+  struct stat statbuf;
+  char name[CGN_BUFSIZE];
+  int level = -1;
+
+ snprintf(name,CGN_BUFSIZE,"%s/%s",MANY_WORLDS_CONTEXT,concept);
+ unlink(name); 
+}
+
+/*****************************************************************************/
+
 int FollowNextAssociation(int prevtype,int atype,int level,char *concept,LinkAssociation *assoc)
 
 { int relevance;
   const int dontwanttoseethis = 0;
+
+  if (ConceptAlreadyUsed(assoc->concept))
+     {
+     return false;
+     }
 
   if (assoc->relevance > dontwanttoseethis)
      {
@@ -402,12 +417,6 @@ int FollowNextAssociation(int prevtype,int atype,int level,char *concept,LinkAss
         {
         printf ("%d:%s) %s \"%s\" %s \"%s\" (intended context: %s - %d%%)\n", level,Abbr(atype), Indent(level),concept,assoc->fwd, assoc->concept,assoc->context,assoc->relevance);
         }
-     }
-
-  if (ConceptAlreadyUsed(assoc->concept, level))
-     {
-     printf("\nxxxxxxxxxx   (Concept %s repeat)\n",assoc->concept);
-     return false;
      }
 
   if (ATYPE_OPT != CGN_ROOT)
@@ -431,7 +440,10 @@ int FollowNextAssociation(int prevtype,int atype,int level,char *concept,LinkAss
      SearchForContextualizedAssociations(assoc->concept,-GR_CONTAINS, atype, level+1);
      }
 
-  printf("          %s [%d]---------------------------------------------------------------------------------\n",Indent(level),level);
+  if (level == 0)
+     {
+     printf("          %s [%d]---------------------------------------------------------------------------------\n",Indent(level),level);
+     }
   return true;
 }
 
