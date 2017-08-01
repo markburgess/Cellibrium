@@ -40,7 +40,6 @@
 (user authentication,4,expresses an attribute,software,is an attribute of,any)
 (user authentication,4,expresses an attribute,application service,is an attribute of,any)
 (user authentication,4,expresses an attribute,microservice,is an attribute of,any)
-(user authentication,4,expresses an attribute,user authentication,is an attribute of,any)
 (ops,1,is approximately,operations,is approximately,software ops operations)
 (microservice,1,is approximately,service,is approximately,software ops operations develop write)
 (service,2,may use,service authentication,may be used by,software ops operations develop write)

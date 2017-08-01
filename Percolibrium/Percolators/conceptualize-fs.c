@@ -193,5 +193,9 @@ void Canonify(char *str)
        {
        *sp = '!';
        }
+    else
+       {
+       *sp = tolower(*sp);
+       }
     }
 }
