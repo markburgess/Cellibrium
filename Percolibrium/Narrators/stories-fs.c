@@ -401,7 +401,7 @@ int FollowNextAssociation(int prevtype,int atype,int level,char *concept,LinkAss
 { int relevance;
   const int dontwanttoseethis = 0;
 
-  if (ConceptAlreadyUsed(assoc->concept))
+  if (ConceptAlreadyUsed(assoc->concept) || strcmp(concept,assoc->concept) == 0)
      {
      return false;
      }

@@ -58,7 +58,7 @@ int main()
  RoleCluster(stdout,"microservice","application", "component,software,service",context);
 
  RoleCluster(stdout,"service authentication","authentication", "component,software,application service,microservice,API authentication",context);
- RoleCluster(stdout,"user authentication","authentication", "component,software,application service,microservice,user authentication",context);
+ RoleCluster(stdout,"user authentication","authentication", "component,software,application service,microservice",context);
 
  //
  

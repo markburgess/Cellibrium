@@ -121,15 +121,14 @@ RoleCluster(stdout,"Jaws movie", "movie", "Jaws,horror movie, thriller (movie)",
 RoleCluster(stdout,"sells food type sushi", "(transitive verb) sells", "food type sushi", "qualify function role purpose");
 RoleCluster(stdout,"food type sushi", "food type", "sushi", "qualify function role purpose");
 
-// Names
+// Names Geography
 RoleCluster(stdout,"New York City", "city", "New York", "proper name");
 RoleCluster(stdout,"Elizabeth NJ", "city", "Elizabeth", "proper name");
 RoleCluster(stdout,"New York State", "state", "New York", "proper name");
 RoleCluster(stdout,"State of New Jersey", "state", "New Jersey", "proper name");
 
-
-RoleCluster(stdout,"Jaws restaurant service", "restaurant service", "food, restaurant", "restaurant");
-RoleCluster(stdout,"Jaws restaurant in Elizabeth NJ", "located", "find, food, restaurant", "location");
+RoleCluster(stdout,"Jaws Sushi", "restaurant service", "food, restaurant", "restaurant");
+RoleCluster(stdout,"Jaws Sushi restaurant in Elizabeth NJ", "located", "find, food, restaurant", "location");
 
 RoleCluster(stdout,"Film festival", "festival", "movie,film", "entertainment");
 
@@ -137,19 +136,20 @@ RoleCluster(stdout,"Film festival", "festival", "movie,film", "entertainment");
 //Gr(stdout, "Jaws", a_name, "character in James Bond movie", "entertainment");
 
 
-RoleCluster(stdout,"character in James Bond movie", "movie character", "James Bond movie", "films movies cinema searching");
+RoleCluster(stdout,"Jaws character in James Bond movie", "movie character", "James Bond movie", "films movies cinema searching");
+RoleCluster(stdout,"Jaws character is Steven Spielberg movie series", "movie character", "Jaws movie", "films movies cinema searching");
 
 // Service Phenomena
 
-RoleCluster(stdout,"web connections to Jaws.com high", "web connections", "find, food, restaurant", "location");
-RoleCluster(stdout,"web connections to Jaws.com", "web connections", "Jaws.com", "location");
-Gr(stdout,"web connections for jaws", a_related_to, "web connections to Jaws.com", "online web");
-Gr(stdout,"web connections for jaws", a_related_to, "web searches for sushi", "online web");
+RoleCluster(stdout,"web connections to JawsSushi.com high", "web connections", "find, food, restaurant", "monitoring service performance");
+RoleCluster(stdout,"web connections to JawsSushi.com", "web connections", "JawsSushi.com", "location");
+Gr(stdout,"web connections for string jaws", a_related_to, "web connections to Jaws.com", "online web");
+Gr(stdout,"web connections for string jaws", a_related_to, "web searches for sushi", "online web");
 
 // Causation ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Intentional motivation for state
-Gr(stdout, "web connections for jaws", a_caused_by, "Interest in Film Festival", "culture online web");
+Gr(stdout, "web connections for jaws sushi", a_caused_by, "Interest in Film Festival", "culture online web");
 
 // state anomaly depends on an ingredient
 Gr(stdout, "high web traffic", a_caused_by, "web connections", "online web");
@@ -159,8 +159,6 @@ Gr(stdout, "restaurant web traffic", a_caused_by, "web connections", "online web
 
  // Specifically, monitoring tells us that ... (forming a temporary context bridge)
  Gr(stdout, "high web traffic", a_caused_by, "web searches for sushi", "traffic load monitoring");
-
-
 
 
 // RoleCluster(stdout,"drama", "genre", "", "films movies cinema searching");
