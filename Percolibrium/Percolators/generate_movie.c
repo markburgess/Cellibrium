@@ -106,7 +106,11 @@ RoleCluster(stdout,"20 miles from Elizabeth NJ", "distance", "Elizabeth NJ,miles
 Gr(stdout, "distance measurement", a_name, "miles", "distances measurements");
 Gr(stdout, "movie theatre", a_name, "Odeon", "proper name");
 
-
+// RoleCluster(stdout,"drama", "genre", "", "films movies cinema searching");
+ Gr(stdout, "drama", a_contains, "movies", "films movies cinema searching");
+ Gr(stdout, "drama", a_contains, "plays", "films movies cinema searching");
+ Gr(stdout, "drama", a_contains, "novels", "fiction");
+ 
 //THese are better modelled as clusters than these originals
 //Gr(stdout, "Jaws restaurant", a_name, "Jaws", ContextClucter("proper name"));
 //Gr(stdout, "sushi", a_name, "food type", "food");
@@ -141,7 +145,10 @@ RoleCluster(stdout,"jaws character is Steven Spielberg movie series", "jaws,char
 
 // Service Phenomena
 
-RoleCluster(stdout,"web connections to jawssushi.com high", "web connections", "find, food, restaurant", "monitoring service performance");
+
+RoleCluster(stdout,"web connections to jawssushi.com","web connections","jawssushi.com","browsing the web");
+RoleCluster(stdout,"jawssushi.com","sushi restaurant website","web,jaws,sushi","domain names internet search");
+
 RoleCluster(stdout,"web connections to jawssushi.com", "web connections", "jawssushi.com", "location");
 Gr(stdout,"web connections for jaws", a_related_to, "web connections to jawssushi.com", "online web");
 Gr(stdout,"web connections for jaws", a_related_to, "web searches for sushi", "online web");
@@ -149,23 +156,26 @@ Gr(stdout,"web connections for jaws", a_related_to, "web searches for sushi", "o
 // Causation ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Intentional motivation for state
-Gr(stdout, "web connections for jaws", a_caused_by, "Interest in Film Festival", "culture online web");
+RoleCluster(stdout,"Interest in Film Festival","interest","Film festival,interested in","Browsing the web entertainment culture");
+Gr(stdout, "web connections for jaws", a_caused_by, "Interest in Film Festival", "Browsing the web entertainment culture");
+
 
 // state anomaly depends on an ingredient
+RoleCluster(stdout, "high web traffic","web traffic","high,traffic,web","operational state anomaly monitoring data");
 Gr(stdout, "high web traffic", a_caused_by, "web connections", "online web");
 
+RoleCluster(stdout,"high web connections to jawssushi.com", "web connections to jawssushi.com", "high-anomaly,find, food, restaurant", "monitoring service performance");
+
 // Derivative concept
+RoleCluster(stdout, "restaurant web traffic","web traffic","restaurant,traffic,web","operational state monitoring data");
 Gr(stdout, "restaurant web traffic", a_caused_by, "web connections", "online web");
 
  // Specifically, monitoring tells us that ... (forming a temporary context bridge)
- Gr(stdout, "high web traffic", a_caused_by, "web searches for sushi", "traffic load monitoring");
-  Gr(stdout, "high web traffic", a_caused_by, "web searches for jaws", "traffic load monitoring");
+Gr(stdout, "high web traffic", a_caused_by, "web searches for sushi", "traffic load monitoring");
+Gr(stdout, "high web traffic", a_caused_by, "web searches for jaws", "traffic load monitoring");
 
 
-// RoleCluster(stdout,"drama", "genre", "", "films movies cinema searching");
- Gr(stdout, "drama", a_contains, "movies", "films movies cinema searching");
- Gr(stdout, "drama", a_contains, "plays", "films movies cinema searching");
- Gr(stdout, "drama", a_contains, "novels", "fiction");
+
 
  return 0;
 }
