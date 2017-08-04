@@ -47,13 +47,12 @@ int main()
  ContextCluster(stdout, "found dead body in the library");
  ContextCluster(stdout, "found blood in the library");
 
-
+/******************************************************************************/
 
 Gr(stdout, "dead body", a_caused_by, "murder", "crime");
 Gr(stdout, "blood", a_caused_by, "murder", "crime");
 
-// RoleCluster(stdout,"drama", "genre", "", "films movies cinema searching");
-
+// RoleCluster(stdout,"drama", "genre", "other attributes", "interior context interpretation");
 
 RoleCluster(stdout,
             "Professor Plum murders Miss Scarlet in the library with a breadknife because she would not marry him",
@@ -64,8 +63,8 @@ RoleCluster(stdout,
 
 RoleCluster(stdout,
             "murder by breadknife",
-            "murder",
-            "by breadknife, what action",
+            "what action verb",
+            "murder,by breadknife",
             "*"
             );
 
@@ -112,6 +111,53 @@ RoleCluster(stdout,
             "*"
             );
 
- return 0;
+Gr(stdout,"Professor Plum",a_hasrole,"who","murder marriage");
+Gr(stdout,"Miss Scarlet",a_hasrole,"who","murder marriage");
+
+/******************************************************************************/
+/* Homomorphic example                                                        */
+/******************************************************************************/
+
+RoleCluster(stdout,
+            "Function MyClass:MyFn() failed in microservice MyService executing in container MyS1 with exit code 345 on host MYHOST because it received exception Out Of Storage",
+            "failed with exit code 345",
+            "Function MyClass:MyFn(),executing in Container MyS1 on MYHOST,received exception Out of Storage",
+            "*"
+            );
+
+RoleCluster(stdout,
+            "failed with exit code 345",
+            "how",
+            "failed,exit code 345",
+            "*"
+            );
+
+RoleCluster(stdout,
+            "Function MyClass:MyFn()",
+            "function",
+            "MyClass:MyFn()",
+            "*"
+            );
+
+Gr(stdout,"file git/file/myfile.lang",a_contains,"MyClass:MyFn()","*");
+Gr(stdout,"code class MyClass",a_contains,"MyFn()","*");
+
+RoleCluster(stdout,
+            "executing in Container MyS1 on MYHOST",
+            "where",
+            "Container MyS1,MYHOST",
+            "*"
+            );
+
+RoleCluster(stdout,
+            "received exception Out of Storage",
+            "why",
+            "exception out of storage",
+            "*"
+            );
+
+Gr(stdout,"exception out of storage",a_origin,"Storage Service S3","operational state error failure");
+
+return 0;
 }
 

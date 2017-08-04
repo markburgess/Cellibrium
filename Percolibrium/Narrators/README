@@ -16,3 +16,7 @@ Examples (from example data):
 ./stories -s "high web traffic"
 ./stories -s "high web traffic" - c "online"
 
+
+./stories -s "murder"
+./stories -c "murder"
+

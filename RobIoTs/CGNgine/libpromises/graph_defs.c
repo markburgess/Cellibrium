@@ -47,13 +47,13 @@ void Gr(FILE *consc,char *from, enum associations assoc, char *to, char *context
  char *sto = SanitizeString(to);
  char *scontext = SanitizeString(context);
  
- if (context && strlen(context) > 0)
+ if (context && strlen(context) > 1)
     {
     fprintf(consc,"(%s,%d,%s,%s,%s,%s)\n",sfrom,A[assoc].type,A[assoc].fwd,sto,A[assoc].bwd,scontext);
     }
  else
     {
-    fprintf(consc,"(%s,%d,%s,%s,%s,%s)\n",sfrom,A[assoc].type,A[assoc].fwd,sto,A[assoc].bwd,"*");
+    fprintf(consc,"(%s,%d,%s,%s,%s,%s)\n",sfrom,A[assoc].type,A[assoc].fwd,sto,A[assoc].bwd,ALL_CONTEXTS);
     }
 
  free(sfrom);
@@ -69,13 +69,13 @@ void IGr(FILE *consc,char *from, enum associations assoc, char *to, char *contex
  char *sto = SanitizeString(to);
  char *scontext = SanitizeString(context);
 
- if (context && strlen(context) > 0)
+ if (context && strlen(context) > 1)
     {
     fprintf(consc,"(%s,-%d,%s,%s,%s,%s)\n",sfrom,A[assoc].type,A[assoc].bwd,sto,A[assoc].fwd,scontext);
     }
  else
     {
-    fprintf(consc,"(%s,-%d,%s,%s,%s,%s)\n",sfrom,A[assoc].type,A[assoc].bwd,sto,A[assoc].fwd,"*");
+    fprintf(consc,"(%s,-%d,%s,%s,%s,%s)\n",sfrom,A[assoc].type,A[assoc].bwd,sto,A[assoc].fwd,ALL_CONTEXTS);
     }
      
  free(sfrom);
@@ -89,13 +89,13 @@ void Number(FILE *consc, double q, char *context)
 {
  enum associations assoc = a_hasrole;
 
- if (context && strlen(context) > 0)
+ if (context && strlen(context) > 1)
     {
     fprintf(consc,"(%.2lf,%d,%s,%s,%s,%s)\n",q,A[assoc].type,A[assoc].fwd,"number",A[assoc].bwd,context);
     }
  else
     {
-    fprintf(consc,"(%.2lf,%d,%s,%s,%s,%s)\n",q,A[assoc].type,A[assoc].fwd,"number",A[assoc].bwd,"*");
+    fprintf(consc,"(%.2lf,%d,%s,%s,%s,%s)\n",q,A[assoc].type,A[assoc].fwd,"number",A[assoc].bwd,ALL_CONTEXTS);
     }
 }
 
@@ -106,13 +106,13 @@ void GrQ(FILE *consc,char *from, enum associations assoc, double to, char *conte
  char *sfrom = SanitizeString(from);
  char *scontext = SanitizeString(context);
 
- if (context && strlen(context) > 0)
+ if (context && strlen(context) > 1)
     {
     fprintf(consc,"(%s,%d,%s,%.2lf,%s,%s)\n",sfrom,A[assoc].type,A[assoc].fwd,to,A[assoc].bwd,scontext);
     }
  else
     {
-    fprintf(consc,"(%s,%d,%s,%.2lf,%s,%s)\n",sfrom,A[assoc].type,A[assoc].fwd,to,A[assoc].bwd,"*");
+    fprintf(consc,"(%s,%d,%s,%.2lf,%s,%s)\n",sfrom,A[assoc].type,A[assoc].fwd,to,A[assoc].bwd,ALL_CONTEXTS);
     }
  
  free(sfrom);
@@ -199,9 +199,11 @@ char *SanitizeString(char *s)
     switch (*sp)
        {
        case ',':
+           *sp = ' ';
+           break;
        case '/':
        case '\\':
-           *sp = '_';
+           *sp = '-';
            break;
        default:
            break;

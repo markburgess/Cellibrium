@@ -241,7 +241,7 @@ void main(int argc, char** argv)
         printf("\n %s ...\n",subject);
         for (j = 0; (j < MAX_STORY_LEN)&&(ALLSTORIES[i].episode[j] != NULL); j++)
            {
-           printf(" - which %s \"%s\" (in the context %s %d%%)\n",ALLSTORIES[i].episode[j]->fwd,ALLSTORIES[i].episode[j]->concept,ALLSTORIES[i].episode[j]->context, ALLSTORIES[i].episode[j]->relevance);
+           printf(" - which %s \"%s\" (in the context %s %d%%)\n",ALLSTORIES[i].episode[j]->fwd,ALLSTORIES[i].episode[j]->concept,ALLSTORIES[i].episode[j]->icontext, ALLSTORIES[i].episode[j]->relevance);
            }
         }
      }
@@ -349,7 +349,7 @@ int FollowNextAssociation(int prevtype,int atype,int level,char *concept,LinkAss
   // Append this path step in this private branch
   thisstory.episode[level] = assoc;
 
-  AppendStateOfMind(assoc->context,"",""); // Do we want to think about NOT here?
+  AppendStateOfMind(assoc->icontext,"",""); // Do we want to think about NOT here?
   
   if (ATYPE_OPT != CGN_ROOT)
      {
@@ -441,7 +441,7 @@ int RankAssociationsByContext(LinkAssociation array[MAX_ASSOC_ARRAY], char *base
        }
     
     array[count].concept = strdup(nextconcept);
-    array[count].context = strdup(relevance_context);
+    array[count].icontext = strdup(relevance_context);
     array[count].fwd = strdup(best_association);
     count++;
     }
@@ -501,12 +501,12 @@ int GetBestAssoc(char *best_association, char *fromconcept,int atype,char *nextc
        strcpy(best_association,array[0].fwd);
        }
 
-    strcat(relevance_context, array[0].context);
+    strcat(relevance_context, array[0].icontext);
     }
  else
     {
     strcpy(best_association, array[0].fwd);
-    strcat(relevance_context, array[0].context);
+    strcat(relevance_context, array[0].icontext);
     }
  
  for (i = 1; (i < MAX_ASSOC_ARRAY) && array[i].fwd; i++)
@@ -520,7 +520,7 @@ int GetBestAssoc(char *best_association, char *fromconcept,int atype,char *nextc
     strcat(best_association, array[i].fwd);
 
     strcat(relevance_context," ");
-    strcat(relevance_context, array[i].context);
+    strcat(relevance_context, array[i].icontext);
     }
 
  // WARN: not checking for overflow here ... very unlikely but ...

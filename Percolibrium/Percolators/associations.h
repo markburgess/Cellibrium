@@ -13,7 +13,7 @@ typedef struct
    char *concept;
    char *fwd;
    char *bwd;      // unneeded?
-   char *context;
+   char *icontext;
    int relevance;
    time_t lastseen;
    double weight;

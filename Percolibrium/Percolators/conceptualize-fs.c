@@ -26,7 +26,6 @@ typedef int Policy; // Hack to use CGNgine defs
 #define true 1
 #define false 0
 #define CGN_BUFSIZE 256
-#define GR_CONTEXT 5
 
 // Import standard link definitions
 
@@ -82,7 +81,7 @@ void ReadTupleFile(char *filename)
  char to[CGN_BUFSIZE];
  char afwd[CGN_BUFSIZE]; 
  char abwd[CGN_BUFSIZE];
- char context[CGN_BUFSIZE];
+ char icontext[CGN_BUFSIZE];
  char linebuff[CGN_BUFSIZE];
  int atype;
  int line = 0;
@@ -98,7 +97,7 @@ void ReadTupleFile(char *filename)
  
  while (!feof(fin))
     {
-    from[0] = to[0] = afwd[0] = abwd[0] = context[0] = '\0';
+    from[0] = to[0] = afwd[0] = abwd[0] = icontext[0] = '\0';
     linebuff[0] = '\0';
     
     fgets(linebuff, CGN_BUFSIZE, fin);
@@ -111,7 +110,7 @@ void ReadTupleFile(char *filename)
            continue;
        }
 
-    sscanf(linebuff, "(%[^,],%d,%[^,],%[^,],%[^,],%[^)])\n",from,&atype,afwd,to,abwd,context);
+    sscanf(linebuff, "(%[^,],%d,%[^,],%[^,],%[^,],%[^)])\n",from,&atype,afwd,to,abwd,icontext);
 
     if (strlen(from) == 0)
        {
@@ -133,7 +132,7 @@ void ReadTupleFile(char *filename)
        printf("Missing field near line %d (%s)\n",line,from);
        }
         
-    if (strlen(context) == 0)
+    if (strlen(icontext) == 0)
        {
        printf("Missing field near line %d (%s)\n",line,from);
        }
@@ -148,19 +147,19 @@ void ReadTupleFile(char *filename)
 
     // In all contexts, the contextualized qualified version is a member of the cluster of all (class instance)
        
-    UpdateAssociation(context,from,atype,afwd,abwd,to);
-    UpdateAssociation(context,to,-atype,abwd,afwd,from);
+    UpdateAssociation(icontext,from,atype,afwd,abwd,to);
+    UpdateAssociation(icontext,to,-atype,abwd,afwd,from);
 
     // Now create an introspective feedback to context as a scaled concept of its own
 
-    UpdateConcept(context);
-    UpdateAssociation(ALL_CONTEXTS,from,-GR_CONTEXT,"appears in the context of","mentions the story topic",context);
-    UpdateAssociation(ALL_CONTEXTS,context,GR_CONTEXT,"mentions the story topic","appears in the context of",from);
-    UpdateAssociation(ALL_CONTEXTS,to,-GR_CONTEXT,"appears in the context of","mentions the story topic",context);
-    UpdateAssociation(ALL_CONTEXTS,context,GR_CONTEXT,"mentions the story topic","appears in the context of",to);
+    UpdateConcept(icontext);
+    UpdateAssociation(ALL_CONTEXTS,from,-GR_CONTEXT,"appears in the context of","mentions the story topic",icontext);
+    UpdateAssociation(ALL_CONTEXTS,icontext,GR_CONTEXT,"mentions the story topic","appears in the context of",from);
+    UpdateAssociation(ALL_CONTEXTS,to,-GR_CONTEXT,"appears in the context of","mentions the story topic",icontext);
+    UpdateAssociation(ALL_CONTEXTS,icontext,GR_CONTEXT,"mentions the story topic","appears in the context of",to);
 
-    UpdateAssociation(ALL_CONTEXTS,ALL_CONTEXTS,GR_CONTEXT,"contains","is contained by",context);
-    UpdateAssociation(ALL_CONTEXTS,context,-GR_CONTEXT,"is contained by","contains",ALL_CONTEXTS);
+    UpdateAssociation(ALL_CONTEXTS,ALL_CONTEXTS,GR_CONTEXT,"contains","is contained by",icontext);
+    UpdateAssociation(ALL_CONTEXTS,icontext,-GR_CONTEXT,"is contained by","contains",ALL_CONTEXTS);
     
     line++;
     }

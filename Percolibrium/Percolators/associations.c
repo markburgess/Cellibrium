@@ -8,7 +8,6 @@
 
 void WriteConceptAssociations(FILE *fin, LinkAssociation *array,int maxentries);
 
-
 /*****************************************************************************/
 
 void InitializeAssociations(LinkAssociation *array)
@@ -19,7 +18,7 @@ void InitializeAssociations(LinkAssociation *array)
     {
     array[i].fwd = NULL;
     array[i].bwd = NULL;
-    array[i].context = NULL;
+    array[i].icontext = NULL;
     array[i].concept = NULL;
     array[i].weight = 0;
     array[i].lastseen = 0;
@@ -37,7 +36,7 @@ void DeleteAssociations(LinkAssociation *array)
     {
     free(array[i].fwd);
     free(array[i].bwd);
-    free(array[i].context);
+    free(array[i].icontext);
     free(array[i].concept);
     }
 }
@@ -68,10 +67,10 @@ void GetConceptAssociations(FILE *fin, char *concept, LinkAssociation *array,int
 
     array[i].fwd = strdup(fwd);
     array[i].bwd = strdup(bwd);
-    array[i].context = strdup(context);
+    array[i].icontext = strdup(context);
     array[i].concept = strdup(concept);
 
-    //printf("FOUND(%s: %s(%s) in context %s(%s)\n", array[i].concept,fwd,array[i].fwd,context,array[i].context);
+    //printf("FOUND(%s: %s(%s) in context %s(%s)\n", array[i].concept,fwd,array[i].fwd,context,array[i].icontext);
     }
 }
 
@@ -82,9 +81,9 @@ void WriteConceptAssociations(FILE *fin, LinkAssociation *array,int maxentries)
 
  for (i = 0; (i < maxentries) && array[i].fwd; i++)
     {
-    fprintf(fin, "(%s,%s,%ld,%lf,%s)\n",array[i].fwd,array[i].bwd,array[i].lastseen,array[i].weight,array[i].context);
+    fprintf(fin, "(%s,%s,%ld,%lf,%s)\n",array[i].fwd,array[i].bwd,array[i].lastseen,array[i].weight,array[i].icontext);
 
-    //printf("WROTE(%s <> %s at %s x %.2lf) context %s\n", array[i].fwd,array[i].bwd,ctime(&(array[i].lastseen)),array[i].weight,array[i].context);
+    //printf("WROTE(%s <> %s at %s x %.2lf) context %s\n", array[i].fwd,array[i].bwd,ctime(&(array[i].lastseen)),array[i].weight,array[i].icontext);
     }
 }
 
@@ -140,7 +139,7 @@ void UpdateAssociation(char *context, char *concept1, int atype, char *fwd, char
     {
     array[i].fwd = strdup(fwd);
     array[i].bwd = strdup(bwd);
-    array[i].context = strdup(context);
+    array[i].icontext = strdup(context);
     array[i].weight = 0.7;
     array[i].lastseen = now;
     array[i].relevance = 99;

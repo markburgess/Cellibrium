@@ -290,11 +290,45 @@ void DeleteManyWorldsContext(void)
 void ShowMatchingConcepts(char *context)
 
 {
+ char filename[CGN_BUFSIZE];
+ DIR *dirh_context;
+ struct dirent *dirp_c;
  int level = 0;
 
  RECURSE_OPT = 1;
  CONTEXT_OPT = strdup(context);
- SearchForContextualizedAssociations(ALL_CONTEXTS, GR_CONTEXT, CGN_ROOT, level);
+
+ snprintf(filename,CGN_BUFSIZE,"%s/%s/%d",VBASEDIR,ALL_CONTEXTS,GR_CONTEXT);
+
+ if ((dirh_context = opendir(filename)) == NULL)
+    {
+    printf("Unable to open %s\n",filename);
+    return; // Fail silently
+    }
+
+ for (dirp_c = readdir(dirh_context); dirp_c != NULL; dirp_c = readdir(dirh_context))
+    {
+    if (dirp_c->d_name[0] == '.')
+       {
+       continue;
+       }
+
+    // Don't go back to places we've already been... (simplistic . could use atime as deadtime lock)
+    
+    char *subject = dirp_c->d_name;
+
+    if (strstr(subject,context))
+       {
+       SearchForContextualizedAssociations(subject, GR_FOLLOWS, CGN_ROOT, level);
+       SearchForContextualizedAssociations(subject, -GR_FOLLOWS, CGN_ROOT, level);
+       SearchForContextualizedAssociations(subject, GR_NEAR, CGN_ROOT, level);
+       SearchForContextualizedAssociations(subject, -GR_NEAR, CGN_ROOT, level);
+       SearchForContextualizedAssociations(subject, GR_CONTAINS, CGN_ROOT, level);
+       SearchForContextualizedAssociations(subject, -GR_CONTAINS, CGN_ROOT, level);
+       SearchForContextualizedAssociations(subject, GR_EXPRESSES, CGN_ROOT, level);
+       SearchForContextualizedAssociations(subject, -GR_EXPRESSES, CGN_ROOT, level);
+       }
+    }
 }
 
 /*****************************************************************************/
@@ -410,12 +444,12 @@ int FollowNextAssociation(int prevtype,int atype,int level,char *concept,LinkAss
      {
      if ((atype == -prevtype) && (abs(atype) != GR_FOLLOWS)) // Don't double back
         {
-        printf ("%s and also note \"%s\" %s \"%s\" (intended in the context of %s)\n", Indent(level), concept,assoc->fwd, assoc->concept,assoc->context);
+        printf ("%s and also note \"%s\" %s \"%s\" (intended in the context of %s)\n", Indent(level), concept,assoc->fwd, assoc->concept,assoc->icontext);
         //return; 
         }
      else
         {
-        printf ("%d:%s) %s \"%s\" %s \"%s\" (intended context: %s - %d%%)\n", level,Abbr(atype), Indent(level),concept,assoc->fwd, assoc->concept,assoc->context,assoc->relevance);
+        printf ("%d:%s) %s \"%s\" %s \"%s\" (icontext: %s - %d%%)\n", level,Abbr(atype), Indent(level),concept,assoc->fwd, assoc->concept,assoc->icontext,assoc->relevance);
         }
      }
 
@@ -512,9 +546,9 @@ int RankAssociationsByContext(LinkAssociation array[MAX_ASSOC_ARRAY], char *base
        {
        continue;
        }
-    
+
     array[count].concept = strdup(nextconcept);
-    array[count].context = strdup(relevance_context);
+    array[count].icontext = strdup(relevance_context);
     array[count].fwd = strdup(best_association);
     array[count].bwd = strdup("n/a"); // Don't need this here
     count++;
@@ -577,12 +611,12 @@ int GetBestAssoc(char *best_association, char *fromconcept,int atype,char *nextc
        strcpy(best_association,array[0].fwd);
        }
 
-    strcat(relevance_context, array[0].context);
+    strcat(relevance_context, array[0].icontext);
     }
  else
     {
     strcpy(best_association, array[0].fwd);
-    strcat(relevance_context, array[0].context);
+    strcat(relevance_context, array[0].icontext);
     }
  
  for (i = 1; (i < MAX_ASSOC_ARRAY) && array[i].fwd; i++)
@@ -596,7 +630,7 @@ int GetBestAssoc(char *best_association, char *fromconcept,int atype,char *nextc
     strcat(best_association, array[i].fwd);
 
     strcat(relevance_context," ");
-    strcat(relevance_context, array[i].context);
+    strcat(relevance_context, array[i].icontext);
     }
 
  // WARN: not checking for overflow here ... very unlikely but ...
