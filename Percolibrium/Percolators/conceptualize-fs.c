@@ -25,7 +25,7 @@ typedef int Policy; // Hack to use CGNgine defs
 
 #define true 1
 #define false 0
-#define CGN_BUFSIZE 256
+#define CGN_BUFSIZE 4096
 
 // Import standard link definitions
 
@@ -110,31 +110,41 @@ void ReadTupleFile(char *filename)
            continue;
        }
 
-    sscanf(linebuff, "(%[^,],%d,%[^,],%[^,],%[^,],%[^)])\n",from,&atype,afwd,to,abwd,icontext);
+    sscanf(linebuff, "(%1024[^,],%d,%1024[^,],%1024[^,],%1024[^,],%1024[^)])\n",from,&atype,afwd,to,abwd,icontext);
 
     if (strlen(from) == 0)
        {
-       printf("Missing field near line %d (%s) len %d\n",line,linebuff,strlen(linebuff));
+       printf("Missing from field near line %d (%s) len %d\n",line,linebuff,strlen(linebuff));
+       printf("FROM: %s\nTYPE %d\nFWD %s\nTO %s\nBWD %s\nCTX %s\n",from,atype,afwd,to,abwd,icontext);
+       return;
        }
 
     if (strlen(afwd) == 0)
        {
-       printf("Missing field near line %d (%s)\n",line,linebuff,strlen(linebuff));
+       printf("Missing fwd field near line %d (%s) - length %d\n",line,linebuff,strlen(linebuff));
+       printf("FROM: %s\nTYPE %d\nFWD %s\nTO %s\nBWD %s\nCTX %s\n",from,atype,afwd,to,abwd,icontext);
+       return;
        }
 
     if (strlen(abwd) == 0)
        {
-       printf("Missing field near line %d (%s)\n",line,from);
+       printf("Missing bwd field near line %d (%s)\n",line,from);
+       printf("FROM: %s\nTYPE %d\nFWD %s\nTO %s\nBWD %s\nCTX %s\n",from,atype,afwd,to,abwd,icontext);
+       return;
        }
 
     if (strlen(to) == 0)
        {
-       printf("Missing field near line %d (%s)\n",line,from);
+       printf("Missing to field near line %d (%s)\n",line,from);
+       printf("FROM: %s\nTYPE %d\nFWD %s\nTO %s\nBWD %s\nCTX %s\n",from,atype,afwd,to,abwd,icontext);
+       return;
        }
         
     if (strlen(icontext) == 0)
        {
-       printf("Missing field near line %d (%s)\n",line,from);
+       printf("Missing ictx field near line %d (%s)\n",line,from);
+       printf("FROM: %s\nTYPE %d\nFWD %s\nTO %s\nBWD %s\nCTX %s\n",from,atype,afwd,to,abwd,icontext);
+       return;
        }
 
     // End validation

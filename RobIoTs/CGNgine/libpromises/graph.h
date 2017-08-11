@@ -50,6 +50,9 @@ char *RoleCluster(FILE *consc,char *compound_name, char *role, char *attributes,
 char *ContextCluster(FILE *consc,char *compound_name);
 char *NamedContextCluster(FILE *consc,char *compound_name,char *list);
 void MakeUniqueClusterName(char *lval,void *sorted,char type,char *buffer);
+char *TimeCluster(FILE *fp,time_t time);
+char *WhereCluster(FILE *fp,char *address, char *uqhn, char *domain, char *ipv4, char *ipv6);
+char *Clue(FILE *fp,char *who,char *what, time_t whentime, char *where, char *how, char *why,char *icontext);
 char *SanitizeString(char *s);
 #endif
 
@@ -65,6 +68,7 @@ extern Association A[a_ass_dim+1];
 #define GR_NEAR      1 // approx like
 #define GR_CONTEXT   5 // approx like
 #define ALL_CONTEXTS "any"
+#define CGN_BUFSIZE 4096
 
 // Don't like using /tmp but keep is simple here - personalize to make non-shared etc
 

@@ -1,3 +1,7 @@
+//
+// CGN_MONITORD - a proof of concept cognitive monitoring agent
+//
+
 /*
    Copyright (C) Mark Burgess
 
@@ -23,6 +27,7 @@
   (COSL) may apply to this file if you as a licensee so wish it. See
   included file COSL.txt.
 */
+
 
 #include <history.h>
 #include <probes.h>
@@ -50,7 +55,10 @@
 #include <verify_classes.h>
 #include <unix_iface.h>
 #include <time_classes.h>
+#include <file_lib.h>
+#include <item_lib.h>
 #include <graph.h>
+
 
 /*****************************************************************************/
 /* Globals                                                                   */
@@ -63,6 +71,7 @@
 #define CF_ENVNEW_FILE   "env_data.new"
 #define CF_GRAPHNEW_FILE "env_graph.new"
 #define CF_GRAPH_FILE    "env_graph"
+#define CF_INV_FILE      "invariant_classes"
 
 /*****************************************************************************/
 
@@ -70,6 +79,7 @@ static char ENVFILE_NEW[CF_BUFSIZE] = "";
 static char ENVFILE[CF_BUFSIZE] = "";
 static char GRAPHFILE_NEW[CF_BUFSIZE] = "";
 static char GRAPHFILE[CF_BUFSIZE] = "";
+static char INVFILE[CF_BUFSIZE],INVFILE_NEW[CF_BUFSIZE],INVFILE_OLD[CF_BUFSIZE];
 
 static double HISTOGRAM[CF_OBSERVABLES][7][CF_GRAINS] = { { { 0.0 } } };
 static Averages MAX, MIN;
@@ -98,6 +108,7 @@ static int LDT_POS = 0;
 static int LDT_FULL = false;
 
 int NO_FORK = false;
+int JUST_REVIVED = true;
 
 /*******************************************************************/
 /* Prototypes                                                      */
@@ -122,7 +133,14 @@ static double RejectAnomaly(double new, double av, double var);
 static void ZeroArrivals(void);
 static PromiseResult KeepMonitorPromise(EvalContext *ctx, const Promise *pp, void *param);
 static void GetNamespace(int index, char *buffer);
-static void AnnotateContext(EvalContext *ctx, FILE *fp, char *now);
+static void AnnotateAnomaly(EvalContext *ctx, FILE *consc, time_t now, Item *syndrome, Item *invariants);
+static void AnnotateOpenPort(FILE *consc, char *type, char *number, char *address);
+static Item *LoadInvariants(void);
+static void SaveInvariants(Item *list);
+static void PublishEnvironment(Item *classes);
+static void DiffInvariants(EvalContext *ctx,Item **anomaly_syndrome,Item **invariants);
+char *MakeAnomalyClusterName(char *title,Item *list);
+char *MakeFlatList(Item *list);
 
 /****************************************************************/
 
@@ -147,6 +165,13 @@ void MonitorInitialize(void)
  snprintf(GRAPHFILE, CF_BUFSIZE, "%s/state/%s", CFWORKDIR, CF_GRAPH_FILE);
  MapName(GRAPHFILE);
 
+ snprintf(INVFILE, CF_BUFSIZE,"%s/state/%s",CFWORKDIR,CF_INV_FILE);
+ snprintf(INVFILE_NEW, CF_BUFSIZE,"%s.new",INVFILE);
+ snprintf(INVFILE_OLD, CF_BUFSIZE,"%s.prev",INVFILE);
+ MapName(INVFILE);
+ MapName(INVFILE_NEW);
+ MapName(INVFILE_OLD);
+ 
  //MonEntropyClassesInit();
  
  GetDatabaseAge();
@@ -588,29 +613,6 @@ static void LeapDetection(void)
 
 /*********************************************************************/
 
-static void PublishEnvironment(Item *classes)
-{
- FILE *fp;
- Item *ip;
- 
- unlink(ENVFILE_NEW);
- 
- if ((fp = fopen(ENVFILE_NEW, "a")) == NULL)
-    {
-    return;
-    }
- 
- for (ip = classes; ip != NULL; ip = ip->next)
-    {
-    fprintf(fp, "%s\n", ip->name);
-    }
- 
- fclose(fp);
- rename(ENVFILE_NEW, ENVFILE);
-}
-
-/*********************************************************************/
-
 static void AddOpenPorts(const char *name, const Item *value, Item **mon_data)
 {
  Writer *w = StringWriter();
@@ -660,13 +662,15 @@ static void BuildConsciousState(EvalContext *ctx, Averages av, Timescales t)
     SetVariable(consc, name, CF_THIS[i], av.Q[i].expect, sigma, &mon_data);
 
     //
+    // Add graph semantics
+    //
+    
     char cname[CF_BUFSIZE],dstring[CF_BUFSIZE];
-    snprintf(cname,CF_BUFSIZE,"measurement called %s",name);
-    snprintf(dstring,CF_BUFSIZE,"%s,measurement",name);
-    RoleCluster(consc,cname, "measurement type", dstring, ContextCluster(consc,"system monitoring measuring data sample"));
-    Gr(consc,cname,a_interpreted,desc,"system monitoring data sample");
-    Gr(consc,"system monitoring measurements",a_contains,cname,"system monitoring data sample");
-
+    snprintf(cname,CF_BUFSIZE,"measurement type %s",name);
+    RoleCluster(consc,cname, "measurement type", name, ContextCluster(consc,"system monitoring measurement"));
+    Gr(consc,cname,a_interpreted,desc,"system monitoring measurement");
+    //
+    
     /* LDT */
     
     ldt_buff[0] = '\0';
@@ -712,6 +716,11 @@ static void BuildConsciousState(EvalContext *ctx, Averages av, Timescales t)
           {
           snprintf(buff, CF_BUFSIZE, "spike_%s_low", name);
           }
+
+       // Note the semantic connection
+       snprintf(cname,CF_BUFSIZE,"anomaly %s",buff);
+       RoleCluster(consc,cname, "measurement anomaly", buff, ContextCluster(consc,"system monitoring measurement"));
+       //
        
        AppendItem(&mon_data, buff, "2");
        EvalContextHeapPersistentSave(ctx, buff, CF_PERSISTENCE, CONTEXT_STATE_POLICY_PRESERVE, "");
@@ -770,6 +779,7 @@ static void BuildConsciousState(EvalContext *ctx, Averages av, Timescales t)
        snprintf(buff,CF_BUFSIZE,"tcp6_port_addr[%s]=%s",ip->name,ip->classes);
        AppendItem(&mon_data, buff, NULL);
        Log(LOG_LEVEL_VERBOSE, "  [%d] %s", count++, buff);
+       AnnotateOpenPort(consc,"ipv6 TCP listening port",ip->name,ip->classes);
        }
     
     for (ip = MON_TCP4; ip != NULL; ip=ip->next)
@@ -777,6 +787,7 @@ static void BuildConsciousState(EvalContext *ctx, Averages av, Timescales t)
        snprintf(buff,CF_BUFSIZE,"tcp4_port_addr[%s]=%s",ip->name,ip->classes);
        AppendItem(&mon_data, buff, NULL);
        Log(LOG_LEVEL_VERBOSE, "  [%d] %s", count++, buff);
+       AnnotateOpenPort(consc,"ipv4 TCP listening port",ip->name,ip->classes);
        }
     }
  
@@ -785,6 +796,7 @@ static void BuildConsciousState(EvalContext *ctx, Averages av, Timescales t)
     snprintf(buff,CF_BUFSIZE,"udp6_port_addr[%s]=%s",ip->name,ip->classes);
     AppendItem(&mon_data, buff, NULL);
     Log(LOG_LEVEL_VERBOSE, "  [%d] %s", count++, buff);
+    AnnotateOpenPort(consc,"ipv6 UDP listening port",ip->name,ip->classes);
     }
  
  for (ip = MON_UDP4; ip != NULL; ip=ip->next)
@@ -792,6 +804,7 @@ static void BuildConsciousState(EvalContext *ctx, Averages av, Timescales t)
     snprintf(buff,CF_BUFSIZE,"udp4_port_addr[%s]=%s",ip->name,ip->classes);
     AppendItem(&mon_data, buff, NULL);
     Log(LOG_LEVEL_VERBOSE, "  [%d] %s", count++, buff);
+    AnnotateOpenPort(consc,"ipv4 UDP listening port",ip->name,ip->classes);
     }
  
  for (ip = MON_RAW6; ip != NULL; ip=ip->next)
@@ -799,6 +812,7 @@ static void BuildConsciousState(EvalContext *ctx, Averages av, Timescales t)
     snprintf(buff,CF_BUFSIZE,"raw6_port_addr[%s]=%s",ip->name,ip->classes);
     AppendItem(&mon_data, buff, NULL);
     Log(LOG_LEVEL_VERBOSE, "  [%d] %s", count++, buff);
+    AnnotateOpenPort(consc,"ipv6 RAW listening port",ip->name,ip->classes);
     }
  
  for (ip = MON_RAW4; ip != NULL; ip=ip->next)
@@ -806,32 +820,44 @@ static void BuildConsciousState(EvalContext *ctx, Averages av, Timescales t)
     snprintf(buff,CF_BUFSIZE,"raw4_port_addr[%s]=%s",ip->name,ip->classes);
     AppendItem(&mon_data, buff, NULL);
     Log(LOG_LEVEL_VERBOSE, "  [%d] %s", count++, buff);
+    AnnotateOpenPort(consc,"ipv4 RAW listening port",ip->name,ip->classes);
     }
  
  PublishEnvironment(mon_data); 
  DeleteItemList(mon_data);
 
+ // Now build the semantic graph based on these `smart sensor' inputs
+ 
  if (consc)
     {
-    char cname[CF_BUFSIZE],dname[CF_BUFSIZE];
-
-    snprintf(cname,CF_BUFSIZE,"unqualified hostname %s",VUQNAME);
-    RoleCluster(consc,cname,"unqualified hostname", VUQNAME, ContextCluster(consc,"hostname identification"));
-    Gr(consc,cname,a_origin,"system monitoring measurements","system monitoring data sample");
-
-    if (VDOMAIN[0] != '\0')
+    // We can't afford to remember every moment in time, but we should remember unusual moments - anomalies
+    // State what = syndrome_name, when=now, where=host_addr, how=syndrome, why=anomaly degree
+    // Express: system monitoring sample at when-where-why
+    
+    Item *anomaly_syndrome = NULL;
+    Item *invariants = NULL;
+    
+    if (JUST_REVIVED)
        {
-       snprintf(cname,CF_BUFSIZE,"fully qualified hostname %s",VFQNAME);
-       RoleCluster(consc,cname,"fully qualified hostname", VFQNAME, "hostname identification");
-       Gr(consc,cname,a_origin,"system monitoring measurements","system monitoring data sample");
-       snprintf(dname,CF_BUFSIZE,"DNS domainname %s",VDOMAIN);
-       RoleCluster(consc,dname,"DNS domain", VDOMAIN, "hostname identification");
-       Gr(consc,dname,a_contains,cname, "hostname identification");
+       // why = ContextCluster(consc,"monitoring restarted");
+       // Event....
        }
+    else
+       {
+       DiffInvariants(ctx,&anomaly_syndrome,&invariants);
+       
+       if (anomaly_syndrome)
+          {          
+          AnnotateAnomaly(ctx, consc, nowt, anomaly_syndrome, invariants);
+          }
 
-    AnnotateContext(ctx, consc, now);
+       DeleteItemList(anomaly_syndrome);
+       DeleteItemList(invariants);
+       }
     }
 
+ JUST_REVIVED = false;
+ 
  if (consc)
     {
     fclose(consc);    
@@ -874,7 +900,6 @@ static Averages *GetCurrentAverages(char *timekey)
  CloseDB(dbp);
  return &entry;
 }
-
 
 /*****************************************************************************/
 
@@ -1128,7 +1153,6 @@ else
 static void SetVariable(FILE *consc, char *name, double value, double average, double stddev, Item **classlist)
 {
  char var[CF_BUFSIZE];
- char attr[CF_BUFSIZE];
  
  snprintf(var, CF_MAXVARSIZE, "value_%s=%.2lf", name, value);
  AppendItem(classlist, var, "");
@@ -1137,9 +1161,9 @@ static void SetVariable(FILE *consc, char *name, double value, double average, d
  snprintf(var, CF_MAXVARSIZE, "dev_%s=%.2lf", name, stddev);
  AppendItem(classlist, var, "");
 
- // Now for the semantic map
- // keep the var as invariant as possible, name has already been explained with desc above
- // the attr are non-invariant and will need to be garbage collected / annealed
+ /* Now for the semantic map - this seems too much detail
+
+ char attr[CF_BUFSIZE];
  
  snprintf(var, CF_MAXVARSIZE, "measurement estimator %s", name);
  snprintf(attr, CF_MAXVARSIZE, "measurement value %s, measurement expectation %s,measurement standard deviation %s", name, name, name);
@@ -1155,7 +1179,7 @@ static void SetVariable(FILE *consc, char *name, double value, double average, d
 
  snprintf(var, CF_MAXVARSIZE, "measurement standard deviation %s", name);
  snprintf(attr, CF_MAXVARSIZE, "%.2lf", stddev);
- RoleCluster(consc,var,"standard deviation", attr, "quantitative host state measurement monitoring here now");
+ RoleCluster(consc,var,"standard deviation", attr, "quantitative host state measurement monitoring here now"); */
 }
 
 /*****************************************************************************/
@@ -1470,71 +1494,255 @@ static void GetNamespace(int index, char *buffer)
 
 /*****************************************************************************/
 
-static void AnnotateContext(EvalContext *ctx, FILE *consc, char *now)
+static void AnnotateAnomaly(EvalContext *ctx, FILE *consc, time_t now, Item *syndrome, Item *invariants)
 {
-if (consc == NULL)
-   {
-   return;
-   }
+ // Look for an anomalous state change as a criterion for a significant event to feed into this
+ // Clue(FILE *fp,char *who,char *what, time_t whentime, char *where, char *how, char *why,char *icontext)
 
-char here_and_now[CF_BUFSIZE];
+ char *who = "cgn_montord";
+ char *what = "anomalous state change";
+ char *why = "unknown"; // or "unknown"
+ char *where = "mark's laptop";
+ time_t when = now;
+ char *how = MakeAnomalyClusterName("anomaly",syndrome);
+ char *howattr = MakeFlatList(syndrome);
+ char *icontext = "system monitoring";
+ char *wherex =  WhereCluster(consc,where, VUQNAME, VDOMAIN, VIPADDRESS,NULL);
 
- // The name/context is a semantic coordinate for the instances (like an array index)
+ Clue(consc,who,what,when,wherex,how,why,icontext);
+ RoleCluster(consc,how,"how",howattr,"system monitoring");
 
-snprintf(here_and_now, CF_BUFSIZE, "%s:%s",VFQNAME,now);
-Gr(consc,here_and_now,a_hasattr,now,ContextCluster(consc,"cgn-monitord system state here now"));
-Gr(consc,here_and_now,a_hasattr,VFQNAME,"cgn-monitord system state here now");
+}
 
-Gr(consc,VUQNAME,a_contains,VFQNAME,"cgn-monitord system state here now");
-Gr(consc,VFQNAME,a_hasinstance,here_and_now,"cgn-monitord system state here now");
-Gr(consc,here_and_now,a_generalizes,now,"cgn-monitord system state here now");
+/*****************************************************************************/
 
-ClassTableIterator *iter = EvalContextClassTableIteratorNewGlobal(ctx, NULL, true, true);
-Class *cls = NULL;
+static void AnnotateOpenPort(FILE *consc, char *type, char *number, char *address)
+{
+ // Look for an anomalous state change as a criterion for a significant event to feed into this
+ // Clue(FILE *fp,char *who,char *what, time_t whentime, char *where, char *how, char *why,char *icontext)
 
-while ((cls = ClassTableIteratorNext(iter)))
-   {
-   Gr(consc,here_and_now,a_hasattr,cls->name,"cgn-monitord system state here now");
-   StringSet *tagset = EvalContextClassTags(ctx, cls->ns, cls->name);
-   StringSetIterator iter = StringSetIteratorInit(tagset);
-   char *name = NULL;
-   char ns[CF_BUFSIZE];
+ //        AnnotateOpenPort(consc,"ipv4 TCP listening port",ip->name,ip->classes);
 
-   while ((name = StringSetIteratorNext(&iter)))
-      {
-      if (strstr(name,"=") == 0)
-         {
-         Gr(consc,name, a_generalizes,cls->name,ContextCluster(consc,"class context label"));
-         Gr(consc,cls->name,a_hasrole,"class or context label","cgn-monitord system state here now");
-
-         if (cls->ns)
-            {
-            snprintf(ns,CF_BUFSIZE,"%s namespace", cls->ns);
-            Gr(consc,ns,a_contains,cls->name,"namespace");
-            Gr(consc,ns,a_hasrole,"namespace","namespace");
-            }
-         else
-            {
-            Gr(consc,"default namespace",a_contains,cls->name,"namespace");
-            Gr(consc,"default namespace",a_hasrole,"namespace","namespace");
-            }
-         }
-      else if (strncmp(name,"name=",5) == 0)
-         {
-         Gr(consc,cls->name,a_hasrole,name+5,"cgn-monitord system state here now");
-         }
-      else if (strncmp(name,"source=",7) == 0)
-         {
-         snprintf(ns,CF_BUFSIZE,"%s namespace", name+7);
-         Gr(consc,cls->name,a_origin,ns,"cgn-monitord system state here now");
-         }
-      else
-         {
-         //??
-         }
-      }
-   }
+ char how[CGN_BUFSIZE],attr[CGN_BUFSIZE];
+ snprintf(how,CGN_BUFSIZE,"port number %s listening to %s",number,address);
+ snprintf(attr,CGN_BUFSIZE,"port number %s,listening to %s",number,address);
  
-ClassTableIteratorDestroy(iter);
+ char *who = VUQNAME;
+ char *what = type;
+ char *why = "appears in netstat"; // or "unknown"
+ char *where = "mark's laptop";
+ char *icontext = "system monitoring";
+
+ time_t when = 0; // Don't want to remember every single sample
+ 
+ Clue(consc,who,what,when,where,how,why,icontext);
+ RoleCluster(consc,how,"how",attr,"system monitoring");
+}
+
+/*********************************************************************/
+
+static void PublishEnvironment(Item *classes)
+{
+ FILE *fp;
+ Item *ip;
+ 
+ unlink(ENVFILE_NEW);
+ 
+ if ((fp = fopen(ENVFILE_NEW, "a")) == NULL)
+    {
+    return;
+    }
+ 
+ for (ip = classes; ip != NULL; ip = ip->next)
+    {
+    fprintf(fp, "%s\n", ip->name);
+    }
+ 
+ fclose(fp);
+ rename(ENVFILE_NEW, ENVFILE);
+}
+
+/*********************************************************************/
+
+static void DiffInvariants(EvalContext *ctx,Item **anomaly_syndrome,Item **invariants)
+{
+ Item *current_state = NULL;
+ Item *prev_state = LoadInvariants(); // Assume pre-sorted, no tampering
+ 
+ ClassTableIterator *iter = EvalContextClassTableIteratorNewGlobal(ctx, NULL, true, true);
+ Class *cls = NULL;
+
+ while ((cls = ClassTableIteratorNext(iter)))
+    {
+    StringSet *tagset = EvalContextClassTags(ctx, cls->ns, cls->name);
+    StringSetIterator iter = StringSetIteratorInit(tagset);
+    char *name = NULL, fqname[CF_BUFSIZE];
+
+    if (cls->ns)
+       {
+       snprintf(fqname,CF_BUFSIZE,"%s_%s",cls->ns,cls->name);
+       }
+    else
+       {
+       snprintf(fqname,CF_BUFSIZE,"%s",cls->name);
+       }
+    
+    if (strstr(cls->name,"normal"))
+       {
+       continue;
+       }
+    
+    while ((name = StringSetIteratorNext(&iter)))
+       {
+       if (strcmp(name,"time") == 0) // Skip non-invariant time classes
+          {
+          break;
+          }
+       
+       PrependItem(&current_state,fqname,NULL);
+       break;
+       }
+    }
+
+ ClassTableIteratorDestroy(iter);
+ SaveInvariants(current_state);
+
+ // Now separate the lists into (invariant/intesect + delta/NOT-intersect) sets
+
+ Item *ip1 = current_state, *ip2 = prev_state;
+ 
+ for (ip1 = current_state; ip1 != NULL; ip1=ip1->next)
+    {
+    if (IsItemIn(prev_state,ip1->name))
+       {
+       PrependItem(invariants,ip1->name,NULL);
+       DeleteItemLiteral(&prev_state,ip1->name);
+       }
+    else
+       {
+       PrependItem(anomaly_syndrome,ip1->name,NULL);
+       }
+    }
+ 
+ for (ip2 = prev_state; ip2 != NULL; ip2=ip2->next)
+    {
+    PrependItem(anomaly_syndrome,ip2->name,NULL);
+    }
+ 
+ DeleteItemList(current_state);
+ DeleteItemList(prev_state);
+}
+
+/*********************************************************************/
+    
+static void SaveInvariants(Item *list)
+{
+ FILE *fp;
+ Item *ip;
+ 
+ rename(INVFILE, INVFILE_OLD);
+
+ if ((fp = fopen(INVFILE_NEW, "w")) == NULL)
+    {
+    return;
+    }
+
+ for (ip = list; ip != NULL; ip=ip->next)
+    {
+    fprintf(fp, "%s\n", ip->name);
+    }
+
+fclose(fp);
+rename(INVFILE_NEW, INVFILE);
+}
+
+/*********************************************************************/
+
+static Item *LoadInvariants()
+{
+ FILE *fp;
+ Item *list = NULL;
+ char class[CF_BUFSIZE];
+
+ if ((fp = fopen(INVFILE, "r")) == NULL)
+    {
+    return NULL;
+    }
+ 
+ while(!feof(fp))
+    {
+    class[0] = '\0';
+    fscanf(fp,"%s",class);
+    if (class[0] != '\0')
+       {
+       AppendItem(&list,class,NULL);
+       }
+    }
+ 
+ fclose(fp);
+ return list;
+}
+
+/*********************************************************************/
+
+char *MakeAnomalyClusterName(char *title,Item *list)
+
+// take 1_2_3, e.g. wwws_in_state - four letters from first, then 1 letter from 2 and 3
+    
+{
+ static char result[CF_BUFSIZE] = {0};
+ char name[CF_MAXVARSIZE],abbr[5],frag[7];
+ Item *ip;
+ char ch1='x',ch2='X';
+
+ strcpy(result,title);
+ strcat(result," ");
+ 
+ for (ip = list; ip != NULL; ip=ip->next)
+    {
+    sscanf(ip->name,"%64[^_]_%c%*64[^_]_%c",name,&ch1,&ch2);
+    int len = strlen(name);
+    abbr[0] = name[0];
+    abbr[1] = name[len-2];
+    abbr[2] = name[len-1];
+    abbr[3] = name[len];
+    abbr[1] = '\0';
+    snprintf(frag,6,"%s%c%c",abbr,ch1,ch2);
+    strcat(result,frag);
+    }
+ 
+ return result;
+}
+
+/*********************************************************************/
+
+char *MakeFlatList(Item *list)
+
+// take 1_2_3, e.g. wwws_in_state - four letters from first, then 1 letter from 2 and 3
+    
+{
+ static char result[CF_BUFSIZE];
+ Item *ip;
+ int len = 0, dl;
+ memset(result,0,CF_BUFSIZE);
+ 
+ for (ip = list; ip != NULL; ip=ip->next)
+    {
+    dl = strlen(ip->name) + 1;
+
+    if (len + dl > CF_BUFSIZE-1)
+       {
+       Log(LOG_LEVEL_VERBOSE, "List overflowed buffer in MakeFlatFiles (%s)",result);
+       len = CF_BUFSIZE;
+       break;
+       }
+    
+    strcat(result,ip->name);
+    strcat(result,",");
+    len += dl;    
+    }
+
+ result[len-1] = '\0';
+ return result;
 }
 

@@ -25,7 +25,6 @@
 
 #define true 1
 #define false 0
-#define CGN_BUFSIZE 256
 #define MAX_ASSOC_ARRAY 128
 
 // Import standard link definitions

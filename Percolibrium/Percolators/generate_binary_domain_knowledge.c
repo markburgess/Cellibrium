@@ -1,6 +1,6 @@
 /*****************************************************************************/
 /*                                                                           */
-/* File: generate_binary_domain_knowledge.c                                     */
+/* File: generate_binary_domain_knowledge.c                                  */
 /*                                                                           */
 /* Created: Mon Nov 21 14:10:46 2016                                         */
 /*                                                                           */
@@ -17,15 +17,12 @@
 #include <stdio.h>
 #include <dirent.h>
 #include <string.h>
-#include <unistd.h>
 #include <time.h>
 #include <sys/stat.h>
-#include <sys/types.h>
 #include <utime.h>
 
 #define true 1
 #define false 0
-#define CGN_BUFSIZE 256
 #define MAX_ASSOC_ARRAY 128
 
 // Import standard link definitions
