@@ -669,6 +669,8 @@ static void BuildConsciousState(EvalContext *ctx, Averages av, Timescales t)
     snprintf(cname,CF_BUFSIZE,"measurement type %s",name);
     RoleCluster(consc,cname, "measurement type", name, ContextCluster(consc,"system monitoring measurement"));
     Gr(consc,cname,a_interpreted,desc,"system monitoring measurement");
+    ContextCluster(consc,"measurement anomaly");
+    ContextCluster(consc,"measurement type");
     //
     
     /* LDT */
@@ -1112,6 +1114,13 @@ if (dev > 3.0 * sqrt(2.0))
 
    //EvalContextHeapPersistentSave(ctx, buffer2, CF_PERSISTENCE, CONTEXT_STATE_POLICY_PRESERVE, "");
    //EvalContextClassPutSoft(ctx, buffer2, CONTEXT_SCOPE_NAMESPACE, "");
+
+   // Note the semantic connection
+   char topic[CF_BUFSIZE];
+   snprintf(topic,CF_BUFSIZE,"anomaly %s",buffer2);
+   RoleCluster(consc,topic, "measurement anomaly", buffer2,"system monitoring measurement");
+   //
+
    return sigma;
    }
 
@@ -1121,8 +1130,16 @@ if (dev > 2.0 * sqrt(2.0))
    strcat(buffer2, "_dev2");
    strcpy(degree, "2sigma");
    AppendItem(classlist, buffer2, "2");
+
    //EvalContextHeapPersistentSave(ctx, buffer2, CF_PERSISTENCE, CONTEXT_STATE_POLICY_PRESERVE, "");
    //EvalContextClassPutSoft(ctx, buffer2, CONTEXT_SCOPE_NAMESPACE, "");
+
+   // Note the semantic connection
+   char topic[CF_BUFSIZE];
+   snprintf(topic,CF_BUFSIZE,"anomaly %s",buffer2);
+   RoleCluster(consc,topic, "measurement anomaly", buffer2,"system monitoring measurement");
+   //
+
    return sigma;
    }
 

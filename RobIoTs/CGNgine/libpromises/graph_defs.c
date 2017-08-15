@@ -234,6 +234,9 @@ char *Clue(FILE *fp,char *who,char *what, time_t whentime, char *where, char *ho
  static char event[CGN_BUFSIZE];
  char attr[CGN_BUFSIZE];
  char *when;
+
+ // Normal regular events do not depend on time, and should not record an irrelevant timestamp
+ // Anomalies do depend on time and timestamp may be significant
  
  if (whentime > 0)
     {
@@ -439,7 +442,7 @@ char *SanitizeString(char *s)
            break;
        case '/':
        case '\\':
-           *sp = '-';
+           *sp = '%';
            break;
        default:
            break;

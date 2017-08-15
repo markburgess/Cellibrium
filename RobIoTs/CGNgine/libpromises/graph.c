@@ -27,17 +27,12 @@ void MakeUniqueClusterName(char *lval,void *sorted,char type,char *buffer)
  switch (type)
     {
     case RVAL_TYPE_SCALAR:
-        snprintf(buffer, CF_BUFSIZE, "%s.%s", lval, (char *)sorted);
+        snprintf(buffer, CF_BUFSIZE, "%s->%s", lval, (char *)sorted);
         break;
+        
     case RVAL_TYPE_LIST:
-
         buffer[0] = '\0';
-        strcat(buffer,lval);
-
-        if (sorted)
-           {
-           strcat(buffer,".");
-           }
+        snprintf(buffer, CF_BUFSIZE, "%s->", lval);
 
         for (Rlist *rp = (Rlist *)sorted; rp != NULL; rp=rp->next)
            {
@@ -51,6 +46,26 @@ void MakeUniqueClusterName(char *lval,void *sorted,char type,char *buffer)
               }
            }
         break;
+
+    case RVAL_TYPE_FNCALL:
+          {
+          FnCall *fp = (FnCall *)sorted;
+          buffer[0] = '\0';
+          snprintf(buffer, CF_BUFSIZE, "%s->%s", lval,fp->name);
+
+          for (Rlist *rp = (Rlist *)fp->args; rp != NULL; rp=rp->next)
+             {
+             if (strlen(buffer) < CF_BUFSIZE / 2)
+                {
+                strcat(buffer,RlistScalarValue(rp));
+                if (rp->next != NULL)
+                   {
+                   strcat(buffer,".");
+                   }
+                }
+             }
+          }
+    break;
     }
 }
 

@@ -44,7 +44,7 @@
 (failed with exit code 345,4,expresses an attribute,exit code 345,is an attribute of,any)
 (Function MyClass:MyFn(),4,has the role of,function,is a role fulfilled by,any)
 (Function MyClass:MyFn(),4,expresses an attribute,MyClass:MyFn(),is an attribute of,any)
-(file git-file-myfile.lang,3,contains,MyClass:MyFn(),belongs to or is part of,any)
+(file git%file%myfile.lang,3,contains,MyClass:MyFn(),belongs to or is part of,any)
 (code class MyClass,3,contains,MyFn(),belongs to or is part of,any)
 (executing in Container MyS1 on MYHOST,4,has the role of,where,is a role fulfilled by,any)
 (executing in Container MyS1 on MYHOST,4,expresses an attribute,Container MyS1,is an attribute of,any)

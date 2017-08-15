@@ -29,7 +29,6 @@
 
 #define true 1
 #define false 0
-#define CGN_BUFSIZE 1024
 #define MAX_WORD_SZ 265
 #define MAX_CONTEXT 265
 #define CGN_ROOT 99
@@ -84,7 +83,7 @@ int FollowNextAssociation(int prevtype,int atype,int level,char *concept,LinkAss
 int GetBestAssoc(char *best_association, char *concept,int atype,char *nextconcept,char *context);
 int RankAssociationsByContext(LinkAssociation array[MAX_ASSOC_ARRAY], char *basedir, char* concept, int atype);
 int RelevantToCurrentContext(char *concept,char *assoc,char *nextconcept,char *context);
-int ConceptAlreadyUsed(char *concept);
+int ConceptAlreadyUsed(char *concept,int level);
 void DeleteConcept(char *concept);
 char *Indent(int level);
 void SplitCompound(char *str, char *atoms[MAX_CONTEXT]);
@@ -200,7 +199,7 @@ void main(int argc, char** argv)
   // off we go
 
   NewManyWorldsContext(subject,CONTEXT_OPT);
-  ConceptAlreadyUsed(subject);
+  ConceptAlreadyUsed(subject,0);
   
   if (ATYPE_OPT != CGN_ROOT)
      {
@@ -384,13 +383,13 @@ void SearchForContextualizedAssociations(char *concept, int atype, int prevtype,
        }
     }
 
- DeleteConcept(concept);
+// DeleteConcept(concept);
  DeleteAssociations(array);
 }
 
 /*****************************************************************************/
 
-int ConceptAlreadyUsed(char *concept)
+int ConceptAlreadyUsed(char *concept, int plevel)
 
 { FILE *fp;
   struct stat statbuf;
@@ -403,10 +402,13 @@ int ConceptAlreadyUsed(char *concept)
     {
     fscanf(fp, "%d", &level);
     fclose(fp);
-    return true;
-    }
 
- if ((fp = fopen(name,"w")) != NULL)
+    if (plevel >level)
+       {
+       return true;
+       }
+    }
+ else if ((fp = fopen(name,"w")) != NULL)
     {
     fprintf(fp, "%d", level);
     fclose(fp);
@@ -435,7 +437,7 @@ int FollowNextAssociation(int prevtype,int atype,int level,char *concept,LinkAss
 { int relevance;
   const int dontwanttoseethis = 0;
 
-  if (ConceptAlreadyUsed(assoc->concept) || strcmp(concept,assoc->concept) == 0)
+  if (ConceptAlreadyUsed(assoc->concept,level) || strcmp(concept,assoc->concept) == 0)
      {
      return false;
      }

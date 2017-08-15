@@ -43,7 +43,9 @@
 static GenericAgentConfig *CheckOpts(int argc, char **argv);
 static void ShowContextsFormatted(EvalContext *ctx);
 static void ShowVariablesFormatted(EvalContext *ctx);
-void GenerateSemanticsGraph(Policy *policy);
+static void GenerateSemanticsGraph(EvalContext *ctx,Policy *policy);
+static char *AbbrevList(Rlist *rlist);
+static char *AbbrevScalar(char *s);
 
 /*******************************************************************/
 /* Command line options                                            */
@@ -198,7 +200,7 @@ int main(int argc, char *argv[])
 
     if (GRAPH)
        {
-       GenerateSemanticsGraph(policy);
+       GenerateSemanticsGraph(ctx,policy);
        }
     
     PolicyDestroy(policy);
@@ -511,7 +513,7 @@ static void ShowVariablesFormatted(EvalContext *ctx)
 
 /**********************************************************************/
 
-void GenerateSemanticsGraph(Policy *policy)
+static void GenerateSemanticsGraph(EvalContext *ctx,Policy *policy)
 {
  // Describe the semantics of the policy structure
  // Seq policy->bundles, policy->bodies
@@ -519,7 +521,7 @@ void GenerateSemanticsGraph(Policy *policy)
  // Not entirely satisfactory - still seems fragile in construction
  // due to the presence of assumed schema
 
- char umbrella[CF_BUFSIZE], filename[CF_BUFSIZE];
+ char filename[CF_BUFSIZE], attr[CF_BUFSIZE], version[CF_BUFSIZE];
  snprintf(filename, CF_BUFSIZE, "%s/policy_graph", CFWORKDIR);
  MapName(filename);
 
@@ -530,38 +532,89 @@ void GenerateSemanticsGraph(Policy *policy)
     return;
     }
 
- Gr(consc,"CGNgine system policy", a_contains,"promise bundle","system policy");
- Gr(consc,"system policy", a_related_to,"promise","");
- Gr(consc,"system policy", a_contains,"namespace","system policy");
- Gr(consc,"promise bundle", a_contains,"promise","system policy");
- Gr(consc,"promise", a_contains,"promise type","system policy");
- Gr(consc,"promise", a_contains,"promise handle","system policy");
- Gr(consc,"promise", a_contains,"constraint","system policy");
- Gr(consc,"promise", a_contains,"promisee","system policy");
- Gr(consc,"constraint", a_contains,"lval","system policy");
- Gr(consc,"constraint", a_contains,"rval","system policy");
- Gr(consc,"compound rval", a_alias, "body group","system policy");
- Gr(consc,"compound rval", a_alias, "constraints body","system policy");
+ snprintf(version,CF_BUFSIZE,"CGNengine policy version %s",(char *)EvalContextVariableControlCommonGet(ctx, COMMON_CONTROL_VERSION));
+ Gr(consc,"CGNgine system policy",a_hasinstance,version,"CGNengine system policy structure");
+ RoleCluster(consc,version,"system policy",attr,"CGNengine system policy structure");
 
+ // Invariants
+ Gr(consc,"system policy", a_contains,"namespace(s)","CGNengine system policy structure");
+ Gr(consc,"namespace(s)", a_contains,"promise bundle(s)","CGNengine system policy structure");
+ Gr(consc,"promise bundle(s)", a_contains,"promise type(s)","CGNengine system policy structure");
+ Gr(consc,"promise type(s)", a_contains,"promise(s)","CGNengine system policy structure");
+ Gr(consc,"promise(s)", a_contains,"promise handle(s)","CGNengine system policy structure");
+ Gr(consc,"promise(s)", a_contains,"constraint(s)","CGNengine system policy structure");
+ Gr(consc,"promise(s)", a_contains,"promisee(s)","CGNengine system policy structure");
+ Gr(consc,"constraint(s)", a_contains,"lval(s)","CGNengine system policy structure");
+ Gr(consc,"constraint(s)", a_contains,"rval(s)","CGNengine system policy structure");
+ Gr(consc,"constraint(s)", a_contains,"compound rval(s)","CGNengine system policy structure");
+ Gr(consc,"compound rval(s)", a_alias, "body template","CGNengine system policy structure");
+ Gr(consc,"compound rval(s)", a_alias, "constraints body","CGNengine system policy structure");
+
+ // Variant instances
+ 
  for (size_t i = 0; i < SeqLength(policy->bundles); i++)
     {
     const Bundle *bundle = SeqAt(policy->bundles, i);
-    Gr(consc,bundle->ns,a_contains,bundle->name,"policy namespace");
-    Gr(consc,bundle->ns,a_hasrole,"namespace","policy namespace");
-    Gr(consc,bundle->name,a_hasrole,"promise bundle","system policy");
-    Gr(consc,bundle->type,a_maintainedby,bundle->name,"system policy");
-
+    char namespace[CF_BUFSIZE],role[CF_MAXVARSIZE];
+    char constraintbuf[CF_BUFSIZE],qualname[CF_BUFSIZE];
+    char nsumbrella[CF_BUFSIZE];
+             
     if (bundle->source_path)
        {
-       Gr(consc,bundle->source_path,a_contains,bundle->name,"system policy file");
-       Gr(consc,bundle->source_path,a_hasrole,"policy file","system policy file");
+       snprintf(nsumbrella,CF_BUFSIZE,"namespace %s in file %s",bundle->ns,bundle->source_path);
+       Gr(consc,version, a_contains,nsumbrella,"CGNgine system policy structure");
+
+       snprintf(attr,CF_BUFSIZE,"namespace %s, in file %s",bundle->ns,bundle->source_path);
+       snprintf(namespace,CF_BUFSIZE,"namespace %s",bundle->ns);
+       RoleCluster(consc,namespace,"namespace(s)",bundle->ns,"CGNgine system policy structure");
+
+       Gr(consc,"namespace(s)", a_hasinstance,namespace,"CGNgine system policy structure");
+              
+       snprintf(attr,CF_BUFSIZE,"in file %s",bundle->source_path);
+       snprintf(filename,CF_BUFSIZE,"file %s",bundle->source_path);
+       RoleCluster(consc,attr,"where",filename,"CGNgine system policy structure");
+       RoleCluster(consc,filename,"file",bundle->source_path,"CGNgine system policy structure");
+       }
+    else
+       {
+       snprintf(namespace,CF_BUFSIZE,"namespace %s",bundle->ns);
+       Gr(consc,version, a_contains,namespace,"CGNgine system policy structure");
+       Gr(consc,"namespace(s)", a_hasinstance,namespace,"CGNgine system policy structure");
+       RoleCluster(consc,namespace,"namespace(s)",bundle->ns,"CGNgine system policy structure");
+       snprintf(filename,CF_BUFSIZE,"unknown file");
        }
 
+    snprintf(qualname,CF_BUFSIZE,"bundle %s:%s",bundle->ns,bundle->name);
+
+    char bundlenm[CF_BUFSIZE],typenm[CF_BUFSIZE],unqualname[CF_BUFSIZE];
+
+    snprintf(bundlenm,CF_BUFSIZE,"%s for %s",qualname,bundle->type);
+    snprintf(typenm,CF_BUFSIZE,"for %s",bundle->type);
+
+    RoleCluster(consc,bundlenm,qualname,typenm,"CGNgine system policy structure");
+    Gr(consc,namespace,a_contains,bundlenm,"CGNgine system policy structure");
+    
+    Gr(consc,"promise bundle(s)",a_hasinstance,bundlenm,"CGNgine system policy structure");
+    RoleCluster(consc,typenm,"who",bundle->type,"CGNgine system policy structure");
+
+    Gr(consc,namespace,a_contains,bundlenm,"CGNgine system policy structure");
+    Gr(consc,"promise bundle(s)",a_hasinstance,bundlenm,"CGNgine system policy structure");
+
+    snprintf(unqualname,CF_BUFSIZE,"unqualified name %s",bundle->name);
+    snprintf(attr,CF_BUFSIZE,"%s,%s",namespace,unqualname);
+    RoleCluster(consc,qualname,"qualified name",attr,"CGNgine system policy structure");
+
+    Gr(consc,filename,a_contains,bundlenm,"CGNgine system policy structure");
+    
     Rlist *argp = NULL;
 
     for (argp = bundle->args; argp != NULL; argp = argp->next)
        {
-       Gr(consc,bundle->name,a_depends,RlistScalarValue(argp),"system promise bundle");
+       char arg[CF_BUFSIZE];
+       snprintf(arg,CF_BUFSIZE,"bundle argument %s",RlistScalarValue(argp));
+       RoleCluster(consc,arg,"bundle argument",RlistScalarValue(argp),"CGNgine system policy structure promise bundle");
+       Gr(consc,bundlenm,a_depends,arg,"CGNgine system policy structure promise bundle");
+       Gr(consc,"bundle argument",a_hasinstance,arg,"CGNgine system policy structure");
        }
 
     for (size_t i = 0; i < SeqLength(bundle->promise_types); i++)
@@ -572,55 +625,79 @@ void GenerateSemanticsGraph(Policy *policy)
           {
           Promise *promise = SeqAt(type->promises, ppi);
 
+          char promisernm[CF_MAXVARSIZE],promiseenm[CF_MAXVARSIZE],classctx[CF_MAXVARSIZE];
+
+          snprintf(promisernm,CF_MAXVARSIZE,"%s",AbbrevScalar(promise->promiser));
+          snprintf(classctx,CF_MAXVARSIZE,"%s",AbbrevScalar(promise->classes));
+                    
+          // Class activation
+
           char *handle = (char *)PromiseGetHandle(promise);
 
           if (handle == NULL)
              {
-             handle = CanonifyName(promise->promiser);
+             handle = "no-name";
              }
-
-          // Promise type
-          Gr(consc,handle,a_hasrole,type->name,"system promise handle");
-          Gr(consc,handle,a_hasfunction,type->name,"system promise handle");
-          Gr(consc,handle,a_contains,promise->promiser,"system promise handle");
-          Gr(consc,promise->promiser,a_maintainedby,bundle->type,"system promise agent type");
-          Gr(consc,promise->promiser,a_hasrole,"promiser","system promise role");
-
-          Gr(consc,bundle->name,a_contains,handle,"system promise bundle");
-          Gr(consc,handle,a_maintainedby,bundle->type,"system promise handle");
-          Gr(consc,handle,a_hasrole,"promise handle","system promise handle");
-          Gr(consc,handle,a_hasfunction,"promise handle","system promise handle");
 
           if (promise->comment)
              {
-             Gr(consc,handle,a_hasattr,promise->comment,"system promise handle");
+             snprintf(attr,CF_BUFSIZE,"comment %s",promise->comment);
+             RoleCluster(consc,attr,"comment",promise->comment,"CGNgine promise definition");
              }
 
           switch (promise->promisee.type)
              {
              case RVAL_TYPE_SCALAR:
-                 Gr(consc,handle,a_contains,promise->promisee.item,"system promisee");
-                 Gr(consc,(char *)promise->promisee.item,a_depends,promise->promiser,"system promiser");
-                 Gr(consc,(char *)promise->promisee.item,a_depends,handle,"system promisee");
+                 snprintf(promiseenm,CF_MAXVARSIZE,"%s",AbbrevScalar((char *)promise->promisee.item));
+                 snprintf(constraintbuf,CF_BUFSIZE,"promisee %s",(char *)promise->promisee.item);
+                 RoleCluster(consc,constraintbuf,"promisee",(char *)promise->promisee.item,"CGNgine system policy structure");
+                 Gr(consc,promiseenm,a_depends,constraintbuf,"CGNgine system policy structure");
                  break;
 
              case RVAL_TYPE_LIST:
-                 for (const Rlist *rp = promise->promisee.item; rp; rp = rp->next)
+
+                 snprintf(promiseenm,CF_MAXVARSIZE,"%s",AbbrevList((Rlist *)promise->promisee.item));
+                 
+                 for (const Rlist *rp = (Rlist *)promise->promisee.item; rp; rp = rp->next)
                     {
-                    Gr(consc,handle,a_contains,RlistScalarValue(rp),"system promisee");
-                    Gr(consc,RlistScalarValue(rp),a_depends, promise->promiser,"system promisee");
-                    Gr(consc,RlistScalarValue(rp),a_depends, handle,"system promise handle");
+                    snprintf(constraintbuf,CF_BUFSIZE,"promisee %s",RlistScalarValue(rp));
+                    RoleCluster(consc,constraintbuf,"promisee",RlistScalarValue(rp),"CGNgine system policy structure");
+                    Gr(consc,promiseenm,a_hasattr,constraintbuf,"CGNgine system policy structure");
                     }
                  break;
 
              default:
+                 snprintf(promiseenm,CF_MAXVARSIZE,"%s",AbbrevScalar((char *)promise->promisee.item));
                 break;
              }
 
-          // Class activation
+          // The promise unit
+          char promiseumbrella[CF_BUFSIZE];
+          snprintf(promiseumbrella,CF_BUFSIZE,"promise %s of type %s from '%s' to '%s' in bundle %s ctx %s",handle,type->name,promisernm,promiseenm,bundle->name,classctx);
+          snprintf(attr,CF_BUFSIZE,"promiser %s,promisee %s,bundle %s,context %s",promisernm,promiseenm,bundle->name,classctx);
+          snprintf(role,CF_BUFSIZE,"promise %s of type %s",handle,type->name);
+          RoleCluster(consc,promiseumbrella,role,attr,"CGNgine promise definition");
 
-          Gr(consc,promise->classes,a_hasrole,"classifier or context label","system promise context precondition");
+          char subrole[CF_BUFSIZE];
+          snprintf(subrole,CF_BUFSIZE,"promise handle %s",handle);
+          snprintf(attr,CF_BUFSIZE,"promise type %s",type->name);
+          RoleCluster(consc,role,subrole,attr,"CGNgine promise definition");
 
+          Gr(consc,"promise(s)",a_contains,promiseumbrella,"CGNgine promise definition");
+
+          // Promise components
+          snprintf(attr,CF_BUFSIZE,"promiser %s",promisernm);
+          RoleCluster(consc,role,"promiser(s)",attr,"CGNgine promise definition");
+          Gr(consc,promiseumbrella,a_hasattr,attr,"CGNgine promise definition");
+          
+          snprintf(attr,CF_BUFSIZE,"promisee %s",promiseenm);
+          RoleCluster(consc,role,"promisee(s)",attr,"CGNgine promise definition");
+          Gr(consc,promiseumbrella,a_hasattr,attr,"CGNgine promise definition");
+          
+          snprintf(attr,CF_BUFSIZE,"context %s",classctx);
+          RoleCluster(consc,attr,"classifier or context label",classctx,"CGNgine system policy structure");
+          Gr(consc,promiseumbrella,a_hasattr,attr,"CGNgine promise definition");
+          
           for (size_t cpi = 0; cpi < SeqLength(promise->conlist); cpi++)
              {
              Constraint *constraint = SeqAt(promise->conlist, cpi);
@@ -628,54 +705,61 @@ void GenerateSemanticsGraph(Policy *policy)
              switch (constraint->rval.type)
                 {
                 case RVAL_TYPE_SCALAR:
-                    MakeUniqueClusterName(constraint->lval,constraint->rval.item,RVAL_TYPE_SCALAR,umbrella);
-                    Gr(consc,handle,a_hasconstraint,umbrella,"system promise");
-                    Gr(consc,umbrella,a_hasrole,"promise body constraint","system promise constraint");
-                    Gr(consc,umbrella,a_hasattr,constraint->rval.item,"system promise constraint");
-                    Gr(consc,constraint->lval, a_hasrole, "lval","system promise constraint type");
-                    Gr(consc,constraint->rval.item, a_hasrole, "rval","system promise constraint value");
-                    Gr(consc,constraint->rval.item, a_interpreted, constraint->lval,"system promise constraint value");
+                    // Make unique name
+                    MakeUniqueClusterName(constraint->lval,constraint->rval.item,RVAL_TYPE_SCALAR,constraintbuf);
+                    snprintf(attr,CF_BUFSIZE,"lval %s,rval %s",constraint->lval,(char *)constraint->rval.item);
+                    RoleCluster(consc,constraintbuf,"promise constraint",attr,"CGNgine system policy structure");
+                    Gr(consc,promiseumbrella,a_hasattr,constraintbuf,"CGNgine promise definition");
+                    // Add the parts
+                    snprintf(constraintbuf,CF_BUFSIZE,"lval %s",constraint->lval);
+                    RoleCluster(consc,constraintbuf,"lval",constraint->lval,"CGNgine system policy structure");
+                    snprintf(constraintbuf,CF_BUFSIZE,"rval %s",(char *)constraint->rval.item);
+                    RoleCluster(consc,constraintbuf,"rval",(char *)constraint->rval.item,"CGNgine system policy structure");
                     break;
 
                 case RVAL_TYPE_LIST:
-                    MakeUniqueClusterName(constraint->lval,constraint->rval.item,RVAL_TYPE_LIST,umbrella);
-                    Gr(consc,handle,a_hasconstraint,umbrella,"system promise");
-                    Gr(consc,umbrella,a_hasrole,"promise body constraint","system promise constraint");
-                    Gr(consc,umbrella,a_hasattr,constraint->lval,"system promise constraint");
-                    Gr(consc,constraint->lval, a_hasrole, "lval","system promise constraint type");
-
+                    MakeUniqueClusterName(constraint->lval,constraint->rval.item,RVAL_TYPE_LIST,constraintbuf);
+                    snprintf(attr,CF_BUFSIZE,"lval %s,rval %s",constraint->lval,constraintbuf);
+                    RoleCluster(consc,constraintbuf,"promise constraint",attr,"CGNgine system policy structure");
+                    Gr(consc,promiseumbrella,a_hasattr,constraintbuf,"CGNgine promise definition");
+                    snprintf(constraintbuf,CF_BUFSIZE,"lval %s",constraint->lval);
+                    RoleCluster(consc,constraintbuf,"lval",constraint->lval,"CGNgine system policy structure");
+                    
                     for (Rlist *rp = (Rlist *)constraint->rval.item; rp != NULL; rp=rp->next)
                        {
-                       Gr(consc,umbrella,a_hasattr,RlistScalarValue(rp),"system promise constraint");
-                       Gr(consc,RlistScalarValue(rp), a_hasrole, "rval","system promise constraint value");
-                       Gr(consc,RlistScalarValue(rp), a_interpreted, constraint->lval,"system promise constraint value");
+                       snprintf(constraintbuf,CF_BUFSIZE,"rval %s",RlistScalarValue(rp));
+                       RoleCluster(consc,constraintbuf,"rval",RlistScalarValue(rp),"CGNgine system policy structure");
                        }
                     break;
 
                 case RVAL_TYPE_FNCALL:
                     {
                     FnCall *fp = (FnCall *)(constraint->rval).item;
+                    char rvalbuf[CF_BUFSIZE];
                     
-                    MakeUniqueClusterName(fp->name,fp->args,RVAL_TYPE_LIST,umbrella);
+                    MakeUniqueClusterName(constraint->lval,constraint->rval.item,RVAL_TYPE_FNCALL,constraintbuf);
+                    MakeUniqueClusterName(fp->name,fp->args,RVAL_TYPE_LIST,rvalbuf);
+                    snprintf(attr,CF_BUFSIZE,"lval %s,rval %s",constraint->lval,rvalbuf);
+                    
+                    RoleCluster(consc,constraintbuf,"promise constraint",attr,"CGNgine system policy structure");
+                    Gr(consc,promiseumbrella,a_hasattr,constraintbuf,"CGNgine promise definition");
+                    
+                    snprintf(attr,CF_BUFSIZE,"lval %s",constraint->lval);
+                    RoleCluster(consc,attr,"lval",constraint->lval,"CGNgine system policy structure");
 
-                    Gr(consc,handle,a_depends,umbrella,"system promise");
-                    Gr(consc,umbrella,a_hasattr,fp->name,"system promise constraint");
-                    Gr(consc,umbrella,a_hasattr,constraint->lval,"system promise constraint");
-                    
-                    Gr(consc,constraint->lval, a_hasrole, "lval","system promise constraint type");
-                    Gr(consc,fp->name, a_hasrole, "rval","system promise constraint value function");
-                    Gr(consc,fp->name, a_interpreted, constraint->lval,"system promise constraint value function");
+                    snprintf(attr,CF_BUFSIZE,"rval %s",rvalbuf);
+                    RoleCluster(consc,attr,"rval",rvalbuf,"CGNgine system policy structure");
 
-                    Gr(consc,handle,a_uses,fp->name,"system promise");
-                    
-                    Gr(consc,promise->promiser,a_depends,umbrella,"system promise promiser");
-                    Gr(consc,fp->name, a_hasrole,"function","system promise constraint value function");
+                    RoleCluster(consc,rvalbuf,"CGNgine function call","","CGNgine rval");
+                    Gr(consc,rvalbuf,a_name,fp->name,"CGNgine rval");
                        
                     for (Rlist *argp = fp->args; argp != NULL; argp = argp->next)
                        {
-                       Gr(consc,umbrella,a_depends,RlistScalarValue(argp),"system promise constraint");
-                       Gr(consc,umbrella,a_hasarg,RlistScalarValue(argp),"promise promise constraint");
-                       Gr(consc,RlistScalarValue(argp),a_hasrole,"argument parameter","promise constraint value function");
+                       char argbuf[CF_BUFSIZE];
+                       snprintf(argbuf,CF_BUFSIZE,"arg %s",RlistScalarValue(argp));
+                       Gr(consc,rvalbuf,a_hasarg,argbuf,"CGNgine rval");
+                       Gr(consc,attr,a_depends,argbuf,"CGNgine rval");
+                       RoleCluster(consc,argbuf,"CGNgine function argument",RlistScalarValue(argp),"CGNgine rval");
                        }
                     }
                     break;
@@ -692,32 +776,123 @@ void GenerateSemanticsGraph(Policy *policy)
  for (size_t i = 0; i < SeqLength(policy->bodies); i++)
     {
     const Body *body = SeqAt(policy->bodies, i);
+    char qualname[CF_BUFSIZE],bodynm[CF_BUFSIZE],typenm[CF_BUFSIZE],longbodyname[CF_BUFSIZE];
+    char namespace[CF_BUFSIZE];
 
-    MakeUniqueClusterName(body->name,body->args,RVAL_TYPE_LIST,umbrella);
+    snprintf(qualname,CF_BUFSIZE,"%s:%s",body->ns,body->name);
 
-    Gr(consc,body->name,a_hasrole,body->type,"promise compound constraint template");
-    Gr(consc,umbrella,a_hasrole,body->type,"promise compound constraint");
-
-    Gr(consc,umbrella,a_hasrole,"promise body constraint","promise compound constraint");
-    Gr(consc,body->name,a_hasrole,"promise body constraint","promise compound constraint template");
-
-    Gr(consc,body->ns,a_contains,body->name,"policy namespace");
-    Gr(consc,body->ns,a_hasrole,"namespace","policy namespace");
+    MakeUniqueClusterName(qualname,body->args,RVAL_TYPE_LIST,longbodyname);
+    snprintf(bodynm,CF_BUFSIZE,"body template %s for %s",longbodyname,body->type);
+    snprintf(typenm,CF_BUFSIZE,"for %s",body->type);
+    snprintf(attr,CF_BUFSIZE,"%s,%s",qualname,body->type);
+    RoleCluster(consc,qualname,"qualified name","","CGNgine system policy structure");
 
     if (body->source_path)
        {
-       Gr(consc,body->source_path,a_contains,body->name,"promise compound constraint template source");
-       Gr(consc,body->source_path,a_contains,umbrella,"promise compound constraint template source");
-       Gr(consc,body->source_path,a_hasrole,"file","promise compound constraint template source");
+       snprintf(namespace,CF_BUFSIZE,"namespace %s in file %s",body->ns,body->source_path);
+       Gr(consc,version, a_contains,namespace,"CGNgine system policy structure");
+       Gr(consc,"namespace(s)", a_hasinstance,namespace,"CGNgine system policy structure");
+       snprintf(attr,CF_BUFSIZE,"namespace %s, in file %s",body->ns,body->source_path);
+       RoleCluster(consc,namespace,"namespace(s)",attr,"CGNgine system policy structure");
+       snprintf(attr,CF_BUFSIZE,"namespace %s",body->ns);
+       RoleCluster(consc,attr,"namespace(s)",body->ns,"CGNgine system policy structure");
+       snprintf(attr,CF_BUFSIZE,"in file %s",body->source_path);
+       snprintf(filename,CF_BUFSIZE,"file %s",body->source_path);
+       RoleCluster(consc,attr,"where",filename,"CGNgine system policy structure");
+       RoleCluster(consc,filename,"file",body->source_path,"CGNgine system policy structure");
        }
+    else
+       {
+       snprintf(namespace,CF_BUFSIZE,"namespace %s",body->ns);
+       Gr(consc,version, a_contains,namespace,"CGNgine system policy structure");
+       Gr(consc,"namespace(s)", a_hasinstance,namespace,"CGNgine system policy structure");
+       RoleCluster(consc,namespace,"namespace(s)",body->ns,"CGNgine system policy structure");
+       snprintf(filename,CF_BUFSIZE,"unknown file");
+       }
+
+    Gr(consc,filename,a_contains,bodynm,"CGNgine system policy structure");
 
     for (Rlist *argp = body->args; argp != NULL; argp = argp->next)
        {
-       Gr(consc,umbrella,a_depends,RlistScalarValue(argp),"promise compound constraint");
-       Gr(consc,umbrella,a_hasarg,RlistScalarValue(argp),"promise compound constraint");
-       Gr(consc,RlistScalarValue(argp),a_hasrole,"argument parameter","promise compound constraint argument");
+       char argbuf[CF_BUFSIZE];
+       snprintf(argbuf,CF_BUFSIZE,"arg %s",RlistScalarValue(argp));
+       Gr(consc,bodynm,a_hasarg,argbuf,"CGNgine body template");
+       RoleCluster(consc,argbuf,"CGNgine body template argument",RlistScalarValue(argp),"CGNgine body template");
        }
     }
 
  fclose(consc);
+}
+
+/**********************************************************************/
+
+static char *AbbrevScalar(char *s)
+{
+ static char retval[CF_MAXVARSIZE] = {0};
+
+ if (s == NULL)
+    {
+    return "undeclared";
+    }
+ 
+ if (strlen(s) > 16)
+    {
+    char *sp,*start = strchr(s,' ');
+
+    if (start)
+       {
+       for (sp = start; sp >= start; sp--)
+          {
+          if (*sp == '/')
+             {
+             strncat(retval,sp+1,16);
+             return retval;
+             }
+          }
+       }
+    else
+       {
+       strncat(retval,s+1,16);
+       }
+    }
+ else
+    {
+    strncat(retval,s+1,16);
+    }
+ return retval;
+}
+
+/**********************************************************************/
+
+static char *AbbrevList(Rlist *rlist)
+{
+ static char retval[CF_MAXVARSIZE];
+ int len = RlistLen(rlist);
+ int i, chs = 16/len;
+ Rlist *rp;
+
+  if (rlist == NULL)
+    {
+    return "undeclared";
+    }
+
+ if (chs == 0)
+    {
+    chs = 1;
+    }
+
+ retval[0] = '\0';
+ // Make a short syndrome based on the list
+
+ for (i = 0,rp = rlist; rp != NULL && i < len && i < 16; i++, rp=rp->next)
+    {
+    strncat(retval,RlistScalarValue(rp),chs);
+    }
+
+ if (rp)
+    {
+    strncat(retval,RlistScalarValue(rp),16-i);
+    }
+
+ return retval;
 }
