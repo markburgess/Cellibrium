@@ -369,7 +369,7 @@ char *TimeCluster(FILE *fp,time_t time)
     RoleCluster(fp,dow,"weekday","","clock time");
     RoleCluster(fp,day,"day of month","","clock time");
     RoleCluster(fp,month,"month","","clock time");
-    RoleCluster(fp,month,"year","","clock time");
+    RoleCluster(fp,year,"year","","clock time");
     RoleCluster(fp,hour,"hour","","clock time");
     RoleCluster(fp,month,"minutes past the hour","minutes","clock time");       
     }
@@ -381,11 +381,15 @@ char *TimeCluster(FILE *fp,time_t time)
 
 /************************************************************************************/
 
-char *WhereCluster(FILE *fp,char *address, char *uqhn, char *domain, char *ipv4, char *ipv6)
+char *WhereCluster(FILE *fp,char *address)
 {
  static char where[CGN_BUFSIZE] = {0};
  char attr[CGN_BUFSIZE];
-
+ char *uqhn = VUQNAME;
+ char *domain = VDOMAIN;
+ char *ipv4 = VIPADDRESS;
+ char *ipv6 = NULL;
+ 
  if (domain == NULL || strlen(domain) == 0)
     {
     domain = "unknown domain";
