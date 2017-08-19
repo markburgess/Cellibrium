@@ -381,14 +381,11 @@ char *TimeCluster(FILE *fp,time_t time)
 
 /************************************************************************************/
 
-char *WhereCluster(FILE *fp,char *address)
+char *WhereCluster(FILE *fp,char *address, char *uqhn, char *domain, char *ipv4, char *ipv6)
 {
  static char where[CGN_BUFSIZE] = {0};
+
  char attr[CGN_BUFSIZE];
- char *uqhn = VUQNAME;
- char *domain = VDOMAIN;
- char *ipv4 = VIPADDRESS;
- char *ipv6 = NULL;
  
  if (domain == NULL || strlen(domain) == 0)
     {

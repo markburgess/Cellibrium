@@ -1524,7 +1524,7 @@ static void AnnotateAnomaly(EvalContext *ctx, FILE *consc, time_t now, Item *syn
  char *how = MakeAnomalyClusterName("anomaly",syndrome);
  char *howattr = MakeFlatList(syndrome);
  char *icontext = "system monitoring";
- char *wherex =  WhereCluster(consc,where);
+ char *wherex =  WhereCluster(consc,where,VUQNAME,VDOMAIN,VIPADDRESS,NULL);
 
  Clue(consc,who,what,when,wherex,how,why,icontext);
  RoleCluster(consc,how,"how",howattr,"system monitoring");
