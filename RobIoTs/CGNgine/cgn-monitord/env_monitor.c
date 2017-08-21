@@ -669,9 +669,19 @@ static void BuildConsciousState(EvalContext *ctx, Averages av, Timescales t)
     snprintf(cname,CF_BUFSIZE,"measurement type %s",name);
     RoleCluster(consc,cname, "measurement type", name, ContextCluster(consc,"system monitoring measurement"));
     RoleCluster(consc,"normal state","state","background,normal","system monitoring measurement");
+    RoleCluster(consc,"anomalous state","state","change,anomaly","system monitoring measurement");
     Gr(consc,cname,a_interpreted,desc,"system monitoring measurement");
     ContextCluster(consc,"measurement anomaly");
     ContextCluster(consc,"measurement type");
+    snprintf(cname,CF_BUFSIZE,"%s_high",name);
+    Gr(consc,cname,a_depends,name,"system monitoring measurement");
+    snprintf(cname,CF_BUFSIZE,"%s_low",name);
+    Gr(consc,cname,a_depends,name,"system monitoring measurement");
+    snprintf(cname,CF_BUFSIZE,"%s_high_anomaly",name);
+    Gr(consc,cname,a_depends,name,"system monitoring measurement");
+    snprintf(cname,CF_BUFSIZE,"%s_low_anomaly",name);
+    Gr(consc,cname,a_depends,name,"system monitoring measurement");
+
     //
     
     /* LDT */
@@ -1545,7 +1555,8 @@ static void AnnotateAnomaly(EvalContext *ctx, FILE *consc, time_t now, Item *syn
 
  Clue(consc,who,what,when,wherex,how,why,icontext);
  char *hub = RoleCluster(consc,how,"how",howattr,"system monitoring");
-
+ Gr(consc,"anomalous state",a_contains,how,"system monitoring measurement");
+ 
  Item *ip;
  for (ip = syndrome; ip != NULL; ip = ip->next)
     {
