@@ -2,9 +2,11 @@
 
 INCLUDES = -I. -I../../RobIoTs/CGNgine/libpromises -I../../RobIoTs/CGNgine/libutils -I../../RobIoTs/CGNgine/libcfnet
 
-all: update build generate graph
+all: update_cgn build generate graph
 
-update:
+update: update_cgn graph
+
+update_cgn:
 # CGNgine data, generated internally
 	cp ~/.CGNgine/state/env_graph ExampleTupleData/ || true
 	cp ~/.CGNgine/policy_graph ExampleTupleData/ || true
