@@ -665,9 +665,10 @@ static void BuildConsciousState(EvalContext *ctx, Averages av, Timescales t)
     // Add graph semantics
     //
     
-    char cname[CF_BUFSIZE],dstring[CF_BUFSIZE];
+    char cname[CF_BUFSIZE];
     snprintf(cname,CF_BUFSIZE,"measurement type %s",name);
     RoleCluster(consc,cname, "measurement type", name, ContextCluster(consc,"system monitoring measurement"));
+    RoleCluster(consc,"normal state","state","background,normal","system monitoring measurement");
     Gr(consc,cname,a_interpreted,desc,"system monitoring measurement");
     ContextCluster(consc,"measurement anomaly");
     ContextCluster(consc,"measurement type");
@@ -843,19 +844,26 @@ static void BuildConsciousState(EvalContext *ctx, Averages av, Timescales t)
        {
        // why = ContextCluster(consc,"monitoring restarted");
        // Event....
-       }
-    else
-       {
-       DiffInvariants(ctx,&anomaly_syndrome,&invariants);
-       
-       if (anomaly_syndrome)
-          {          
-          AnnotateAnomaly(ctx, consc, nowt, anomaly_syndrome, invariants);
-          }
+       char *who = "cgn_montord";
+       char *what = "monitor restarted";
+       char *why = "unknown"; // or "unknown"
+       char *where = "mark's laptop";
+       time_t when = now;
+       char *how = "restart monitor service";
+       char *howattr = "restart,service,monitor";
+       char *icontext = "system monitoring measurment";
+       char *wherex =  WhereCluster(consc,where,VUQNAME,VDOMAIN,VIPADDRESS,NULL);
 
-       DeleteItemList(anomaly_syndrome);
-       DeleteItemList(invariants);
+       Log(LOG_LEVEL_VERBOSE, "Detected a restart anomaly");
+       Clue(consc,who,what,when,wherex,how,why,icontext);
+       char *hub = RoleCluster(consc,how,"how",howattr,"system monitoring measurement");
        }
+
+    DiffInvariants(ctx,&anomaly_syndrome,&invariants);       
+    AnnotateAnomaly(ctx, consc, nowt, anomaly_syndrome, invariants);
+    
+    DeleteItemList(anomaly_syndrome);
+    DeleteItemList(invariants);
     }
 
  JUST_REVIVED = false;
@@ -1516,6 +1524,15 @@ static void AnnotateAnomaly(EvalContext *ctx, FILE *consc, time_t now, Item *syn
  // Look for an anomalous state change as a criterion for a significant event to feed into this
  // Clue(FILE *fp,char *who,char *what, time_t whentime, char *where, char *how, char *why,char *icontext)
 
+ if (syndrome)
+    {
+    Log(LOG_LEVEL_VERBOSE,"Describing state semantics (anomalous)");
+    }
+ else
+    {
+    Log(LOG_LEVEL_VERBOSE,"Describing state semantics");
+    }
+
  char *who = "cgn_montord";
  char *what = "anomalous state change";
  char *why = "unknown"; // or "unknown"
@@ -1523,7 +1540,7 @@ static void AnnotateAnomaly(EvalContext *ctx, FILE *consc, time_t now, Item *syn
  time_t when = now;
  char *how = MakeAnomalyClusterName("anomaly",syndrome);
  char *howattr = MakeFlatList(syndrome);
- char *icontext = "system monitoring";
+ char *icontext = "system monitoring measurement";
  char *wherex =  WhereCluster(consc,where,VUQNAME,VDOMAIN,VIPADDRESS,NULL);
 
  Clue(consc,who,what,when,wherex,how,why,icontext);
@@ -1539,6 +1556,23 @@ static void AnnotateAnomaly(EvalContext *ctx, FILE *consc, time_t now, Item *syn
        Gr(consc,hub,a_caused_by,anomaly,"measurement anomaly");
        }
     }
+
+ how = MakeAnomalyClusterName("background",invariants);
+ who = "cgn_montord";
+ what = "normal state";
+ why = "unknown"; // or "unknown"
+ where = "mark's laptop";
+ when = now;
+ howattr = MakeFlatList(invariants);
+ icontext = "system monitoring";
+ wherex =  WhereCluster(consc,where,VUQNAME,VDOMAIN,VIPADDRESS,NULL);
+
+ // Normal background
+ Clue(consc,who,what,when,wherex,how,why,icontext);
+ hub = RoleCluster(consc,how,"how",howattr,"system monitoring measurement");
+
+ // Superhub
+ Gr(consc,"normal state",a_contains,how,"system monitoring measurement");
 }
 
 /*****************************************************************************/

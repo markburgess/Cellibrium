@@ -157,9 +157,6 @@ void main(int argc, char** argv)
   
   if (CONTEXT_OPT)
      {
-     
-
-
      // Should we add the subject and first order connections to the context list?
 
      // What kind of an agent am I?
@@ -181,6 +178,7 @@ void main(int argc, char** argv)
      if (strcmp(CONTEXT_OPT,ALL_CONTEXTS) != 0)
         {
         printf("No subject provided, so searching/looking for possibly relevant contexts\n\n");
+        NewManyWorldsContext(CONTEXT_OPT,CONTEXT_OPT);
         ShowMatchingConcepts(CONTEXT_OPT);
         return;
         }
@@ -339,10 +337,10 @@ void SearchForContextualizedAssociations(char *concept, int atype, int prevtype,
 { int i, count = 0;
   LinkAssociation array[MAX_ASSOC_ARRAY];
   const int threshold_for_relevance = 0;
-  const int max_stories = 5;
+  const int max_stories = 0;
 
  InitializeAssociations(array);
-  
+
  if (!RankAssociationsByContext(array,VBASEDIR,concept,atype))
     {
     return;
@@ -356,23 +354,26 @@ void SearchForContextualizedAssociations(char *concept, int atype, int prevtype,
        }
     
     // Similar attributes, but don't go back the way we came
-    
+
     if (atype == -prevtype)
        {
-       continue;
-       if (atype == GR_CONTAINS || atype == -GR_CONTAINS || atype == GR_EXPRESSES || atype == -GR_EXPRESSES)
+       char trunc[CGN_BUFSIZE];
+       snprintf(trunc,CGN_BUFSIZE," %s `%s'",(atype > 0) ? GR_TYPES[atype][0]: GR_TYPES[atype][1] ,concept);
+       if (!ConceptAlreadyUsed(trunc,0))
           {
-          printf("CHECK FOR LOOPS\n");
+          printf("                   (%s)\n",trunc);
           }
+       continue;
        }
 
     // Explore next level, if context and everything matches
+
 
     if (level < RECURSE_OPT+1) // Arbitrary curb on length of stories
        {
        if (!FollowNextAssociation(prevtype,atype,level,concept,&(array[i])))
           {
-          printf("          %s << End of unique story\n",Indent(level));
+          //printf("          %s << End of unique story\n",Indent(level));
           }
 
        if (count++ > max_stories)
@@ -397,23 +398,27 @@ int ConceptAlreadyUsed(char *concept, int plevel)
   int level = -1;
 
  snprintf(name,CGN_BUFSIZE,"%s/%s",MANY_WORLDS_CONTEXT,concept);
- 
+
  if ((fp = fopen(name,"r")) != NULL)
     {
     fscanf(fp, "%d", &level);
     fclose(fp);
 
-    if (plevel >level)
+    if ((plevel == 0) || (plevel > level))
        {
        return true;
        }
     }
  else if ((fp = fopen(name,"w")) != NULL)
     {
-    fprintf(fp, "%d", level);
+    fprintf(fp, "%d", plevel);
     fclose(fp);
     }
- 
+ else
+    {
+    printf("Couldn't trace steps by writing %s,%d\n",name,plevel);
+    }
+
  return false;
 }
 
@@ -439,7 +444,10 @@ int FollowNextAssociation(int prevtype,int atype,int level,char *concept,LinkAss
 
   if (ConceptAlreadyUsed(assoc->concept,level) || strcmp(concept,assoc->concept) == 0)
      {
-     return false;
+     if (level > 0)
+        {
+        return false;
+        }
      }
 
   if (assoc->relevance > dontwanttoseethis)
