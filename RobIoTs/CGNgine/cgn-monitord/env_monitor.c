@@ -1527,8 +1527,18 @@ static void AnnotateAnomaly(EvalContext *ctx, FILE *consc, time_t now, Item *syn
  char *wherex =  WhereCluster(consc,where,VUQNAME,VDOMAIN,VIPADDRESS,NULL);
 
  Clue(consc,who,what,when,wherex,how,why,icontext);
- RoleCluster(consc,how,"how",howattr,"system monitoring");
+ char *hub = RoleCluster(consc,how,"how",howattr,"system monitoring");
 
+ Item *ip;
+ for (ip = syndrome; ip != NULL; ip = ip->next)
+    {
+    if (ip->name)
+       {
+       char anomaly[CF_BUFSIZE];
+       snprintf(anomaly,CF_BUFSIZE,"anomaly %s",ip->next);
+       Gr(consc,hub,a_caused_by,anomaly,"measurement anomaly");
+       }
+    }
 }
 
 /*****************************************************************************/
