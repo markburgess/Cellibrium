@@ -337,7 +337,7 @@ void SearchForContextualizedAssociations(char *concept, int atype, int prevtype,
 { int i, count = 0;
   LinkAssociation array[MAX_ASSOC_ARRAY];
   const int threshold_for_relevance = 0;
-  const int max_stories = 0;
+  const int max_stories = 10;
 
  InitializeAssociations(array);
 
@@ -358,7 +358,7 @@ void SearchForContextualizedAssociations(char *concept, int atype, int prevtype,
     if (atype == -prevtype)
        {
        char trunc[CGN_BUFSIZE];
-       snprintf(trunc,CGN_BUFSIZE," %s `%s'",(atype > 0) ? GR_TYPES[atype][0]: GR_TYPES[atype][1] ,concept);
+       snprintf(trunc,CGN_BUFSIZE," (%d)%s `%s'",atype,(atype > 0) ? GR_TYPES[atype][0]: GR_TYPES[atype][1] ,array[i].concept);
        if (!ConceptAlreadyUsed(trunc,0))
           {
           printf("                   (%s)\n",trunc);
@@ -394,10 +394,18 @@ int ConceptAlreadyUsed(char *concept, int plevel)
 
 { FILE *fp;
   struct stat statbuf;
-  char name[CGN_BUFSIZE];
-  int level = -1;
+  char *sp,name[CGN_BUFSIZE];
+  int hash = 0,pos = 1,level = -1;
 
- snprintf(name,CGN_BUFSIZE,"%s/%s",MANY_WORLDS_CONTEXT,concept);
+  // filenames are only 255 while paths can be 4096, so we have to shorten long concepts
+  // This is a simple approx hash
+
+  for (sp = concept; *sp != '\0'; sp++, pos++)
+     {
+     hash += *sp * pos;
+     }
+  
+ snprintf(name,CGN_BUFSIZE,"%s/%d",MANY_WORLDS_CONTEXT,hash);
 
  if ((fp = fopen(name,"r")) != NULL)
     {
@@ -416,7 +424,8 @@ int ConceptAlreadyUsed(char *concept, int plevel)
     }
  else
     {
-    printf("Couldn't trace steps by writing %s,%d\n",name,plevel);
+    printf("\nCouldn't trace steps by writing (%s),%d, len = %d\n\n",name,plevel,strlen(name));
+    perror("fopen");
     }
 
  return false;

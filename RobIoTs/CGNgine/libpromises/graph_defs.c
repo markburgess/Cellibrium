@@ -43,12 +43,12 @@ Association A[a_ass_dim+1] =
 
 const char *GR_TYPES[6][2] =
 {
-    {"no type","nothing"},
-    {"similar to","similar to"},
+    {"no type",                  "nothing"},
+    {"similar to",               "similar to"},
     {"may follow from/caused by","may cause / precede"},
-    {"contains", "may be part of"},
-    {"may express","may be expressed by"},
-    {"may be found in context","may be context for"}
+    {"contains",                 "may be part of"},
+    {"may express",              "may be expressed by"},
+    {"may be found in context",  "may be context for"}
 };
 
 /********************************************************************************/
