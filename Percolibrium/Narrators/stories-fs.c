@@ -47,6 +47,7 @@ extern int optind, opterr, optopt;
 
 int ATYPE_OPT = CGN_ROOT;
 int RECURSE_OPT = 10;
+int JSON = false;
 char *CONTEXT_OPT;
 
 char MANY_WORLDS_CONTEXT[CGN_BUFSIZE];
@@ -54,23 +55,25 @@ char VBASEDIR[256];
 
 /*****************************************************************************/
 
-static const struct option OPTIONS[6] =
+static const struct option OPTIONS[7] =
 {
     {"help", no_argument, 0, 'h'},
     {"subject", required_argument, 0, 's'},
     {"context", required_argument, 0, 'c'},
     {"type", required_argument, 0, 't'},
     {"recurse", required_argument, 0, 'r'},
+    {"json", no_argument, 0, 'j'},
     {NULL, 0, 0, '\0'}
 };
 
-static const char *HINTS[6] =
+static const char *HINTS[7] =
 {
     "Print the help message",
     "The subject of the story (initial condition)", 
     "Context relevance string (would be provided by a running short term history)",
     "Association type 1-4 (see paper III theory)",
     "Recursion depth",
+    "JSON-like output",
     NULL
 };
 
@@ -90,6 +93,9 @@ void SplitCompound(char *str, char *atoms[MAX_CONTEXT]);
 void ShowMatchingConcepts(char *context);
 char *Abbr(int n);
 int Overlap(char *set1, char *set2);
+void StartReport(void);
+void SectionBanner(char *s);
+void EndBanner(void);
 
 static int cmpassoc(const void *p1, const void *p2);
 static int cmprel(const void *p1, const void *p2);
@@ -103,7 +109,7 @@ void main(int argc, char** argv)
  char c;
  char *subject = NULL, *context = NULL;
  
-  while ((c = getopt_long(argc, argv, "ht:s:c:r:", OPTIONS, &optindex)) != EOF)
+  while ((c = getopt_long(argc, argv, "jht:s:c:r:", OPTIONS, &optindex)) != EOF)
     {
     switch ((char) c)
        {
@@ -143,6 +149,10 @@ void main(int argc, char** argv)
            RECURSE_OPT = atoi(optarg);
            break;
 
+       case 'j':
+           JSON = true;
+           break;
+           
        default:
            printf("Unknown option %c\n", c);
            break;
@@ -205,18 +215,20 @@ void main(int argc, char** argv)
      }
   else
      {
-     printf("=========== sequential, causal reasoning =======================\n\n");
+     StartReport();
+     SectionBanner("=========== sequential, causal reasoning =======================\n\n");
      SearchForContextualizedAssociations(subject, GR_FOLLOWS, CGN_ROOT, level);
      SearchForContextualizedAssociations(subject, -GR_FOLLOWS, CGN_ROOT, level);
-     printf("=========== proximity reasoning =======================\n\n");
+     SectionBanner("=========== proximity reasoning =======================\n\n");
      SearchForContextualizedAssociations(subject, GR_NEAR, CGN_ROOT, level);
      SearchForContextualizedAssociations(subject, -GR_NEAR, CGN_ROOT, level);
-     printf("=========== boundary or enclosure reasoning =======================\n\n");
+     SectionBanner("=========== boundary or enclosure reasoning =======================\n\n");
      SearchForContextualizedAssociations(subject, GR_CONTAINS, CGN_ROOT, level);
      SearchForContextualizedAssociations(subject, -GR_CONTAINS, CGN_ROOT, level);
-     printf("=========== property or promise based reasoning =======================\n\n");
+     SectionBanner("=========== property or promise based reasoning =======================\n\n");
      SearchForContextualizedAssociations(subject, GR_EXPRESSES, CGN_ROOT, level);
      SearchForContextualizedAssociations(subject, -GR_EXPRESSES, CGN_ROOT, level);
+     EndReport();
      }
   
   printf("\n");
@@ -463,7 +475,7 @@ int FollowNextAssociation(int prevtype,int atype,int level,char *concept,LinkAss
      {
      if ((atype == -prevtype) && (abs(atype) != GR_FOLLOWS)) // Don't double back
         {
-        printf ("%s and also note \"%s\" %s \"%s\" (intended in the context of %s)\n", Indent(level), concept,assoc->fwd, assoc->concept,assoc->icontext);
+        printf ("%s and also note \"%s\" %s \"%s\" (icontext %s)\n", Indent(level), concept,assoc->fwd, assoc->concept,assoc->icontext);
         //return; 
         }
      else
@@ -890,4 +902,34 @@ char *Abbr(int d)
     default:
         return "???";
     }
+}
+
+/**********************************************************/
+
+void StartReport(int level)
+{
+ if (JSON)
+    {
+    printf("%s{",Indent(level));
+    }
+}
+
+/**********************************************************/
+
+void SectionBanner(char *s)
+{
+ if (JSON)
+    {
+    }
+ else
+    {
+    printf("%s",s);
+    }
+}
+
+/**********************************************************/
+
+void EndBanner(void)
+
+{
 }

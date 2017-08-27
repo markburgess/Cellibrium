@@ -266,6 +266,8 @@ char *Clue(FILE *fp,char *who,char *what, time_t whentime, char *where, char *ho
  RoleCluster(fp,what,"what",what,icontext);
  RoleCluster(fp,how,"how",how,icontext);
  RoleCluster(fp,why,"why","",icontext);
+
+ Gr(fp,what,a_caused_by,why,icontext);
  return event;
 }
 

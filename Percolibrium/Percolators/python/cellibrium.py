@@ -164,6 +164,8 @@ class Cellibrium:
         self.RoleCluster(ofile,what,"what",what,icontext)
         self.RoleCluster(ofile,how,"how",how,icontext)
         self.RoleCluster(ofile,why,"why","",icontext)
+        self.Gr(ofile,what,"a_caused_by",why,icontext);
+
         
     ########################################################################################################
 

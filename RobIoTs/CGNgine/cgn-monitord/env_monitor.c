@@ -1565,6 +1565,7 @@ static void AnnotateAnomaly(EvalContext *ctx, FILE *consc, time_t now, Item *syn
        char anomaly[CF_BUFSIZE];
        snprintf(anomaly,CF_BUFSIZE,"anomaly %s",ip->next);
        Gr(consc,hub,a_caused_by,anomaly,"measurement anomaly");
+       Log(LOG_LEVEL_VERBOSE," - current %s contains %s\n",how,ip->name);
        }
     }
 
