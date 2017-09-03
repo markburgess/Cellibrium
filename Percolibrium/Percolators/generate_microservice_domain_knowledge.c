@@ -103,6 +103,29 @@ int main()
   
  Gr(stdout, "host", a_promises, "operating system","execute run software ops operations");
  Gr(stdout, "operating system",a_promises,"kernel","execute run software ops operations");
+
+ InitialCluster(stdout);
+ 
+ ServerCluster(stdout,
+               "ssh",
+               "/usr/local/sshd",
+               "London",
+               "myserver",
+               "example.com",
+               "123.456.789.10/24",
+               "2001:::7/64",
+               22
+               );
+
+ ClientCluster(stdout,
+               "ssh",
+               "/usr/bin/ssh",
+               "San Jose",
+               "desktop",
+               "example.com",
+               "321.654.987.99/24",
+               "2002:::8/64"
+               );
  return 0;
 }
 

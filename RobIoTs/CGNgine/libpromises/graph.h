@@ -11,6 +11,7 @@ enum associations
     a_contains,
     a_generalizes,
     a_origin,
+    a_providedby,
     a_maintainedby,
     a_depends,
     a_caused_by,
@@ -50,9 +51,16 @@ char *RoleCluster(FILE *consc,char *compound_name, char *role, char *attributes,
 char *ContextCluster(FILE *consc,char *compound_name);
 char *NamedContextCluster(FILE *consc,char *compound_name,char *list);
 void MakeUniqueClusterName(char *lval,void *sorted,char type,char *buffer);
+
+void InitialCluster(FILE *fp);
 char *TimeCluster(FILE *fp,time_t time);
-char *WhereCluster(FILE *fp,char *address, char *uqhn, char *domain, char *ipv4, char *ipv6);
+char *WhereCluster(FILE *fp,char *address, char *uqhn, char *domain, char *ipv4, char *ipv6, unsigned int portnumber);
 char *Clue(FILE *fp,char *who,char *what, time_t whentime, char *where, char *how, char *why,char *icontext);
+char *ServiceCluster(FILE *fp,char *servicename);
+char *ClientCluster(FILE *fp,char *servicename,char *clientname,char *address, char *uqhn, char *domain, char *ipv4, char *ipv6);
+char *ServerCluster(FILE *fp,char *servicename,char *servername,char *address, char *uqhn, char *domain, char *ipv4, char *ipv6, unsigned int portnumber);
+char *ServiceInstance(FILE *fp,char *role, char *instancename,char *servicename, char *where);
+char *ExceptionCluster(FILE *fp,char *origin,char *logmessage);
 char *SanitizeString(char *s);
 #endif
 
@@ -60,6 +68,10 @@ char *SanitizeString(char *s);
 
 #ifndef GRAPH
 extern Association A[a_ass_dim+1];
+#endif
+
+#ifndef CGN_BUFSIZE
+# define CGN_BUFSIZE 4096
 #endif
 
 #define GR_CONTAINS  3 

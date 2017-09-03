@@ -15,6 +15,7 @@ class Cellibrium:
         "a_contains" :     [GR_CONTAINS,"contains","belongs to or is part of"],
         "a_generalizes" :  [GR_CONTAINS,"generalizes","is a special case of"],
         "a_origin" :       [GR_FOLLOWS,"may originate from","may be the source or origin of"],
+        "a_providedby" :   [GR_FOLLOWS,"may be provided by","may provide"],
         "a_maintainedby" : [GR_FOLLOWS,"is maintained by","maintains"],
         "a_depends" :      [GR_FOLLOWS,"depends on","partly determines"],
         "a_caused_by" :    [GR_FOLLOWS,"may be caused by","can cause"],
@@ -75,6 +76,35 @@ class Cellibrium:
         ss = re.sub(r"[\\/,]","_",s)
         return ss
     
+    ########################################################################################################
+    
+    def InitialCluster(self,ofile):
+    
+        # Basic axioms about causation (upstream/downstream principle)
+
+        self.ContextCluster(ofile,"service relationship");
+        self.ContextCluster(ofile,"system diagnostics");
+        self.ContextCluster(ofile,"lifecycle state change");
+        self.ContextCluster(ofile,"software exception");
+        
+        self.Gr(ofile,"client measurement anomaly","a_caused_by","client software exception","system diagnostics");
+        self.Gr(ofile,"client measurement anomaly","a_caused_by","server software exception","system diagnostics");
+        self.Gr(ofile,"server measurement anomaly","a_caused_by","server software exception","system diagnostics");
+        
+        self.Gr(ofile,"measurement anomaly","a_caused_by","software exception","system diagnostics");
+        
+        self.Gr(ofile,"resource contention","a_caused_by","resource limit","system diagnostics");
+        self.Gr(ofile,"increasing queue length","a_caused_by","resource contention","system diagnostics");
+        self.Gr(ofile,"system performance slow","a_caused_by","increasing queue length","system diagnostics");
+        self.Gr(ofile,"system performance slow","a_related_to","system performance latency","system diagnostics");
+        
+        self.Gr(ofile,"system performance latency","a_caused_by","resource contention","system diagnostics");
+        self.Gr(ofile,"system performance latency","a_caused_by","increasing queue length","system diagnostics");
+        
+        self.Gr(ofile,"system performance latency","a_caused_by","server unavailability","system diagnostics");
+        self.Gr(ofile,"server unavailability","a_caused_by","software crash","system diagnostics");
+        self.Gr(ofile,"server unavailability","a_caused_by","system performance slow","system diagnostics");
+
     ########################################################################################################
 
     def Gr(self,ofile,from_t, name, to_t, context):
@@ -164,8 +194,7 @@ class Cellibrium:
         self.RoleCluster(ofile,what,"what",what,icontext)
         self.RoleCluster(ofile,how,"how",how,icontext)
         self.RoleCluster(ofile,why,"why","",icontext)
-        self.Gr(ofile,what,"a_caused_by",why,icontext);
-
+        self.Gr(ofile,what,"a_caused_by",why,icontext)
         
     ########################################################################################################
 
@@ -204,14 +233,102 @@ class Cellibrium:
 
         return hub;
 
+
+    # Could also use  WeekSlot (Mon-Sun,MinXX_YY),
+    #                 MonthSlot (1stday, lastday, else DayN) etc
+
     ########################################################################################################
 
-    def WhereCluster(self,ofile,address):
+    def WhereCluster(self,ofile,address,uqhn,domain,ipv4,ipv6,portnr):
 
         # VUQNAME, VDOMAIN, VIPADDRESS,NULL);
         # figure out my IP address, FQHN, domainname, etc...
 
         # The endless problem of host identification has no generic solution...
+        id = "host hostname domain example.com ipv4 192.168.1.55 ipv6 2001:...." # how can we make this the outer ip?
         
-        return "no idea"
+        return id
     
+    ########################################################################################################
+
+    def HereCluster(self,ofile):
+
+        # VUQNAME, VDOMAIN, VIPADDRESS,NULL);
+        # figure out my IP address, FQHN, domainname, etc...
+
+        id = "host localhost domain undefined ipv4 127.0.0.1 ipv6 ::1" # how can we make this the outer ip?
+        
+        return id
+    
+    ########################################################################################################
+    
+    def ServiceCluster(self,ofile,servicename):
+
+        name = "service %s" % servicename
+        self.Gr(ofile,name,"a_hasrole","service","service relationship")
+        self.Gr(ofile,name,"a_hasfunction",servicename,"service relationship")
+        
+        server = "%s server" % servicename
+        self.Gr(ofile,server,"a_hasrole","server","service relationship");
+        
+        client = "%s client" % servicename
+        self.Gr(ofile,client,"a_hasrole","client","service relationship");
+        
+        self.Gr(ofile,client,"a_depends",server,"service relationship");
+        self.Gr(ofile,client,"a_uses",name,"service relationship");
+        
+        return name;
+
+    ########################################################################################################
+
+    def ServerCluster(self,ofile,servicename,servername,address,uqhn,domain,ipv4,ipv6,portnumber):
+        where = self.WhereCluster(ofile,address,uqhn,domain,ipv4,ipv6,portnumber)
+        self.ServiceCluster(ofile,servicename)
+        return self.ServiceInstance(ofile,"server",servername,servicename,where);
+
+    ########################################################################################################
+
+    def ClientCluster(self,ofile,servicename,clientname,address,uqhn,domain,ipv4,ipv6):
+        where = self.WhereCluster(ofile,address,uqhn,domain,ipv4,ipv6,0);
+        self.ServiceCluster(ofile,servicename);
+        return self.ServiceInstance(ofile,"client",clientname,servicename,where)  
+
+    ########################################################################################################
+
+    def ServiceInstance(self,ofile,role,instancename,servicename,where):
+
+        location = "located at %s" % where
+        service = "%s %s" % (servicename,role)             # e.g. ftp server
+        instance = "instance %s %s" % (role,instancename)  # e.g. instance server myhost
+        rolehub = "%s %s %s" % (service,instance,location) # (ftp server) (instance server myhost) (located at WHERE)
+        attr = "%s,%s" % (service,location)             # (ftp server),(located at WHERE)
+        
+        # Top level hub
+        self.RoleCluster(ofile,rolehub,instance,attr,"service relationship");
+        
+        # Attr hierarchy
+        self.RoleCluster(ofile,location,"where",where,"service relationship instance");
+        self.RoleCluster(ofile,service,role,servicename,"service relationship instance");
+        
+        attr = "%s,%s" % (role,instancename)               # (ftp server),(located at WHERE)
+        self.RoleCluster(ofile,instance,role,instancename,"service relationship instance");
+        
+        # Causation
+        
+        if role == "client":
+            self.Gr(ofile,rolehub,"a_depends",servicename,"service relationship")
+        else:
+            self.Gr(ofile,servicename,"a_providedby",rolehub,"service relationship")
+        
+        return rolehub
+
+    ########################################################################################################
+
+    def ExceptionCluster(self,ofile,origin,logmessage):
+
+        # 2016-08-13T15:00:01.906160+02:00 linux-e2vo /usr/sbin/cron[23039]: pam_unix(crond:session): session opened for user root by (uid=0)
+        # When                             where      who                    what                                                  (new who)
+        # Why = (lifecycle state change, exception, ...)
+
+        return "something"
+

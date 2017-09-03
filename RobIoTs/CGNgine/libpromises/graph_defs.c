@@ -18,6 +18,7 @@ Association A[a_ass_dim+1] =
     {GR_CONTAINS,"contains","belongs to or is part of"},
     {GR_CONTAINS,"generalizes","is a special case of"},
     {GR_FOLLOWS,"may originate from","may be the source or origin of"},
+    {GR_FOLLOWS,"may be provided by","may provide"},
     {GR_FOLLOWS,"is maintained by","maintains"},
     {GR_FOLLOWS,"depends on","partly determines"},
     {GR_FOLLOWS,"may be caused by","can cause"},
@@ -92,6 +93,34 @@ const char *GR_SHIFT_TEXT[] =
 };
 
 /******************************************************************************/
+
+void InitialCluster(FILE *fp)
+{
+ // Basic axioms about causation (upstream/downstream principle)
+
+ ContextCluster(fp,"service relationship");
+ ContextCluster(fp,"system diagnostics");
+ ContextCluster(fp,"lifecycle state change");
+ ContextCluster(fp,"software exception");
+
+ Gr(fp,"client measurement anomaly",a_caused_by,"client software exception","system diagnostics");
+ Gr(fp,"client measurement anomaly",a_caused_by,"server software exception","system diagnostics");
+ Gr(fp,"server measurement anomaly",a_caused_by,"server software exception","system diagnostics");
+
+ Gr(fp,"measurement anomaly",a_caused_by,"software exception","system diagnostics");
+
+ Gr(fp,"resource contention",a_caused_by,"resource limit","system diagnostics");
+ Gr(fp,"increasing queue length",a_caused_by,"resource contention","system diagnostics");
+ Gr(fp,"system performance slow",a_caused_by,"increasing queue length","system diagnostics");
+ Gr(fp,"system performance slow",a_related_to,"system performance latency","system diagnostics");
+ 
+ Gr(fp,"system performance latency",a_caused_by,"resource contention","system diagnostics");
+ Gr(fp,"system performance latency",a_caused_by,"increasing queue length","system diagnostics");
+
+ Gr(fp,"system performance latency",a_caused_by,"server unavailability","system diagnostics");
+ Gr(fp,"server unavailability",a_caused_by,"software crash","system diagnostics");
+ Gr(fp,"server unavailability",a_caused_by,"system performance slow","system diagnostics");
+}
 
 /*****************************************************************************/
 
@@ -236,6 +265,96 @@ char *ContextCluster(FILE *consc,char *compound_name)
     }
 
 return compound_name;
+}
+
+/************************************************************************************/
+
+char *ServiceCluster(FILE *fp,char *servicename)
+{
+ static char name[CGN_BUFSIZE],server[CGN_BUFSIZE],client[CGN_BUFSIZE];
+
+ snprintf(name,CGN_BUFSIZE,"service %s",servicename);
+ Gr(fp,name,a_hasrole,"service","service relationship");
+ Gr(fp,name,a_hasfunction,servicename,"service relationship");
+
+ snprintf(server,CGN_BUFSIZE,"%s server",servicename);
+ Gr(fp,server,a_hasrole,"server","service relationship");
+
+ snprintf(client,CGN_BUFSIZE,"%s client",servicename);
+ Gr(fp,client,a_hasrole,"client","service relationship");
+
+ Gr(fp,client,a_depends,server,"service relationship");
+ Gr(fp,client,a_uses,name,"service relationship");
+
+ return name;
+}
+
+/************************************************************************************/
+
+char *ServerCluster(FILE *fp,char *servicename,char *servername,char *address, char *uqhn, char *domain, char *ipv4, char *ipv6, unsigned int portnumber)
+{
+ char *where = WhereCluster(fp,address,uqhn,domain,ipv4,ipv6,portnumber);
+ ServiceCluster(fp,servicename);
+ return ServiceInstance(fp,"server",servername,servicename,where);
+}
+
+/************************************************************************************/
+
+char *ClientCluster(FILE *fp,char *servicename,char *clientname,char *address, char *uqhn, char *domain, char *ipv4, char *ipv6)
+{
+ char *where = WhereCluster(fp,address,uqhn,domain,ipv4,ipv6,0);
+ ServiceCluster(fp,servicename);
+ return ServiceInstance(fp,"client",clientname,servicename,where);
+}
+
+/************************************************************************************/
+
+char *ServiceInstance(FILE *fp,char *role, char *instancename,char *servicename, char *where)
+{
+ static char rolehub[CGN_BUFSIZE], attr[CGN_BUFSIZE];
+ char location[CGN_BUFSIZE], service[CGN_BUFSIZE], instance[CGN_BUFSIZE];
+
+ snprintf(location,CGN_BUFSIZE,"located at %s",where);
+ snprintf(service,CGN_BUFSIZE,"%s %s",servicename,role);  // e.g. ftp server
+ snprintf(instance,CGN_BUFSIZE,"instance %s %s",role,instancename); // e.g. instance server myhost
+
+ snprintf(rolehub,CGN_BUFSIZE,"%s %s %s",service,instance,location); //(ftp server) (instance server myhost) (located at WHERE)
+ snprintf(attr,CGN_BUFSIZE,"%s,%s",service,location); //(ftp server),(located at WHERE)
+
+ // Top level hub
+ RoleCluster(fp,rolehub,instance,attr,"service relationship");
+
+ // Attr hierarchy
+ RoleCluster(fp,location,"where",where,"service relationship instance");
+ RoleCluster(fp,service,role,servicename,"service relationship instance");
+
+ snprintf(attr,CGN_BUFSIZE,"%s,%s",role,instancename); //(ftp server),(located at WHERE)
+ RoleCluster(fp,instance,role,instancename,"service relationship instance");
+
+ // Causation
+ 
+ if (strcmp(role,"client") == 0)
+    {
+    Gr(fp,rolehub,a_depends,servicename,"service relationship");
+    }
+ else //server
+    {
+    Gr(fp,servicename,a_providedby,rolehub,"service relationship");
+    }
+
+ return rolehub;
+}
+
+/************************************************************************************/
+
+char *ExceptionCluster(FILE *fp,char *origin,char *logmessage)
+
+// 2016-08-13T15:00:01.906160+02:00 linux-e2vo /usr/sbin/cron[23039]: pam_unix(crond:session): session opened for user root by (uid=0)
+// When                             where      who                    what                                                  (new who)
+// Why = (lifecycle state change, exception, ...)
+
+{
+ return NULL;
 }
 
 /************************************************************************************/
@@ -394,7 +513,7 @@ char *TimeCluster(FILE *fp,time_t time)
 
 /************************************************************************************/
 
-char *WhereCluster(FILE *fp,char *address, char *uqhn, char *domain, char *ipv4, char *ipv6)
+char *WhereCluster(FILE *fp,char *address, char *uqhn, char *domain, char *ipv4, char *ipv6, unsigned int portnumber)
 {
  static char where[CGN_BUFSIZE] = {0};
 
@@ -410,8 +529,17 @@ char *WhereCluster(FILE *fp,char *address, char *uqhn, char *domain, char *ipv4,
     domain = "no ipv6";
     }
 
- snprintf(where,CGN_BUFSIZE,"host %s.%s IPv4 %s ipv6 %s at %s",uqhn,domain,ipv4,ipv6,address);
- snprintf(attr,CGN_BUFSIZE,"hostname %s,domain %s,IPv4 %s,IPv6 %s,address %s",uqhn,domain,ipv4,ipv6,address);
+  if (portnumber > 0)
+     {
+     snprintf(where,CGN_BUFSIZE,"host %s.%s IPv4 %s ipv6 %s at %s port %d",uqhn,domain,ipv4,ipv6,address,portnumber);
+     snprintf(attr,CGN_BUFSIZE,"hostname %s,domain %s,IPv4 %s,IPv6 %s,address %s,ip portnumber %d",uqhn,domain,ipv4,ipv6,address,portnumber);
+     }
+  else
+     {
+     snprintf(where,CGN_BUFSIZE,"host %s.%s IPv4 %s ipv6 %s at %s",uqhn,domain,ipv4,ipv6,address);
+     snprintf(attr,CGN_BUFSIZE,"hostname %s,domain %s,IPv4 %s,IPv6 %s,address %s",uqhn,domain,ipv4,ipv6,address);
+     }
+         
  RoleCluster(fp,where,"where",attr, "location");
 
  snprintf(attr,CGN_BUFSIZE,"hostname %s",uqhn);
@@ -426,6 +554,13 @@ char *WhereCluster(FILE *fp,char *address, char *uqhn, char *domain, char *ipv4,
  snprintf(where,CGN_BUFSIZE,"ipv6 address %s",ipv6);
  RoleCluster(fp,where,"ipv6 address", ipv6,"location");
 
+ if (portnumber > 0)
+    {
+    snprintf(where,CGN_BUFSIZE,"ip portnumber %d",portnumber);
+    snprintf(attr,CGN_BUFSIZE,"%d",portnumber);
+    RoleCluster(fp,where,"ip portnumber",attr,"location");
+    }
+ 
  snprintf(where,CGN_BUFSIZE,"decription address %s",address);
  RoleCluster(fp,where,"description address",address,"location");
  

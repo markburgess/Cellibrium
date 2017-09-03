@@ -862,7 +862,7 @@ static void BuildConsciousState(EvalContext *ctx, Averages av, Timescales t)
        char *how = "restart monitor service";
        char *howattr = "restart,service,monitor";
        char *icontext = "system monitoring measurment";
-       char *wherex =  WhereCluster(consc,where,VUQNAME,VDOMAIN,VIPADDRESS,NULL);
+       char *wherex =  WhereCluster(consc,where,VUQNAME,VDOMAIN,VIPADDRESS,NULL,0);
 
        Log(LOG_LEVEL_VERBOSE, "Detected a restart anomaly");
        Clue(consc,who,what,when,wherex,how,why,icontext);
@@ -1551,7 +1551,7 @@ static void AnnotateAnomaly(EvalContext *ctx, FILE *consc, time_t now, Item *syn
  char *how = MakeAnomalyClusterName("anomaly",syndrome);
  char *howattr = MakeFlatList(syndrome);
  char *icontext = "system monitoring measurement";
- char *wherex =  WhereCluster(consc,where,VUQNAME,VDOMAIN,VIPADDRESS,NULL);
+ char *wherex =  WhereCluster(consc,where,VUQNAME,VDOMAIN,VIPADDRESS,NULL,0);
 
  Clue(consc,who,what,when,wherex,how,why,icontext);
  char *hub = RoleCluster(consc,how,"how",howattr,"system monitoring");
@@ -1577,7 +1577,7 @@ static void AnnotateAnomaly(EvalContext *ctx, FILE *consc, time_t now, Item *syn
  when = now;
  howattr = MakeFlatList(invariants);
  icontext = "system monitoring";
- wherex =  WhereCluster(consc,where,VUQNAME,VDOMAIN,VIPADDRESS,NULL);
+ wherex =  WhereCluster(consc,where,VUQNAME,VDOMAIN,VIPADDRESS,NULL,0);
 
  // Normal background
  Clue(consc,who,what,when,wherex,how,why,icontext);
