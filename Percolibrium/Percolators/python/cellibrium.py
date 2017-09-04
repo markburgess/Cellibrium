@@ -240,7 +240,7 @@ class Cellibrium:
 
     ########################################################################################################
 
-    def WhereCluster(self,ofile,address,uqhn,domain,ipv4,ipv6,portnr):
+    def WhereCluster(self,ofile,address,uqhn,domain,ipv4,ipv6,portnumber):
 
         # VUQNAME, VDOMAIN, VIPADDRESS,NULL);
         # figure out my IP address, FQHN, domainname, etc...
@@ -258,14 +258,14 @@ class Cellibrium:
             where = "host %s.%s IPv4 %s ipv6 %s at %s" % (uqhn,domain,ipv4,ipv6,address)
             attr = "hostname %s,domain %s,IPv4 %s,IPv6 %s,address %s" % (uqhn,domain,ipv4,ipv6,address)
          
-        self.RoleCluster(fp,where,"where",attr, "location")
+        self.RoleCluster(ofile,where,"where",attr, "location")
 
         host = "hostname %s" % uqhn
         self.RoleCluster(ofile,host,"hostname",uqhn,"location")
         self.Gr(ofile,where,"a_alias",host,"host identification")  # Alias for quick association
   
         domain = "domain %s" % domain
-        RoleCluster(ofile,domain,"dns domain name",domain,"location")
+        self.RoleCluster(ofile,domain,"dns domain name",domain,"location")
  
         where4 = "ipv4 address %s" % ipv4
         self.RoleCluster(ofile,where4,"ipv4 address", ipv4,"location")
@@ -283,10 +283,10 @@ class Cellibrium:
         desc = "decription address %s" % address
         self.RoleCluster(ofile,where,"description address",address,"location")
  
-        self.Gr(ofile,domain,a_contains,uqhn, ContextCluster(fp,"location"));
-        self.Gr(ofile,domain,a_contains,ipv4, "location");
-        self.Gr(ofile,domain,a_contains,ipv6, "location");
-        self.Gr(ofile,"description address",a_related_to,"street address", "location");
+        self.Gr(ofile,domain,"a_contains",uqhn, self.ContextCluster(ofile,"location"));
+        self.Gr(ofile,domain,"a_contains",ipv4, "location");
+        self.Gr(ofile,domain,"a_contains",ipv6, "location");
+        self.Gr(ofile,"description address","a_related_to","street address", "location");
         
         return where;
 

@@ -70,7 +70,7 @@ when = now;
 how = "how it happened (i.e. symptoms)" #MakeAnomalyClusterName("anomaly",syndrome);
 icontext = "system monitoring";
 
-wherex = c.WhereCluster(sys.stdout,"Oslo","marklaptop","unknown","192.168.1.183",0,0);
+wherex = c.WhereCluster(sys.stdout,"Oslo","marklaptop","unknown","192.168.1.183","",0);
 
 c.Clue(sys.stdout,who,what,when,wherex,how,why,icontext);
 
@@ -115,7 +115,7 @@ c.ServerCluster(sys.stdout,
                 "cloudprovider.com",
                 "123.456.789.55/24",
                 "",
-                "50345"
+                50345
                 )
 
 # PostWriteData
