@@ -9,9 +9,14 @@
 #ifndef GRAPHDEF
 #define GRAPHDEF 1
 
-/* In this semantic basis, contains and exhibits are not completely orthogonal.
- Expresses implies an exterior promise from a sub-agent or from
- within, while contains alone is an interior agent membership property */
+/* In this semantic basis, contains and exhibits are not completely
+ orthogonal.  Expresses implies an exterior promise from a sub-agent
+ or from within, while contains alone is an interior agent membership
+ property
+
+ The approach here requires a set of simple conventions allied with
+ a method of hub decomposition. It is quite painstaking work to make
+ something practical, but the general principles are simple. */
 
 Association A[a_ass_dim+1] =
 {
@@ -102,6 +107,7 @@ void InitialCluster(FILE *fp)
  ContextCluster(fp,"system diagnostics");
  ContextCluster(fp,"lifecycle state change");
  ContextCluster(fp,"software exception");
+ ContextCluster(fp,"promise keeping");
 
  Gr(fp,"client measurement anomaly",a_caused_by,"client software exception","system diagnostics");
  Gr(fp,"client measurement anomaly",a_caused_by,"server software exception","system diagnostics");
@@ -273,17 +279,17 @@ char *ServiceCluster(FILE *fp,char *servicename)
 {
  static char name[CGN_BUFSIZE],server[CGN_BUFSIZE],client[CGN_BUFSIZE];
 
- snprintf(name,CGN_BUFSIZE,"service %s",servicename);
+ snprintf(name,CGN_BUFSIZE,"service %s",servicename);     // service ftp
  Gr(fp,name,a_hasrole,"service","service relationship");
  Gr(fp,name,a_hasfunction,servicename,"service relationship");
 
- snprintf(server,CGN_BUFSIZE,"%s server",servicename);
+ snprintf(server,CGN_BUFSIZE,"%s server",servicename);   // ftp server
  Gr(fp,server,a_hasrole,"server","service relationship");
 
- snprintf(client,CGN_BUFSIZE,"%s client",servicename);
+ snprintf(client,CGN_BUFSIZE,"%s client",servicename);   // ftp client
  Gr(fp,client,a_hasrole,"client","service relationship");
 
- Gr(fp,client,a_depends,server,"service relationship");
+ Gr(fp,client,a_depends,server,"service relationship");  // service => client depends on server
  Gr(fp,client,a_uses,name,"service relationship");
 
  return name;
@@ -347,6 +353,216 @@ char *ServiceInstance(FILE *fp,char *role, char *instancename,char *servicename,
 
 /************************************************************************************/
 
+char *GivePromiseCluster(FILE *fp,char *S, char *R, char *body)
+{
+ char sender[CGN_BUFSIZE], receiver[CGN_BUFSIZE],attr[CGN_BUFSIZE];
+ static char promisehub[CGN_BUFSIZE];
+ snprintf(sender,CGN_BUFSIZE,"promiser %s",S);
+ snprintf(receiver,CGN_BUFSIZE,"promisee %s",R);
+
+ snprintf(promisehub,CGN_BUFSIZE,"%s promises to give %s to %s",sender,body,receiver);
+ snprintf(attr,CGN_BUFSIZE,"%s,promise body +%s,%s",sender,body,receiver);
+ RoleCluster(fp,promisehub,"give-provide promise",attr,"promise keeping");
+ 
+ Gr(fp,sender,a_depends,promisehub,"promise keeping");
+ Gr(fp,promisehub,a_depends,sender,"promise keeping");
+
+ return promisehub;
+}
+
+/************************************************************************************/
+
+char *AcceptPromiseCluster(FILE *fp,char *R, char *S, char *body)
+{
+ char sender[CGN_BUFSIZE], receiver[CGN_BUFSIZE],attr[CGN_BUFSIZE];
+ static char promisehub[CGN_BUFSIZE];
+ snprintf(receiver,CGN_BUFSIZE,"promiser %s",R);
+ snprintf(sender,CGN_BUFSIZE,"promisee %s",S);
+
+ snprintf(promisehub,CGN_BUFSIZE,"%s promises to accept %s to %s",receiver,body,sender);
+ snprintf(attr,CGN_BUFSIZE,"%s,promise body -%s,%s",sender,body,receiver);
+ RoleCluster(fp,promisehub,"use-accept promise",attr,"promise keeping");
+
+ Gr(fp,receiver,a_depends,promisehub,"promise keeping");
+ Gr(fp,"use-accept promise",a_related_to,"client pull methods","promise keeping");
+ 
+ return promisehub;
+}
+
+/************************************************************************************/
+
+char *ImpositionCluster(FILE *fp,char *S, char *R, char *body)
+{
+ char sender[CGN_BUFSIZE], receiver[CGN_BUFSIZE],attr[CGN_BUFSIZE];
+ char *acceptance;
+ static char promisehub[CGN_BUFSIZE];
+ snprintf(sender,CGN_BUFSIZE,"imposer %s",S);
+ snprintf(receiver,CGN_BUFSIZE,"imposee %s",R);
+
+ snprintf(promisehub,CGN_BUFSIZE,"%s imposes body %s onto %s",sender,body,receiver);
+ snprintf(attr,CGN_BUFSIZE,"%s,imposition body %s,%s",sender,body,receiver);
+ RoleCluster(fp,promisehub,"imposition",attr,"promise keeping");
+ Gr(fp,"imposition",a_related_to,"client push methods","promise keeping");
+
+ // Imposition only affects if there is an accept promise
+
+ if ((acceptance = AcceptPromiseCluster(fp,R,S,body)))
+    {
+    Gr(fp,promisehub,a_depends,acceptance,"promise keeping");
+    Gr(fp,promisehub,a_depends,sender,"promise keeping");
+    }
+ 
+ return promisehub;
+}
+
+/************************************************************************************/
+
+char *ClientQuery(FILE *fp,char *client, char *server, char *request, char *servicename, int portnumber)
+{
+ static char query[CGN_BUFSIZE];
+ char attr[CGN_BUFSIZE];
+
+ snprintf(attr,CGN_BUFSIZE,"client %s",client);
+ RoleCluster(fp,attr,"client",client,"client service query");
+ 
+ snprintf(attr,CGN_BUFSIZE,"request %s",request);
+ RoleCluster(fp,attr,"service request",request,"client service query");
+
+ snprintf(attr,CGN_BUFSIZE,"server %s",server);
+ RoleCluster(fp,attr,"server",server,"client service query");
+
+ snprintf(attr,CGN_BUFSIZE,"service %s",servicename);
+ RoleCluster(fp,attr,"service",servicename,"client service query");
+
+ snprintf(attr,CGN_BUFSIZE,"port %d",portnumber);
+ char p[8];
+ snprintf(p,8,"%d",portnumber);
+ RoleCluster(fp,attr,"port",p,"client service query");
+
+ snprintf(query,CGN_BUFSIZE,"client %s requests %s from service %s at server %s on port %d",client,request,servicename,server,portnumber);
+ snprintf(attr,CGN_BUFSIZE,"client %s,request %s,server %s,service %s,port %d",client,request,server,servicename,portnumber);
+ RoleCluster(fp,query,"client query",attr,"service relationship");
+
+ // Causal model
+
+ snprintf(attr,CGN_BUFSIZE,"request %s from service %s port %d",request,servicename,portnumber),
+ ImpositionCluster(fp,client,server,attr);
+ return query;
+}
+
+/************************************************************************************/
+
+char *ClientPush(FILE *fp,char *client, char *server, char *request, char *servicename, int portnumber)
+{
+ static char query[CGN_BUFSIZE]; 
+ char attr[CGN_BUFSIZE];
+ 
+ snprintf(query,CGN_BUFSIZE,"client %s pushes %s to service %s at server %s on port %d",client,request,servicename,server,portnumber);
+
+ snprintf(attr,CGN_BUFSIZE,"client %s",client);
+ RoleCluster(fp,attr,"client",client,"client service query");
+ 
+ snprintf(attr,CGN_BUFSIZE,"request %s",request);
+ RoleCluster(fp,attr,"service request",request,"client service query");
+
+ snprintf(attr,CGN_BUFSIZE,"server %s",server);
+ RoleCluster(fp,attr,"server",server,"client service query");
+
+ snprintf(attr,CGN_BUFSIZE,"service %s",servicename);
+ RoleCluster(fp,attr,"service",servicename,"client service query");
+
+ snprintf(attr,CGN_BUFSIZE,"port %d",portnumber);
+ char p[8];
+ snprintf(p,8,"%d",portnumber);
+ RoleCluster(fp,attr,"port",p,"client service query");
+
+ snprintf(attr,CGN_BUFSIZE,"client %s,request %s,server %s,service %s,port %d",client,request,server,servicename,portnumber);
+ RoleCluster(fp,query,"client push",attr,"service relationship");
+
+ // Causal model
+
+ snprintf(attr,CGN_BUFSIZE,"request %s from service %s port %d",request,servicename,portnumber),
+ ImpositionCluster(fp,client,server,attr); 
+ RoleCluster(fp,query,"client push",attr,"service relationship");
+
+ return query;
+}
+
+/************************************************************************************/
+
+char *ServerListen(FILE *fp,char *servername, char *servicename, int port)
+{
+ static char query[CGN_BUFSIZE];
+ char ports[CGN_BUFSIZE],attr[CGN_BUFSIZE];
+ 
+ snprintf(query,CGN_BUFSIZE,"server %s listens for service %s requests on port %d",servername,servicename,port);
+ snprintf(attr,CGN_BUFSIZE,"server %s,service %s,port %d",servername,servicename,port);
+ RoleCluster(fp,query,"server",attr,"service relationship");
+ 
+ snprintf(ports,CGN_BUFSIZE,"listening on port %d",port);
+    
+ // Causation
+ 
+ GivePromiseCluster(fp,servername,"ip INADDR_ANY",ports);
+ return query;
+}
+
+/************************************************************************************/
+
+char *ServerAccept(FILE *fp,char *servername, char *fromclient, char *servicename, int port)
+{
+ static char query[CGN_BUFSIZE];
+ char attr[CGN_BUFSIZE];
+ snprintf(query,CGN_BUFSIZE,"server %s accept data from client %s via port %d for service %s",servername,fromclient,port,servicename);
+ snprintf(attr,CGN_BUFSIZE,"server %s,service %s,port %d,client %s",servername,servicename,port,fromclient);
+ RoleCluster(fp,query,"server accept",attr,"service relationship");
+ AcceptPromiseCluster(fp,servername,fromclient,"accept data"); 
+ return query;
+}
+
+/************************************************************************************/
+
+char *ServerReply(FILE *fp,char *server, char *toclient, char *servicename, int port)
+{
+ static char data[CGN_BUFSIZE];
+ snprintf(data,CGN_BUFSIZE,"port query result %d",port);
+ return ReplyToGetData(fp,server,toclient,servicename,data);
+}
+
+/************************************************************************************/
+
+char *WritePostData(FILE *fp,char *client, char *server, char *data,char *servicename, int portnumber)
+{
+ return ClientPush(fp,client,server,data,servicename,portnumber);
+}
+
+/************************************************************************************/
+
+char *ReadGetData(FILE *fp,char *client, char *server, char *servicename, char *get, int portnumber)
+{
+ return ClientQuery(fp,client,server,get,servicename,portnumber);
+}
+
+/************************************************************************************/
+
+char *AcceptPostData(FILE *fp,char *server,char *client,char *servicename, char *data)
+{
+ char request[CGN_BUFSIZE];
+ snprintf(request,CGN_BUFSIZE,"conditional reply %.64s to service %s request",data,servicename);
+ return AcceptPromiseCluster(fp,server,client,request);
+}
+
+/************************************************************************************/
+
+char *ReplyToGetData(FILE *fp,char *server,char *client,char *servicename, char *data)
+{
+ char request[CGN_BUFSIZE];
+ snprintf(request,CGN_BUFSIZE,"conditional reply %.64s to service %s request",data,servicename);
+ return GivePromiseCluster(fp,server,client,request); 
+}
+
+/************************************************************************************/
+
 char *ExceptionCluster(FILE *fp,char *origin,char *logmessage)
 
 // 2016-08-13T15:00:01.906160+02:00 linux-e2vo /usr/sbin/cron[23039]: pam_unix(crond:session): session opened for user root by (uid=0)
@@ -354,6 +570,7 @@ char *ExceptionCluster(FILE *fp,char *origin,char *logmessage)
 // Why = (lifecycle state change, exception, ...)
 
 {
+ Gr(fp,origin,a_related_to,logmessage,"???? TBD");
  return NULL;
 }
 
@@ -515,8 +732,10 @@ char *TimeCluster(FILE *fp,time_t time)
 
 char *WhereCluster(FILE *fp,char *address, char *uqhn, char *domain, char *ipv4, char *ipv6, unsigned int portnumber)
 {
+ // This model of "where?" is based on IP addresses and portnumbers, for cloud services
+ // alternative models for "other worlds" can be added...
+ 
  static char where[CGN_BUFSIZE] = {0};
-
  char attr[CGN_BUFSIZE];
  
  if (domain == NULL || strlen(domain) == 0)
@@ -539,37 +758,41 @@ char *WhereCluster(FILE *fp,char *address, char *uqhn, char *domain, char *ipv4,
      snprintf(where,CGN_BUFSIZE,"host %s.%s IPv4 %s ipv6 %s at %s",uqhn,domain,ipv4,ipv6,address);
      snprintf(attr,CGN_BUFSIZE,"hostname %s,domain %s,IPv4 %s,IPv6 %s,address %s",uqhn,domain,ipv4,ipv6,address);
      }
-         
- RoleCluster(fp,where,"where",attr, "location");
 
- snprintf(attr,CGN_BUFSIZE,"hostname %s",uqhn);
- RoleCluster(fp,attr,"hostname",uqhn,"location");
+  RoleCluster(fp,where,"where",attr, "location");
+  
+  snprintf(attr,CGN_BUFSIZE,"hostname %s",uqhn);
+  RoleCluster(fp,attr,"hostname",uqhn,"location");
+  Gr(fp,where,a_alias,attr,"host identification");  // Alias for quick association
 
- snprintf(attr,CGN_BUFSIZE,"domain %s",domain);
- RoleCluster(fp,attr,"dns domain name",domain,"location");
- 
- snprintf(where,CGN_BUFSIZE,"ipv4 address %s",ipv4);
- RoleCluster(fp,where,"ipv4 address", ipv4,"location");
-
- snprintf(where,CGN_BUFSIZE,"ipv6 address %s",ipv6);
- RoleCluster(fp,where,"ipv6 address", ipv6,"location");
-
- if (portnumber > 0)
-    {
-    snprintf(where,CGN_BUFSIZE,"ip portnumber %d",portnumber);
-    snprintf(attr,CGN_BUFSIZE,"%d",portnumber);
-    RoleCluster(fp,where,"ip portnumber",attr,"location");
-    }
- 
- snprintf(where,CGN_BUFSIZE,"decription address %s",address);
- RoleCluster(fp,where,"description address",address,"location");
- 
- Gr(fp,domain,a_contains,uqhn, ContextCluster(fp,"location"));
- Gr(fp,domain,a_contains,ipv4, "location");
- Gr(fp,domain,a_contains,ipv6, "location");
- Gr(fp,"description address",a_related_to,"street address", "location");
-
- return where;
+  snprintf(attr,CGN_BUFSIZE,"domain %s",domain);
+  RoleCluster(fp,attr,"dns domain name",domain,"location");
+  
+  snprintf(attr,CGN_BUFSIZE,"ipv4 address %s",ipv4);
+  RoleCluster(fp,attr,"ipv4 address", ipv4,"location");
+  Gr(fp,where,a_alias,attr,"host identification");  // Alias for quick association
+    
+  snprintf(attr,CGN_BUFSIZE,"ipv6 address %s",ipv6);
+  RoleCluster(fp,attr,"ipv6 address", ipv6,"location");
+  Gr(fp,where,a_alias,attr,"host identification");  // Alias for quick association
+    
+  if (portnumber > 0)
+     {
+     char port[CGN_BUFSIZE];
+     snprintf(attr,CGN_BUFSIZE,"ip portnumber %d",portnumber);
+     snprintf(port,CGN_BUFSIZE,"%d",portnumber);
+     RoleCluster(fp,attr,"ip portnumber",port,"location");
+     }
+  
+  snprintf(attr,CGN_BUFSIZE,"decription address %s",address);
+  RoleCluster(fp,attr,"description address",address,"location");
+  
+  Gr(fp,domain,a_contains,uqhn, ContextCluster(fp,"location"));
+  Gr(fp,domain,a_contains,ipv4, "location");
+  Gr(fp,domain,a_contains,ipv6, "location");
+  Gr(fp,"description address",a_related_to,"street address", "location");
+  
+  return where;
 }
 
 /**********************************************************************/

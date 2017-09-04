@@ -86,6 +86,7 @@ class Cellibrium:
         self.ContextCluster(ofile,"system diagnostics");
         self.ContextCluster(ofile,"lifecycle state change");
         self.ContextCluster(ofile,"software exception");
+        self.ContextCluster(ofile,"promise keeping");
         
         self.Gr(ofile,"client measurement anomaly","a_caused_by","client software exception","system diagnostics");
         self.Gr(ofile,"client measurement anomaly","a_caused_by","server software exception","system diagnostics");
@@ -244,11 +245,51 @@ class Cellibrium:
         # VUQNAME, VDOMAIN, VIPADDRESS,NULL);
         # figure out my IP address, FQHN, domainname, etc...
 
-        # The endless problem of host identification has no generic solution...
-        id = "host hostname domain example.com ipv4 192.168.1.55 ipv6 2001:...." # how can we make this the outer ip?
+        if len(domain) == 0:
+            domain = "unknown domain";
+
+        if len(ipv6) == 0:
+            domain = "no ipv6"
+
+        if portnumber > 0:
+            where = "host %s.%s IPv4 %s ipv6 %s at %s port %d" % (uqhn,domain,ipv4,ipv6,address,portnumber)
+            attr = "hostname %s,domain %s,IPv4 %s,IPv6 %s,address %s,ip portnumber %d" % (uqhn,domain,ipv4,ipv6,address,portnumber)
+        else:
+            where = "host %s.%s IPv4 %s ipv6 %s at %s" % (uqhn,domain,ipv4,ipv6,address)
+            attr = "hostname %s,domain %s,IPv4 %s,IPv6 %s,address %s" % (uqhn,domain,ipv4,ipv6,address)
+         
+        self.RoleCluster(fp,where,"where",attr, "location")
+
+        host = "hostname %s" % uqhn
+        self.RoleCluster(ofile,host,"hostname",uqhn,"location")
+        self.Gr(ofile,where,"a_alias",host,"host identification")  # Alias for quick association
+  
+        domain = "domain %s" % domain
+        RoleCluster(ofile,domain,"dns domain name",domain,"location")
+ 
+        where4 = "ipv4 address %s" % ipv4
+        self.RoleCluster(ofile,where4,"ipv4 address", ipv4,"location")
+        self.Gr(ofile,where,"a_alias",where4,"host identification")  # Alias for quick association
         
-        return id
-    
+        where6 = "ipv6 address %s" % ipv6
+        self.RoleCluster(ofile,where6,"ipv6 address", ipv6,"location")
+        self.Gr(ofile,where,"a_alias",where6,"host identification")  # Alias for quick association
+        
+        if portnumber > 0:
+            port = "ip portnumber %d" % portnumber
+            nr = "%d" % portnumber
+            self.RoleCluster(ofile,port,"ip portnumber",nr,"location")
+ 
+        desc = "decription address %s" % address
+        self.RoleCluster(ofile,where,"description address",address,"location")
+ 
+        self.Gr(ofile,domain,a_contains,uqhn, ContextCluster(fp,"location"));
+        self.Gr(ofile,domain,a_contains,ipv4, "location");
+        self.Gr(ofile,domain,a_contains,ipv6, "location");
+        self.Gr(ofile,"description address",a_related_to,"street address", "location");
+        
+        return where;
+
     ########################################################################################################
 
     def HereCluster(self,ofile):
@@ -329,6 +370,9 @@ class Cellibrium:
         # 2016-08-13T15:00:01.906160+02:00 linux-e2vo /usr/sbin/cron[23039]: pam_unix(crond:session): session opened for user root by (uid=0)
         # When                             where      who                    what                                                  (new who)
         # Why = (lifecycle state change, exception, ...)
+
+        # ???
+        self.Gr(ofile,origin,"a_related_to",logmessage,"???? TBD")
 
         return "something"
 

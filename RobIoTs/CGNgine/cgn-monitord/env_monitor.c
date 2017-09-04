@@ -866,7 +866,7 @@ static void BuildConsciousState(EvalContext *ctx, Averages av, Timescales t)
 
        Log(LOG_LEVEL_VERBOSE, "Detected a restart anomaly");
        Clue(consc,who,what,when,wherex,how,why,icontext);
-       char *hub = RoleCluster(consc,how,"how",howattr,"system monitoring measurement");
+       RoleCluster(consc,how,"how",howattr,"system monitoring measurement");
        }
 
     DiffInvariants(ctx,&anomaly_syndrome,&invariants);       
@@ -1563,9 +1563,9 @@ static void AnnotateAnomaly(EvalContext *ctx, FILE *consc, time_t now, Item *syn
     if (ip->name)
        {
        char anomaly[CF_BUFSIZE];
-       snprintf(anomaly,CF_BUFSIZE,"anomaly %s",ip->next);
+       snprintf(anomaly,CF_BUFSIZE,"anomaly %s",ip->name);
        Gr(consc,hub,a_caused_by,anomaly,"measurement anomaly");
-       Log(LOG_LEVEL_VERBOSE," - current %s contains %s\n",how,ip->name);
+       Log(LOG_LEVEL_VERBOSE," - current state `%s' contains %s\n",how,ip->name);
        }
     }
 

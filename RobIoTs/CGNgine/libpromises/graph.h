@@ -51,6 +51,9 @@ char *RoleCluster(FILE *consc,char *compound_name, char *role, char *attributes,
 char *ContextCluster(FILE *consc,char *compound_name);
 char *NamedContextCluster(FILE *consc,char *compound_name,char *list);
 void MakeUniqueClusterName(char *lval,void *sorted,char type,char *buffer);
+char *ImpositionCluster(FILE *fp,char *S, char *R, char *body);
+char *AcceptPromiseCluster(FILE *fp,char *R, char *S, char *body);
+char *GivePromiseCluster(FILE *fp,char *S, char *R, char *body);
 
 void InitialCluster(FILE *fp);
 char *TimeCluster(FILE *fp,time_t time);
@@ -60,6 +63,20 @@ char *ServiceCluster(FILE *fp,char *servicename);
 char *ClientCluster(FILE *fp,char *servicename,char *clientname,char *address, char *uqhn, char *domain, char *ipv4, char *ipv6);
 char *ServerCluster(FILE *fp,char *servicename,char *servername,char *address, char *uqhn, char *domain, char *ipv4, char *ipv6, unsigned int portnumber);
 char *ServiceInstance(FILE *fp,char *role, char *instancename,char *servicename, char *where);
+
+char *ClientQuery(FILE *fp,char *client, char *server, char *request, char *servicename, int portnumber);
+char *ClientPush(FILE *fp,char *client, char *server, char *request, char *servicename, int portnumber);
+char *ServerListen(FILE *fp,char *servername, char *servicename, int port);
+char *ServerAccept(FILE *fp,char *servername, char *fromclient, char *servicename, int port);
+char *ServerReply(FILE *fp,char *server, char *toclient, char *servicename, int port);
+
+char *WritePostData(FILE *fp,char *S, char *R, char *data,char *servicename, int portnumber);
+char *ReadGetData(FILE *fp,char *client, char *server, char *servicename, char *get, int portnumber);
+
+char *AcceptPostData(FILE *fp,char *server,char *client,char *servicename, char *data);
+char *ReplyToGetData(FILE *fp,char *server,char *client,char *servicename, char *data);
+
+
 char *ExceptionCluster(FILE *fp,char *origin,char *logmessage);
 char *SanitizeString(char *s);
 #endif

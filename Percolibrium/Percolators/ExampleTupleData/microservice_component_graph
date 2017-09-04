@@ -89,6 +89,8 @@
 (lifecycle state change,3,contains,change,belongs to or is part of,any)
 (software exception,3,contains,software,belongs to or is part of,any)
 (software exception,3,contains,exception,belongs to or is part of,any)
+(promise keeping,3,contains,promise,belongs to or is part of,any)
+(promise keeping,3,contains,keeping,belongs to or is part of,any)
 (client measurement anomaly,2,may be caused by,client software exception,can cause,system diagnostics)
 (client measurement anomaly,2,may be caused by,server software exception,can cause,system diagnostics)
 (server measurement anomaly,2,may be caused by,server software exception,can cause,system diagnostics)
