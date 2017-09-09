@@ -139,8 +139,9 @@ static Item *LoadInvariants(void);
 static void SaveInvariants(Item *list);
 static void PublishEnvironment(Item *classes);
 static void DiffInvariants(EvalContext *ctx,Item **anomaly_syndrome,Item **invariants);
-char *MakeAnomalyClusterName(char *title,Item *list);
+char *MakeAnomalyGrName(char *title,Item *list);
 char *MakeFlatList(Item *list);
+char *HereGr(FILE *fp, char *address);
 
 /****************************************************************/
 
@@ -667,12 +668,12 @@ static void BuildConsciousState(EvalContext *ctx, Averages av, Timescales t)
     
     char cname[CF_BUFSIZE];
     snprintf(cname,CF_BUFSIZE,"measurement type %s",name);
-    RoleCluster(consc,cname, "measurement type", name, ContextCluster(consc,"system monitoring measurement"));
-    RoleCluster(consc,"normal state","state","background,normal","system monitoring measurement");
-    RoleCluster(consc,"anomalous state","state","change,anomaly","system monitoring measurement");
+    RoleGr(consc,cname, "measurement type", name, ContextGr(consc,"system monitoring measurement"));
+    RoleGr(consc,"normal state","state","background,normal","system monitoring measurement");
+    RoleGr(consc,"anomalous state","state","change,anomaly","system monitoring measurement");
     Gr(consc,cname,a_interpreted,desc,"system monitoring measurement");
-    ContextCluster(consc,"measurement anomaly");
-    ContextCluster(consc,"measurement type");
+    ContextGr(consc,"measurement anomaly");
+    ContextGr(consc,"measurement type");
     snprintf(cname,CF_BUFSIZE,"%s_high",name);
     Gr(consc,cname,a_depends,name,"system monitoring measurement");
     snprintf(cname,CF_BUFSIZE,"%s_low",name);
@@ -732,7 +733,7 @@ static void BuildConsciousState(EvalContext *ctx, Averages av, Timescales t)
 
        // Note the semantic connection
        snprintf(cname,CF_BUFSIZE,"anomaly %s",buff);
-       RoleCluster(consc,cname, "measurement anomaly", buff, ContextCluster(consc,"system monitoring measurement"));
+       RoleGr(consc,cname, "measurement anomaly", buff, ContextGr(consc,"system monitoring measurement"));
        //
        
        AppendItem(&mon_data, buff, "2");
@@ -852,21 +853,20 @@ static void BuildConsciousState(EvalContext *ctx, Averages av, Timescales t)
     
     if (JUST_REVIVED)
        {
-       // why = ContextCluster(consc,"monitoring restarted");
+       // why = ContextGr(consc,"monitoring restarted");
        // Event....
        char *who = "cgn_montord";
        char *what = "monitor restarted";
        char *why = "unknown"; // or "unknown"
-       char *where = "mark's laptop";
-       time_t when = now;
+       time_t when = time(NULL);
        char *how = "restart monitor service";
        char *howattr = "restart,service,monitor";
        char *icontext = "system monitoring measurment";
-       char *wherex =  WhereCluster(consc,where,VUQNAME,VDOMAIN,VIPADDRESS,NULL,0);
+       char *where =  HereGr(consc,"Mark's laptop oslo");
 
        Log(LOG_LEVEL_VERBOSE, "Detected a restart anomaly");
-       Clue(consc,who,what,when,wherex,how,why,icontext);
-       RoleCluster(consc,how,"how",howattr,"system monitoring measurement");
+       Clue(consc,who,what,when,where,how,why,icontext);
+       RoleGr(consc,how,"how",howattr,"system monitoring measurement");
        }
 
     DiffInvariants(ctx,&anomaly_syndrome,&invariants);       
@@ -1136,7 +1136,7 @@ if (dev > 3.0 * sqrt(2.0))
    // Note the semantic connection
    char topic[CF_BUFSIZE];
    snprintf(topic,CF_BUFSIZE,"anomaly %s",buffer2);
-   RoleCluster(consc,topic, "measurement anomaly", buffer2,"system monitoring measurement");
+   RoleGr(consc,topic, "measurement anomaly", buffer2,"system monitoring measurement");
    //
 
    return sigma;
@@ -1155,7 +1155,7 @@ if (dev > 2.0 * sqrt(2.0))
    // Note the semantic connection
    char topic[CF_BUFSIZE];
    snprintf(topic,CF_BUFSIZE,"anomaly %s",buffer2);
-   RoleCluster(consc,topic, "measurement anomaly", buffer2,"system monitoring measurement");
+   RoleGr(consc,topic, "measurement anomaly", buffer2,"system monitoring measurement");
    //
 
    return sigma;
@@ -1202,19 +1202,19 @@ static void SetVariable(FILE *consc, char *name, double value, double average, d
  
  snprintf(var, CF_MAXVARSIZE, "measurement estimator %s", name);
  snprintf(attr, CF_MAXVARSIZE, "measurement value %s, measurement expectation %s,measurement standard deviation %s", name, name, name);
- RoleCluster(consc,var,"state measurement estimator", attr, ContextCluster(consc,"quantitative host state measurement monitoring here now"));
+ RoleGr(consc,var,"state measurement estimator", attr, ContextGr(consc,"quantitative host state measurement monitoring here now"));
 
  snprintf(var, CF_MAXVARSIZE, "measurement value %s", name);
  snprintf(attr, CF_MAXVARSIZE, "%.2lf", value);
- RoleCluster(consc,var,"current value or state", attr, "quantitative host state measurement monitoring here now");
+ RoleGr(consc,var,"current value or state", attr, "quantitative host state measurement monitoring here now");
 
  snprintf(var, CF_MAXVARSIZE, "measurement expectation %s", name);
  snprintf(attr, CF_MAXVARSIZE, "%.2lf", average);
- RoleCluster(consc,var,"expectation value", attr, "quantitative host state measurement monitoring here now");
+ RoleGr(consc,var,"expectation value", attr, "quantitative host state measurement monitoring here now");
 
  snprintf(var, CF_MAXVARSIZE, "measurement standard deviation %s", name);
  snprintf(attr, CF_MAXVARSIZE, "%.2lf", stddev);
- RoleCluster(consc,var,"standard deviation", attr, "quantitative host state measurement monitoring here now"); */
+ RoleGr(consc,var,"standard deviation", attr, "quantitative host state measurement monitoring here now"); */
 }
 
 /*****************************************************************************/
@@ -1546,15 +1546,14 @@ static void AnnotateAnomaly(EvalContext *ctx, FILE *consc, time_t now, Item *syn
  char *who = "cgn_montord";
  char *what = "anomalous state change";
  char *why = "unknown"; // or "unknown"
- char *where = "mark's laptop";
  time_t when = now;
- char *how = MakeAnomalyClusterName("anomaly",syndrome);
+ char *how = MakeAnomalyGrName("anomaly",syndrome);
  char *howattr = MakeFlatList(syndrome);
  char *icontext = "system monitoring measurement";
- char *wherex =  WhereCluster(consc,where,VUQNAME,VDOMAIN,VIPADDRESS,NULL,0);
+ char *where =  HereGr(consc,"mark's laptop oslo");
 
- Clue(consc,who,what,when,wherex,how,why,icontext);
- char *hub = RoleCluster(consc,how,"how",howattr,"system monitoring");
+ Clue(consc,who,what,when,where,how,why,icontext);
+ char *hub = RoleGr(consc,how,"how",howattr,"system monitoring");
  Gr(consc,"anomalous state",a_contains,how,"system monitoring measurement");
  
  Item *ip;
@@ -1569,19 +1568,17 @@ static void AnnotateAnomaly(EvalContext *ctx, FILE *consc, time_t now, Item *syn
        }
     }
 
- how = MakeAnomalyClusterName("background",invariants);
+ how = MakeAnomalyGrName("background",invariants);
  who = "cgn_montord";
  what = "normal state";
  why = "unknown"; // or "unknown"
- where = "mark's laptop";
  when = now;
  howattr = MakeFlatList(invariants);
  icontext = "system monitoring";
- wherex =  WhereCluster(consc,where,VUQNAME,VDOMAIN,VIPADDRESS,NULL,0);
 
  // Normal background
- Clue(consc,who,what,when,wherex,how,why,icontext);
- hub = RoleCluster(consc,how,"how",howattr,"system monitoring measurement");
+ Clue(consc,who,what,when,where,how,why,icontext);
+ hub = RoleGr(consc,how,"how",howattr,"system monitoring measurement");
 
  // Superhub
  Gr(consc,"normal state",a_contains,how,"system monitoring measurement");
@@ -1609,7 +1606,7 @@ static void AnnotateOpenPort(FILE *consc, char *type, char *number, char *addres
  time_t when = 0; // Don't want to remember every single sample
  
  Clue(consc,who,what,when,where,how,why,icontext);
- RoleCluster(consc,how,"how",attr,"system monitoring");
+ RoleGr(consc,how,"how",attr,"system monitoring");
 }
 
 /*********************************************************************/
@@ -1756,9 +1753,23 @@ static Item *LoadInvariants()
  return list;
 }
 
+/**********************************************************************/
+
+char *HereGr(FILE *fp, char *address)
+{
+ char identity[CGN_BUFSIZE], identitymain[CGN_BUFSIZE];
+
+ // alias different indentities
+ snprintf(identitymain,CGN_BUFSIZE,"host identity %s",VFQNAME);
+ snprintf(identity,CGN_BUFSIZE,"host identity %s",VIPADDRESS); 
+ Gr(fp,identitymain,a_alias,identity,"host location identification");
+
+ return WhereGr(fp,address,VUQNAME,VDOMAIN,VIPADDRESS,NULL);
+}
+
 /*********************************************************************/
 
-char *MakeAnomalyClusterName(char *title,Item *list)
+char *MakeAnomalyGrName(char *title,Item *list)
 
 // take 1_2_3, e.g. wwws_in_state - four letters from first, then 1 letter from 2 and 3
     

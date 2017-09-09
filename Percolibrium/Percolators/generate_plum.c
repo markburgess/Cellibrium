@@ -41,40 +41,40 @@ int main()
 // Maja
 
  // Usage::
- // ContextCluster(what am I thinking? What do I see/feel/sense?)
+ // ContextGr(what am I thinking? What do I see/feel/sense?)
  
- ContextCluster(stdout, "found dead body in the library");
- ContextCluster(stdout, "found blood in the library");
+ ContextGr(stdout, "found dead body in the library");
+ ContextGr(stdout, "found blood in the library");
 
 /******************************************************************************/
 
 Gr(stdout, "dead body", a_caused_by, "murder", "crime");
 Gr(stdout, "blood", a_caused_by, "murder", "crime");
 
-// RoleCluster(stdout,"drama", "genre", "other attributes", "interior context interpretation");
+// RoleGr(stdout,"drama", "genre", "other attributes", "interior context interpretation");
 
-RoleCluster(stdout,
+RoleGr(stdout,
             "Professor Plum murders Miss Scarlet in the library with a breadknife because she would not marry him",
             "murder by breadknife",
             "in the library,Professor plum,Miss Scarlet,Miss Scarlet refuses to marry Professory plum",
             "*"
             );
 
-RoleCluster(stdout,
+RoleGr(stdout,
             "murder by breadknife",
             "what action verb",
             "murder,by breadknife",
             "*"
             );
 
-RoleCluster(stdout,
+RoleGr(stdout,
             "by breadknife",
             "how",
             "breadknife",
             "*"
             );
 
-RoleCluster(stdout,
+RoleGr(stdout,
             "breadknife",
             "knife",
             "used for bread",
@@ -82,28 +82,28 @@ RoleCluster(stdout,
             );
 
 
-RoleCluster(stdout,
+RoleGr(stdout,
             "in the library",
             "where",
             "the library",
             "*"
             );
 
-RoleCluster(stdout,
+RoleGr(stdout,
             "the library",
             "library",
             "Professor Plum's library",
             "*"
             );
 
-RoleCluster(stdout,
+RoleGr(stdout,
             "Miss Scarlet refuses to marry Professory plum",
             "why",
             "Miss Scarlet,marriage refusal,Professor Plum",
             "*"
             );
 
-RoleCluster(stdout,
+RoleGr(stdout,
             "marriage refusal",
             "refusal",
             "marriage",
@@ -117,21 +117,21 @@ Gr(stdout,"Miss Scarlet",a_hasrole,"who","murder marriage");
 /* Homomorphic example                                                        */
 /******************************************************************************/
 
-RoleCluster(stdout,
+RoleGr(stdout,
             "Function MyClass:MyFn() failed in microservice MyService executing in container MyS1 with exit code 345 on host MYHOST because it received exception Out Of Storage",
             "failed with exit code 345",
             "Function MyClass:MyFn(),executing in Container MyS1 on MYHOST,received exception Out of Storage",
             "*"
             );
 
-RoleCluster(stdout,
+RoleGr(stdout,
             "failed with exit code 345",
             "how",
             "failed,exit code 345",
             "*"
             );
 
-RoleCluster(stdout,
+RoleGr(stdout,
             "Function MyClass:MyFn()",
             "function",
             "MyClass:MyFn()",
@@ -141,14 +141,14 @@ RoleCluster(stdout,
 Gr(stdout,"file git/file/myfile.lang",a_contains,"MyClass:MyFn()","*");
 Gr(stdout,"code class MyClass",a_contains,"MyFn()","*");
 
-RoleCluster(stdout,
+RoleGr(stdout,
             "executing in Container MyS1 on MYHOST",
             "where",
             "Container MyS1,MYHOST",
             "*"
             );
 
-RoleCluster(stdout,
+RoleGr(stdout,
             "received exception Out of Storage",
             "why",
             "exception out of storage",

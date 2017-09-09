@@ -41,23 +41,23 @@ int main()
 
  // What menu of contexts can we describe and measure?
 
- ContextCluster(stdout, "application service");
- ContextCluster(stdout, "design write develop software");
- ContextCluster(stdout, "run execute software");
- ContextCluster(stdout, "software ops operations");
- ContextCluster(stdout, "use software");
- ContextCluster(stdout, "bug fault failure error");
+ ContextGr(stdout, "application service");
+ ContextGr(stdout, "design write develop software");
+ ContextGr(stdout, "run execute software");
+ ContextGr(stdout, "software ops operations");
+ ContextGr(stdout, "use software");
+ ContextGr(stdout, "bug fault failure error");
 
  char *context = "software ops operations develop write";
- ContextCluster(stdout,context);
+ ContextGr(stdout,context);
 
  // Roles etc.
  
- RoleCluster(stdout,"application service","application", "component,software,service",context);
- RoleCluster(stdout,"microservice","application", "component,software,service",context);
+ RoleGr(stdout,"application service","application", "component,software,service",context);
+ RoleGr(stdout,"microservice","application", "component,software,service",context);
 
- RoleCluster(stdout,"service authentication","authentication", "component,software,application service,microservice,API authentication",context);
- RoleCluster(stdout,"user authentication","authentication", "component,software,application service,microservice",context);
+ RoleGr(stdout,"service authentication","authentication", "component,software,application service,microservice,API authentication",context);
+ RoleGr(stdout,"user authentication","authentication", "component,software,application service,microservice",context);
 
  //
  
@@ -69,11 +69,11 @@ int main()
  Gr(stdout, "service",a_depends,"application cgn-agent",context);
 
  
- RoleCluster(stdout,"software SOFTWARENAME VERSION","software", "SOFTWARENAME,VERSION",context);
- RoleCluster(stdout,"container CONTAINERNAME VERSION","container", "CONTAINERNAME,VERSION",context);
- RoleCluster(stdout,"package PACKAGENAME1 VERSION1","package", "PACKAGENAME1,VERSION1",context);
- RoleCluster(stdout,"package PACKAGENAME2 VERSION2","package", "PACKAGENAME2,VERSION2",context);
- RoleCluster(stdout,"package PACKAGENAME3 VERSION3","package", "PACKAGENAME3,VERSION3",context);
+ RoleGr(stdout,"software SOFTWARENAME VERSION","software", "SOFTWARENAME,VERSION",context);
+ RoleGr(stdout,"container CONTAINERNAME VERSION","container", "CONTAINERNAME,VERSION",context);
+ RoleGr(stdout,"package PACKAGENAME1 VERSION1","package", "PACKAGENAME1,VERSION1",context);
+ RoleGr(stdout,"package PACKAGENAME2 VERSION2","package", "PACKAGENAME2,VERSION2",context);
+ RoleGr(stdout,"package PACKAGENAME3 VERSION3","package", "PACKAGENAME3,VERSION3",context);
  
  Gr(stdout, "software SOFTWARENAME",a_depends,"container CONTAINERNAME",context);
 
@@ -85,7 +85,7 @@ int main()
 
  // This comes from an orchestrator K8s, openstack etc?
  
- RoleCluster(stdout,"hosting CONTAINERNAME INSTANCE","hosting", "CONTAINERNAME,INSTANCE",context);
+ RoleGr(stdout,"hosting CONTAINERNAME INSTANCE","hosting", "CONTAINERNAME,INSTANCE",context);
   
  // These should be scanned by internal scanner, etc
  
@@ -99,14 +99,14 @@ int main()
  Gr(stdout, "service", a_depends, "hosting","software ops operations");
  Gr(stdout, "hosting", a_depends, "host HOSTNAME","execute run software ops operations");
 
- RoleCluster(stdout,"host HOSTNAME IPADDRESS","host", "hostname HOSTNAME,ip address IPADDRESS",context);
+ RoleGr(stdout,"host HOSTNAME IPADDRESS","host", "hostname HOSTNAME,ip address IPADDRESS",context);
   
  Gr(stdout, "host", a_promises, "operating system","execute run software ops operations");
  Gr(stdout, "operating system",a_promises,"kernel","execute run software ops operations");
 
- InitialCluster(stdout);
+ InitialGr(stdout);
  
- ServerCluster(stdout,
+ ServerGr(stdout,
                "ssh",
                "/usr/local/sshd",
                "London",
@@ -117,7 +117,7 @@ int main()
                22
                );
 
- ClientCluster(stdout,
+ ClientGr(stdout,
                "ssh",
                "/usr/bin/ssh",
                "San Jose",

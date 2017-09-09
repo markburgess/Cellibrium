@@ -21,7 +21,7 @@
 
 /**********************************************************************/
 
-void MakeUniqueClusterName(char *lval,void *sorted,char type,char *buffer)
+void MakeUniqueGrName(char *lval,void *sorted,char type,char *buffer)
 
 {
  switch (type)

@@ -39,28 +39,28 @@ int main()
 
  // What kinds of compound contexts can we expect? State of mind...
  
- ContextCluster(stdout,"doctor service");
- ContextCluster(stdout,"patient appointment");
- ContextCluster(stdout,"patient health service");
- ContextCluster(stdout,"need to visit a doctor");
- ContextCluster(stdout,"patient doctor registration"); 
- ContextCluster(stdout,"identity authentication verification");
+ ContextGr(stdout,"doctor service");
+ ContextGr(stdout,"patient appointment");
+ ContextGr(stdout,"patient health service");
+ ContextGr(stdout,"need to visit a doctor");
+ ContextGr(stdout,"patient doctor registration"); 
+ ContextGr(stdout,"identity authentication verification");
  
  // Compound (qualified) concepts
 
- RoleCluster(stdout,"general practictioner doctor","doctor", "general practitioner", "patient health service");
- RoleCluster(stdout,"surgeon doctor","doctor", "surgeon", "patient health service");
- RoleCluster(stdout,"patient appointment","appointment", "doctor patient", "patient health service");
+ RoleGr(stdout,"general practictioner doctor","doctor", "general practitioner", "patient health service");
+ RoleGr(stdout,"surgeon doctor","doctor", "surgeon", "patient health service");
+ RoleGr(stdout,"patient appointment","appointment", "doctor patient", "patient health service");
 
  // Record realtime state relationships (promises) - note the role of a STATE is the state outcome, not the subject
 
- RoleCluster(stdout,"doctor authenticated","authenticated","doctor", "patient health service");
- RoleCluster(stdout,"patient authenticated","authenticated","patient", "patient health service");
+ RoleGr(stdout,"doctor authenticated","authenticated","doctor", "patient health service");
+ RoleGr(stdout,"patient authenticated","authenticated","patient", "patient health service");
 
  // Note how fragile this is to difference between available,availability ... linguistically we could fuzzy match
  
- RoleCluster(stdout,"general practictioner doctor available","doctor availability", "general,practitioner,doctor", "patient health service");
- RoleCluster(stdout,"open for business","service availability", "open,available", "need to visit a doctor");
+ RoleGr(stdout,"general practictioner doctor available","doctor availability", "general,practitioner,doctor", "patient health service");
+ RoleGr(stdout,"open for business","service availability", "open,available", "need to visit a doctor");
 
  Gr(stdout,"have public health service access",a_depends,"patient authenticated","need to visit a doctor");
  Gr(stdout,"have public health service access",a_depends,"patient appointment","need to visit a doctor");
@@ -107,7 +107,7 @@ int main()
  Gr(stdout,"medical association",a_promises,"doctor authorized","doctor registration");
 
  Gr(stdout,"doctor",a_promises,"doctor availability","patient doctor registration");
- Gr(stdout,"patient uses appointment",a_hasoutcome,"promise kept",ContextCluster(stdout,"public health service patient doctor registration"));
+ Gr(stdout,"patient uses appointment",a_hasoutcome,"promise kept",ContextGr(stdout,"public health service patient doctor registration"));
 
  Gr(stdout,"doctor",a_promises,"identity credentials","patient doctor registration");
  Gr(stdout,"patient",a_promises,"identity credentials","patient doctor registration");

@@ -40,9 +40,9 @@ int main()
 
  // What menu of contexts can we describe and measure?
 
- ContextCluster(stdout, "host configuration maintenance agent CGNgine");
+ ContextGr(stdout, "host configuration maintenance agent CGNgine");
 
- RoleCluster(stdout,"application cgn-agent","application", "cgn-agent,software,service","host configuration maintenance agent CGNgine");
+ RoleGr(stdout,"application cgn-agent","application", "cgn-agent,software,service","host configuration maintenance agent CGNgine");
 
  Gr(stdout,"application cgn-agent",a_depends,"cgn-agent","host configuration maintenance agent CGNgine");
  CrawlApplication("/var/CGNgine/bin","cgn-agent","host configuration maintenance agent CGNgine");
@@ -59,10 +59,10 @@ void CrawlApplication(char *path, char *app, char *desc)
  char fqname[CGN_BUFSIZE];
  char context[CGN_BUFSIZE];
 
- strcpy(context,ContextCluster(stdout,"host application software dependencies security"));
+ strcpy(context,ContextGr(stdout,"host application software dependencies security"));
 
  snprintf(name, CGN_BUFSIZE, "application %s", app);
- RoleCluster(stdout,name,"application", "component,CGNgine",context);
+ RoleGr(stdout,name,"application", "component,CGNgine",context);
 
  // Get the dependency graph
 
