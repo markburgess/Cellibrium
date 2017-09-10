@@ -419,7 +419,7 @@ char *ClientQuery(FILE *fp,char *client, char *server, char *request, char *serv
 
  // Causal model
 
- snprintf(attr,CGN_BUFSIZE,"request %s from service %s port %d",request,servicename,portnumber),
+ snprintf(attr,CGN_BUFSIZE,"request %s from service %s port %d",request,servicename,portnumber);
  ImpositionGr(fp,SClientInstance(servicename,client),SServerInstance(servicename,server),attr);
  return query;
 }
@@ -443,7 +443,7 @@ char *ClientPush(FILE *fp,char *client, char *server, char *request, char *servi
 
  // Causal model
 
- snprintf(attr,CGN_BUFSIZE,"push %s to service %s port %d",request,servicename,portnumber),
+ snprintf(attr,CGN_BUFSIZE,"push %s to service %s port %d",request,servicename,portnumber);
  ImpositionGr(fp,SClientInstance(servicename,client),SServerInstance(servicename,server),attr);
  return query;
 }

@@ -51,13 +51,13 @@ when = now;
 how = "by breadknife" #MakeAnomalyGrName("anomaly",syndrome);
 icontext = "cluedo";
 
-c.Clue(sys.stdout,who,what,when,where,how,why,icontext);
+c.EventClue(sys.stdout,who,what,when,where,how,why,icontext);
 
 
 print "------------------------------------------------------"
 
 #
-# How to call Cluedo interface for a system issue
+# How to call EventCluedo interface for a system issue
 #
 
 now = time.time()
@@ -72,7 +72,7 @@ icontext = "system monitoring";
 
 wherex = c.WhereGr(sys.stdout,"Oslo","marklaptop","unknown","192.168.1.183","");
 
-c.Clue(sys.stdout,who,what,when,wherex,how,why,icontext);
+c.EventClue(sys.stdout,who,what,when,wherex,how,why,icontext);
 
 print "------------------------------------------------------"
 

@@ -185,7 +185,7 @@ class Cellibrium:
 
     ########################################################################################################
 
-    def Clue(self,ofile,who,what,whentime,where,how,why,icontext):
+    def EventClue(self,ofile,who,what,whentime,where,how,why,icontext):
 
         if (whentime > 0):
             when = self.TimeGr(ofile,whentime);
@@ -395,73 +395,228 @@ class Cellibrium:
         return id
     
     ########################################################################################################
-    
-    def ServiceGr(self,ofile,servicename,portnr):
 
-        name = "service %s on port %d" % (servicename,portnr)
-        service = "service %s" % servicename
-        port = "ip portnumber %d" % portnr
-        self.RoleGr(ofile,name,service,port,"service relationship")
-         
-        self.Gr(ofile,service,"a_hasrole","service","service relationship");
-        self.Gr(ofile,service,"a_hasfunction",servicename,"service relationship");
-         
-        service = "ip portnumber %d" % portnr
-        port = "%d" % portnr
-        self.RoleGr(ofile,service,"ip portnumber",port,"service relationship");
+    def ServiceGr(self,ofile,servicename,portnumber):
+
+        name = "%s on port %d" % (self.SService(servicename), portnumber)
+        port = "ip portnumber %d" % portnumber
+        self.RoleGr(ofile,name,self.SService(servicename),port,"service relationship")
+
+        self.Gr(ofile,self.SService(servicename),"a_hasrole","service","service relationship")
+        self.Gr(ofile,self.SService(servicename),"a_hasfunction",servicename,"service relationship")
+
+        portname = "ip portnumber %d" % portnumber
+        port = "%d" % portnumber
+        self.RoleGr(ofile,portname,"ip portnumber",port,"service relationship")
 
         # ancillary notes
-                        
-        server = "%s server" % servicename
-        self.Gr(ofile,server,"a_hasrole","server","service relationship");
-                        
-        client = "%s client" % servicename
-        self.Gr(ofile,client,"a_hasrole","client","service relationship");
+ 
+        self.Gr(ofile,self.SServer(servicename),"a_hasrole","server","service relationship")
+        self.Gr(ofile,self.SClient(servicename),"a_hasrole","client","service relationship")
 
-        self.Gr(ofile,client,"a_depends",server,"service relationship");
-        self.Gr(ofile,client,"a_uses",name,"service relationship");
-                        
-        return name;
+        self.Gr(ofile,self.SClient(servicename),"a_depends",self.SServer(servicename),"service relationship")
+        self.Gr(ofile,self.SClient(servicename),"a_uses",name,"service relationship");
+
+        return name
 
     ########################################################################################################
 
     def ServerInstanceGr(self,ofile,servicename,portnumber,servername,where):
+
         self.ServiceGr(ofile,servicename,portnumber)
-        return self.ServiceInstance(ofile,"server",servername,servicename,where);
+        hub = "%s %s" % (self.SServerInstance(servicename,servername),where)
+        self.RoleGr(ofile,hub,self.SServerInstance(servicename,servername),where,"service relationship instance")
+        self.Gr(ofile,self.SService(servicename),"a_providedby",hub,"service relationship");
+        return hub
 
     ########################################################################################################
 
     def ClientInstanceGr(self,ofile,servicename,clientname,where):
-        return self.ServiceInstance(ofile,"client",clientname,servicename,where)  
+
+        hub = "%s %s" % (self.SClientInstance(servicename,clientname),where)
+        self.RoleGr(ofile,hub,self.SClientInstance(servicename,clientname),where,"service relationship instance")
+        self.Gr(ofile,hub,"a_uses",self.SService(servicename),"service relationship")
+
+        return hub
 
     ########################################################################################################
 
-    def ServiceInstance(self,ofile,role,instancename,servicename,where):
+    def GivePromiseGr(self,ofile,S,R,body):
 
-        location = "located at %s" % where
-        service = "%s %s" % (servicename,role)             # e.g. ftp server
-        instance = "instance %s %s" % (role,instancename)  # e.g. instance server myhost
-        rolehub = "%s %s %s" % (service,instance,location) # (ftp server) (instance server myhost) (located at WHERE)
-        attr = "%s,%s" % (service,location)             # (ftp server),(located at WHERE)
-        
-        # Top level hub
-        self.RoleGr(ofile,rolehub,instance,attr,"service relationship");
-        
-        # Attr hierarchy
-        self.RoleGr(ofile,location,"where",where,"service relationship instance");
-        self.RoleGr(ofile,service,role,servicename,"service relationship instance");
-        
-        attr = "%s,%s" % (role,instancename)               # (ftp server),(located at WHERE)
-        self.RoleGr(ofile,instance,role,instancename,"service relationship instance");
-        
+        sender = "promiser %s" % S
+        receiver = "promisee %s" % R
+
+        promisehub = "%s promises to give %s to %s" % (sender,body,receiver)
+        attr = "%s,promise body +%s,%s" % (sender,body,receiver)
+        self.RoleGr(ofile,promisehub,"give-provide promise",attr,"promise keeping")
+        self.Gr(ofile,sender,"a_depends",promisehub,"promise keeping")
+        self.Gr(ofile,promisehub,"a_depends",sender,"promise keeping")
+
+        return promisehub
+
+    ########################################################################################################
+
+    def AcceptPromiseGr(self,ofile,R,S,body):
+
+        receiver = "promiser %s" % R
+        sender = "promisee %s" % S
+
+        promisehub = "%s promises to accept %s to %s" % (receiver,body,sender)
+        attr = "%s,promise body -%s,%s" % (sender,body,receiver)
+        self.RoleGr(ofile,promisehub,"use-accept promise",attr,"promise keeping")
+        self.Gr(ofile,receiver,"a_depends",promisehub,"promise keeping")
+        self.Gr(ofile,"use-accept promise","a_related_to","client pull methods","promise keeping") 
+
+        return promisehub
+
+    ########################################################################################################
+
+    def ImpositionGr(self,ofile,S,R,body):
+
+        sender = "imposer %s" % S
+        receiver = "imposee %s" % R
+
+        promisehub = "%s imposes body %s onto %s" % (sender,body,receiver)
+        attr = "%s,imposition body %s,%s" % (sender,body,receiver)
+        self.RoleGr(ofile,promisehub,"imposition",attr,"promise keeping")
+        self.Gr(ofile,"imposition","a_related_to","client push methods","promise keeping")
+
+        # Imposition only affects if there is an accept promise
+
+        acceptance = self.AcceptPromiseGr(ofile,R,S,body)
+        if acceptance:
+            self.Gr(ofile,promisehub,"a_depends",acceptance,"promise keeping");
+            self.Gr(ofile,promisehub,"a_depends",sender,"promise keeping")
+ 
+        return promisehub;
+
+    ########################################################################################################
+
+    def ClientQuery(self,ofile,client,server,request,servicename,portnumber):
+
+        attr = "port %d" % portnumber
+        p = "%d" % portnumber
+        self.RoleGr(ofile,attr,"port",p,"client service query")
+
+        query = "%s requests %s from %s on port %d" % (SClientInstance(servicename,client),request,SServerInstance(servicename,server),portnumber)
+        attr = "%s,%s,port %d" % (SClientInstance(servicename,client),SServerInstance(servicename,server),portnumber)
+        id = "query request for %s" % request
+        self.RoleGr(ofile,query,id,attr,"service relationship")
+
+        # Causal model
+
+        attr = "request %s from service %s port %d" % (request,servicename,portnumber)
+        self.ImpositionGr(ofile,SClientInstance(servicename,client),SServerInstance(servicename,server),attr)
+
+        return query
+
+    ########################################################################################################
+
+    def ClientPush(self,ofile,client,server,request,servicename,portnumber):
+
+        attr = "port %d" % portnumber
+        p = "%d" % portnumber
+        self.RoleGr(ofile,attr,"port",p,"client service query")
+
+        query = "%s pushes %s to %s on port %d" % (SClientInstance(servicename,client),request,SServerInstance(servicename,server),portnumber)
+        attr = "%s,%s,port %d" % (SClientInstance(servicename,client),SServerInstance(servicename,server),portnumber)
+        id = "query pushes %s" % request
+        self.RoleGr(ofile,query,id,attr,"service relationship")
+
+        # Causal model
+
+        attr = "push %s to service %s port %d" % (request,servicename,portnumber)
+        self.ImpositionGr(ofile,SClientInstance(servicename,client),SServerInstance(servicename,server),attr)
+
+        return query
+
+    ########################################################################################################
+
+    def ServerListenPromise(self,ofile,servername,servicename,port):
+ 
+        listen = "%s listens for requests on port %d" % (SServerInstance(servicename,servername),port)
+        attr = "%s,port %d" % (SServerInstance(servicename,servername),port)
+        self.RoleGr(ofile,listen,"listen on service port",attr,"service relationship")
+
         # Causation
-        
-        if role == "client":
-            self.Gr(ofile,rolehub,"a_depends",servicename,"service relationship")
-        else:
-            self.Gr(ofile,servicename,"a_providedby",rolehub,"service relationship")
-        
-        return rolehub
+ 
+        ports = "listening on port %d" % port
+        self.GivePromiseGr(ofile,SServerInstance(servicename,servername),"ip INADDR_ANY",ports)
+
+        return listen
+
+    ########################################################################################################
+
+    def ServerAcceptPromise(self,ofile,servername,fromclient,servicename,port):
+
+        accept = "%s accept data from %s on port %d" % (SServerInstance(servicename,servername),SClientInstance(servicename,fromclient),port)
+        attr = "%s,%s,ip portnumber %d" % (SServerInstance(servicename,servername),SClientInstance(servicename,fromclient),port)
+        id = "accept data on port %d" % port
+        self.RoleGr(ofile,accept,id,attr,"service relationship")
+ 
+        self.AcceptPromiseGr(ofile,self.SServerInstance(servicename,servername),self.SClientInstance(servicename,fromclient),id)
+
+        return accept
+
+    ########################################################################################################
+
+    def ServerReplyPromise(self,ofile,servername,toclient,servicename,port):
+
+        reply = "%s reply to %s from port %d" % (self.SServerInstance(servicename,servername),self.SClientInstance(servicename,toclient),port)
+        attr = "%s,%s,ip portnumber %d" % (SServerInstance(servicename,servername),SClientInstance(servicename,toclient),port)
+        id = "reply to queries from port %d" % port
+        self.RoleGr(ofile,reply,id,attr,"service relationship")
+        self.GivePromiseGr(ofile,self.SServerInstance(servicename,servername),self.SClientInstance(servicename,toclient),id)
+
+        return reply
+
+    ########################################################################################################
+
+    def ClientWritePostData(self,ofile,client,server,data,servicename,portnumber):
+
+        return self.ClientPush(ofile,client,server,data,servicename,portnumber)
+
+    ########################################################################################################
+
+    def ClientReadGetData(self,ofile,client,server,servicename,get,portnumber):
+
+        return self.ClientQuery(ofile,client,server,get,servicename,portnumber)
+
+    ########################################################################################################
+
+    def ServerAcceptPostData(self,ofile,server,client,servicename,data):
+
+        request = "accept %.64s to %s request" % (data,self.SService(servicename))
+        return self.AcceptPromiseGr(ofile,server,client,request)
+
+    ########################################################################################################
+
+    def ServerReplyToGetData(self,ofile,server,client,servicename,data):
+
+        request = "conditional reply %.64s to %s request" % (data,SService(servicename))
+        return self.GivePromiseGr(ofile,server,client,request)
+
+    ########################################################################################################
+
+    def SClientInstance(self,service,client):
+        ret = "%s client %s" % (service,client)
+        return ret
+
+    def SServerInstance(self,service,server):
+        ret = "%s server %s" % (service,server)
+        return ret
+
+    def SClient(self,service):
+        ret = "%s client" % service
+        return ret
+
+    def SServer(self,service):
+        ret = "%s server" % service
+        return ret
+
+    def SService(self,servicename):
+        ret = "service %s" % servicename
+        return ret
 
     ########################################################################################################
 
