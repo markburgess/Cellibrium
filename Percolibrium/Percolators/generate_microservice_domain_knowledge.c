@@ -106,25 +106,17 @@ int main()
 
  InitialGr(stdout);
  
- ServerGr(stdout,
+ ServerInstanceGr(stdout,
                "ssh",
+                  22,
                "/usr/local/sshd",
-               "London",
-               "myserver",
-               "example.com",
-               "123.456.789.10/24",
-               "2001:::7/64",
-               22
-               );
+                  WhereGr(stdout,"London","myserver","example.com","123.456.789.10/24","2001:::7/64")
+                  );;
 
- ClientGr(stdout,
+ ClientInstanceGr(stdout,
                "ssh",
                "/usr/bin/ssh",
-               "San Jose",
-               "desktop",
-               "example.com",
-               "321.654.987.99/24",
-               "2002:::8/64"
+                  WhereGr(stdout,"San Jose","desktop","example.com","321.654.987.99/24","2002:::8/64")
                );
  return 0;
 }

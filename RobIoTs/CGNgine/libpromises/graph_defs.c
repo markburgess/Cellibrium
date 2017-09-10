@@ -289,32 +289,26 @@ return compound_name;
 char *ServiceGr(FILE *fp,char *servicename, unsigned int portnumber)
 {
  static char name[CGN_BUFSIZE];
- char server[CGN_BUFSIZE],client[CGN_BUFSIZE];
- char port[CGN_BUFSIZE], service[CGN_BUFSIZE];
+ char port[CGN_BUFSIZE],portname[CGN_BUFSIZE];
  
- snprintf(name,CGN_BUFSIZE,"service %s on port %d",servicename, portnumber);     // service ftp
-
- snprintf(service,CGN_BUFSIZE,"service %s",servicename); 
+ snprintf(name,CGN_BUFSIZE,"%s on port %d",SService(servicename), portnumber);     // service ftp
  snprintf(port,CGN_BUFSIZE,"ip portnumber %d",portnumber);
- RoleGr(fp,name,service,port,"service relationship");
+ RoleGr(fp,name,SService(servicename),port,"service relationship");
 
- Gr(fp,service,a_hasrole,"service","service relationship");
- Gr(fp,service,a_hasfunction,servicename,"service relationship");
+ Gr(fp,SService(servicename),a_hasrole,"service","service relationship");
+ Gr(fp,SService(servicename),a_hasfunction,servicename,"service relationship");
 
- snprintf(service,CGN_BUFSIZE,"ip portnumber %d",portnumber);
+ snprintf(portname,CGN_BUFSIZE,"ip portnumber %d",portnumber);
  snprintf(port,CGN_BUFSIZE,"%d",portnumber);
- RoleGr(fp,service,"ip portnumber",port,"service relationship");
+ RoleGr(fp,portname,"ip portnumber",port,"service relationship");
 
  // ancillary notes
  
- snprintf(server,CGN_BUFSIZE,"%s server",servicename);   // ftp server
- Gr(fp,server,a_hasrole,"server","service relationship");
+ Gr(fp,SServer(servicename),a_hasrole,"server","service relationship");
+ Gr(fp,SClient(servicename),a_hasrole,"client","service relationship");
 
- snprintf(client,CGN_BUFSIZE,"%s client",servicename);   // ftp client
- Gr(fp,client,a_hasrole,"client","service relationship");
-
- Gr(fp,client,a_depends,server,"service relationship");  // service => client depends on server
- Gr(fp,client,a_uses,name,"service relationship");
+ Gr(fp,SClient(servicename),a_depends,SServer(servicename),"service relationship");  // service => client depends on server
+ Gr(fp,SClient(servicename),a_uses,name,"service relationship");
 
  return name;
 }
@@ -323,53 +317,23 @@ char *ServiceGr(FILE *fp,char *servicename, unsigned int portnumber)
 
 char *ServerInstanceGr(FILE *fp,char *servicename, unsigned int portnumber,char *servername,char *where)
 {
+ static char hub[CGN_BUFSIZE];
  ServiceGr(fp,servicename,portnumber);
- return ServiceInstance(fp,"server",servername,servicename,where);
+ snprintf(hub,CGN_BUFSIZE,"%s %s",SServerInstance(servicename,servername),where);
+ RoleGr(fp,hub,SServerInstance(servicename,servername),where,"service relationship instance");
+ Gr(fp,SService(servicename),a_providedby,hub,"service relationship");
+ return hub;
 }
 
 /************************************************************************************/
 
 char *ClientInstanceGr(FILE *fp,char *servicename,char *clientname,char *where)
 {
- return ServiceInstance(fp,"client",clientname,servicename,where);
-}
-
-/************************************************************************************/
-
-char *ServiceInstance(FILE *fp,char *role, char *instancename,char *servicename, char *where)
-{
- static char rolehub[CGN_BUFSIZE], attr[CGN_BUFSIZE];
- char location[CGN_BUFSIZE], service[CGN_BUFSIZE], instance[CGN_BUFSIZE];
-
- snprintf(location,CGN_BUFSIZE,"located at %s",where);
- snprintf(service,CGN_BUFSIZE,"%s %s",servicename,role);  // e.g. ftp server
- snprintf(instance,CGN_BUFSIZE,"instance %s %s",role,instancename); // e.g. instance server myhost
-
- snprintf(rolehub,CGN_BUFSIZE,"%s %s %s",service,instance,location); //(ftp server) (instance server myhost) (located at WHERE)
- snprintf(attr,CGN_BUFSIZE,"%s,%s",service,location); //(ftp server),(located at WHERE)
-
- // Top level hub
- RoleGr(fp,rolehub,instance,attr,"service relationship");
-
- // Attr hierarchy
- RoleGr(fp,location,"where",where,"service relationship instance");
- RoleGr(fp,service,role,servicename,"service relationship instance");
-
- snprintf(attr,CGN_BUFSIZE,"%s,%s",role,instancename); //(ftp server),(located at WHERE)
- RoleGr(fp,instance,role,instancename,"service relationship instance");
-
- // Causation
- 
- if (strcmp(role,"client") == 0)
-    {
-    Gr(fp,rolehub,a_depends,servicename,"service relationship");
-    }
- else //server
-    {
-    Gr(fp,servicename,a_providedby,rolehub,"service relationship");
-    }
-
- return rolehub;
+ static char hub[CGN_BUFSIZE];
+ snprintf(hub,CGN_BUFSIZE,"%s %s",SClientInstance(servicename,clientname),where);
+ RoleGr(fp,hub,SClientInstance(servicename,clientname),where,"service relationship instance");
+ Gr(fp,hub,a_uses,SService(servicename),"service relationship");
+ return hub;
 }
 
 /************************************************************************************/
@@ -441,33 +405,22 @@ char *ImpositionGr(FILE *fp,char *S, char *R, char *body)
 char *ClientQuery(FILE *fp,char *client, char *server, char *request, char *servicename, int portnumber)
 {
  static char query[CGN_BUFSIZE];
- char attr[CGN_BUFSIZE];
-
- snprintf(attr,CGN_BUFSIZE,"client %s",client);
- RoleGr(fp,attr,"client",client,"client service query");
- 
- snprintf(attr,CGN_BUFSIZE,"request %s",request);
- RoleGr(fp,attr,"service request",request,"client service query");
-
- snprintf(attr,CGN_BUFSIZE,"server %s",server);
- RoleGr(fp,attr,"server",server,"client service query");
-
- snprintf(attr,CGN_BUFSIZE,"service %s",servicename);
- RoleGr(fp,attr,"service",servicename,"client service query");
+ char attr[CGN_BUFSIZE], id[CGN_BUFSIZE];
 
  snprintf(attr,CGN_BUFSIZE,"port %d",portnumber);
  char p[8];
  snprintf(p,8,"%d",portnumber);
  RoleGr(fp,attr,"port",p,"client service query");
 
- snprintf(query,CGN_BUFSIZE,"client %s requests %s from service %s at server %s on port %d",client,request,servicename,server,portnumber);
- snprintf(attr,CGN_BUFSIZE,"client %s,request %s,server %s,service %s,port %d",client,request,server,servicename,portnumber);
- RoleGr(fp,query,"client query",attr,"service relationship");
+ snprintf(query,CGN_BUFSIZE,"%s requests %s from %s on port %d",SClientInstance(servicename,client),request,SServerInstance(servicename,server),portnumber);
+ snprintf(attr,CGN_BUFSIZE,"%s,%s,port %d",SClientInstance(servicename,client),SServerInstance(servicename,server),portnumber);
+ snprintf(id,CGN_BUFSIZE,"query request for %s",request);
+ RoleGr(fp,query,id,attr,"service relationship");
 
  // Causal model
 
  snprintf(attr,CGN_BUFSIZE,"request %s from service %s port %d",request,servicename,portnumber),
- ImpositionGr(fp,client,server,attr);
+ ImpositionGr(fp,SClientInstance(servicename,client),SServerInstance(servicename,server),attr);
  return query;
 }
 
@@ -475,110 +428,104 @@ char *ClientQuery(FILE *fp,char *client, char *server, char *request, char *serv
 
 char *ClientPush(FILE *fp,char *client, char *server, char *request, char *servicename, int portnumber)
 {
- static char query[CGN_BUFSIZE]; 
- char attr[CGN_BUFSIZE];
- 
- snprintf(query,CGN_BUFSIZE,"client %s pushes %s to service %s at server %s on port %d",client,request,servicename,server,portnumber);
-
- snprintf(attr,CGN_BUFSIZE,"client %s",client);
- RoleGr(fp,attr,"client",client,"client service query");
- 
- snprintf(attr,CGN_BUFSIZE,"request %s",request);
- RoleGr(fp,attr,"service request",request,"client service query");
-
- snprintf(attr,CGN_BUFSIZE,"server %s",server);
- RoleGr(fp,attr,"server",server,"client service query");
-
- snprintf(attr,CGN_BUFSIZE,"service %s",servicename);
- RoleGr(fp,attr,"service",servicename,"client service query");
+ static char query[CGN_BUFSIZE];
+ char attr[CGN_BUFSIZE], id[CGN_BUFSIZE];
 
  snprintf(attr,CGN_BUFSIZE,"port %d",portnumber);
  char p[8];
  snprintf(p,8,"%d",portnumber);
  RoleGr(fp,attr,"port",p,"client service query");
 
- snprintf(attr,CGN_BUFSIZE,"client %s,request %s,server %s,service %s,port %d",client,request,server,servicename,portnumber);
- RoleGr(fp,query,"client push",attr,"service relationship");
+ snprintf(query,CGN_BUFSIZE,"%s pushes %s to %s on port %d",SClientInstance(servicename,client),request,SServerInstance(servicename,server),portnumber);
+ snprintf(attr,CGN_BUFSIZE,"%s,%s,port %d",SClientInstance(servicename,client),SServerInstance(servicename,server),portnumber);
+ snprintf(id,CGN_BUFSIZE,"query pushes %s",request);
+ RoleGr(fp,query,id,attr,"service relationship");
 
  // Causal model
 
- snprintf(attr,CGN_BUFSIZE,"request %s from service %s port %d",request,servicename,portnumber),
- ImpositionGr(fp,client,server,attr); 
- RoleGr(fp,query,"client push",attr,"service relationship");
-
+ snprintf(attr,CGN_BUFSIZE,"push %s to service %s port %d",request,servicename,portnumber),
+ ImpositionGr(fp,SClientInstance(servicename,client),SServerInstance(servicename,server),attr);
  return query;
 }
 
 /************************************************************************************/
 
-char *ServerListen(FILE *fp,char *servername, char *servicename, int port)
+char *ServerListenPromise(FILE *fp,char *servername, char *servicename, int port)
 {
- static char query[CGN_BUFSIZE];
+ static char listen[CGN_BUFSIZE];
  char ports[CGN_BUFSIZE],attr[CGN_BUFSIZE];
  
- snprintf(query,CGN_BUFSIZE,"server %s listens for service %s requests on port %d",servername,servicename,port);
- snprintf(attr,CGN_BUFSIZE,"server %s,service %s,port %d",servername,servicename,port);
- RoleGr(fp,query,"server",attr,"service relationship");
+ snprintf(listen,CGN_BUFSIZE,"%s listens for requests on port %d",SServerInstance(servicename,servername),port);
+ snprintf(attr,CGN_BUFSIZE,"%s,port %d",SServerInstance(servicename,servername),port);
+ RoleGr(fp,listen,"listen on service port",attr,"service relationship");
+
+  // Causation
  
  snprintf(ports,CGN_BUFSIZE,"listening on port %d",port);
-    
- // Causation
+ GivePromiseGr(fp,SServerInstance(servicename,servername),"ip INADDR_ANY",ports);
+ return listen;
+}
+
+/************************************************************************************/
+
+char *ServerAcceptPromise(FILE *fp,char *servername, char *fromclient, char *servicename, int port)
+{
+ static char accept[CGN_BUFSIZE];
+ char attr[CGN_BUFSIZE],id[CGN_BUFSIZE];
+
+ snprintf(accept,CGN_BUFSIZE,"%s accept data from %s on port %d",SServerInstance(servicename,servername),SClientInstance(servicename,fromclient),port);
+ snprintf(attr,CGN_BUFSIZE,"%s,%s,ip portnumber %d",SServerInstance(servicename,servername),SClientInstance(servicename,fromclient),port);
+ snprintf(id,CGN_BUFSIZE,"accept data on port %d",port);
+ RoleGr(fp,accept,id,attr,"service relationship");
  
- GivePromiseGr(fp,servername,"ip INADDR_ANY",ports);
- return query;
+ AcceptPromiseGr(fp,SServerInstance(servicename,servername),SClientInstance(servicename,fromclient),id); 
+ return accept;
 }
 
 /************************************************************************************/
 
-char *ServerAccept(FILE *fp,char *servername, char *fromclient, char *servicename, int port)
+char *ServerReplyPromise(FILE *fp,char *servername, char *toclient, char *servicename, int port)
 {
- static char query[CGN_BUFSIZE];
- char attr[CGN_BUFSIZE];
- snprintf(query,CGN_BUFSIZE,"server %s accept data from client %s via port %d for service %s",servername,fromclient,port,servicename);
- snprintf(attr,CGN_BUFSIZE,"server %s,service %s,port %d,client %s",servername,servicename,port,fromclient);
- RoleGr(fp,query,"server accept",attr,"service relationship");
- AcceptPromiseGr(fp,servername,fromclient,"accept data"); 
- return query;
+ static char reply[CGN_BUFSIZE];
+ char attr[CGN_BUFSIZE],id[CGN_BUFSIZE];
+
+ snprintf(reply,CGN_BUFSIZE,"%s reply to %s from port %d",SServerInstance(servicename,servername),SClientInstance(servicename,toclient),port);
+ snprintf(attr,CGN_BUFSIZE,"%s,%s,ip portnumber %d",SServerInstance(servicename,servername),SClientInstance(servicename,toclient),port);
+ snprintf(id,CGN_BUFSIZE,"reply to queries from port %d",port);
+ RoleGr(fp,reply,id,attr,"service relationship");
+ GivePromiseGr(fp,SServerInstance(servicename,servername),SClientInstance(servicename,toclient),id); 
+ return reply;
 }
 
 /************************************************************************************/
 
-char *ServerReply(FILE *fp,char *server, char *toclient, char *servicename, int port)
-{
- static char data[CGN_BUFSIZE];
- snprintf(data,CGN_BUFSIZE,"port query result %d",port);
- return ReplyToGetData(fp,server,toclient,servicename,data);
-}
-
-/************************************************************************************/
-
-char *WritePostData(FILE *fp,char *client, char *server, char *data,char *servicename, int portnumber)
+char *ClientWritePostData(FILE *fp,char *client, char *server, char *data,char *servicename, int portnumber)
 {
  return ClientPush(fp,client,server,data,servicename,portnumber);
 }
 
 /************************************************************************************/
 
-char *ReadGetData(FILE *fp,char *client, char *server, char *servicename, char *get, int portnumber)
+char *ClientReadGetData(FILE *fp,char *client, char *server, char *servicename, char *get, int portnumber)
 {
  return ClientQuery(fp,client,server,get,servicename,portnumber);
 }
 
 /************************************************************************************/
 
-char *AcceptPostData(FILE *fp,char *server,char *client,char *servicename, char *data)
+char *ServerAcceptPostData(FILE *fp,char *server,char *client,char *servicename, char *data)
 {
  char request[CGN_BUFSIZE];
- snprintf(request,CGN_BUFSIZE,"conditional reply %.64s to service %s request",data,servicename);
+ snprintf(request,CGN_BUFSIZE,"accept %.64s to %s request",data,SService(servicename));
  return AcceptPromiseGr(fp,server,client,request);
 }
 
 /************************************************************************************/
 
-char *ReplyToGetData(FILE *fp,char *server,char *client,char *servicename, char *data)
+char *ServerReplyToGetData(FILE *fp,char *server,char *client,char *servicename, char *data)
 {
  char request[CGN_BUFSIZE];
- snprintf(request,CGN_BUFSIZE,"conditional reply %.64s to service %s request",data,servicename);
+ snprintf(request,CGN_BUFSIZE,"conditional reply %.64s to %s request",data,SService(servicename));
  return GivePromiseGr(fp,server,client,request); 
 }
 
@@ -597,7 +544,7 @@ char *ExceptionGr(FILE *fp,char *origin,char *logmessage)
 
 /************************************************************************************/
 
-char *Clue(FILE *fp,char *who,char *what, time_t whentime, char *where, char *how, char *why,char *icontext)
+char *EventClue(FILE *fp,char *who,char *what, time_t whentime, char *where, char *how, char *why,char *icontext)
 {
  static char event[CGN_BUFSIZE];
  char attr[CGN_BUFSIZE];
@@ -829,6 +776,46 @@ char *WhereGr(FILE *fp,char *address, char *uqhn, char *domain, char *ipv4, char
   Gr(fp,hostname,a_alias,ipv4x,"host location identification");
 
   return where;
+}
+
+/**********************************************************************/
+
+char *SClientInstance(char *service,char *client)
+{
+ static char ret[CGN_BUFSIZE];
+ snprintf(ret,CGN_BUFSIZE,"%s client %s",service,client);
+ return ret;
+}
+
+
+char *SServerInstance(char *service,char *server)
+{
+ static char ret[CGN_BUFSIZE];
+ snprintf(ret,CGN_BUFSIZE,"%s server %s",service,server);
+ return ret;
+}
+
+
+char *SClient(char *service)
+{
+ static char ret[CGN_BUFSIZE];
+ snprintf(ret,CGN_BUFSIZE,"%s client",service);
+ return ret;
+}
+
+
+char *SServer(char *service)
+{
+ static char ret[CGN_BUFSIZE];
+ snprintf(ret,CGN_BUFSIZE,"%s server",service);
+ return ret;
+}
+
+char *SService(char *servicename)
+{
+ static char ret[CGN_BUFSIZE];
+ snprintf(ret,CGN_BUFSIZE,"service %s",servicename);
+ return ret;
 }
 
 /**********************************************************************/

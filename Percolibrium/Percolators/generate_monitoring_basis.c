@@ -50,7 +50,7 @@ int main()
   char *why = "lighttpd process started"; // or "unknown"
   char *icontext = "system monitoring";
   
-  Clue(stdout,who,what,when,where,how,why,icontext);
+  EventClue(stdout,who,what,when,where,how,why,icontext);
 
   who = "cgn-monitord";
   what = "notable anomaly";
@@ -60,7 +60,7 @@ int main()
   why = "unknown"; // or "unknown"
   icontext = "system monitoring";
   
-  Clue(stdout,who,what,when,where,how,why,icontext);
+  EventClue(stdout,who,what,when,where,how,why,icontext);
 
   
  return 0;

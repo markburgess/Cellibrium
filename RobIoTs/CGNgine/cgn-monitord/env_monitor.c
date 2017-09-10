@@ -865,7 +865,7 @@ static void BuildConsciousState(EvalContext *ctx, Averages av, Timescales t)
        char *where =  HereGr(consc,"Mark's laptop oslo");
 
        Log(LOG_LEVEL_VERBOSE, "Detected a restart anomaly");
-       Clue(consc,who,what,when,where,how,why,icontext);
+       EventClue(consc,who,what,when,where,how,why,icontext);
        RoleGr(consc,how,"how",howattr,"system monitoring measurement");
        }
 
@@ -1532,7 +1532,7 @@ static void GetNamespace(int index, char *buffer)
 static void AnnotateAnomaly(EvalContext *ctx, FILE *consc, time_t now, Item *syndrome, Item *invariants)
 {
  // Look for an anomalous state change as a criterion for a significant event to feed into this
- // Clue(FILE *fp,char *who,char *what, time_t whentime, char *where, char *how, char *why,char *icontext)
+ // EventClue(FILE *fp,char *who,char *what, time_t whentime, char *where, char *how, char *why,char *icontext)
 
  if (syndrome)
     {
@@ -1552,7 +1552,7 @@ static void AnnotateAnomaly(EvalContext *ctx, FILE *consc, time_t now, Item *syn
  char *icontext = "system monitoring measurement";
  char *where =  HereGr(consc,"mark's laptop oslo");
 
- Clue(consc,who,what,when,where,how,why,icontext);
+ EventClue(consc,who,what,when,where,how,why,icontext);
  char *hub = RoleGr(consc,how,"how",howattr,"system monitoring");
  Gr(consc,"anomalous state",a_contains,how,"system monitoring measurement");
  
@@ -1577,7 +1577,7 @@ static void AnnotateAnomaly(EvalContext *ctx, FILE *consc, time_t now, Item *syn
  icontext = "system monitoring";
 
  // Normal background
- Clue(consc,who,what,when,where,how,why,icontext);
+ EventClue(consc,who,what,when,where,how,why,icontext);
  hub = RoleGr(consc,how,"how",howattr,"system monitoring measurement");
 
  // Superhub
@@ -1589,7 +1589,7 @@ static void AnnotateAnomaly(EvalContext *ctx, FILE *consc, time_t now, Item *syn
 static void AnnotateOpenPort(FILE *consc, char *type, char *number, char *address)
 {
  // Look for an anomalous state change as a criterion for a significant event to feed into this
- // Clue(FILE *fp,char *who,char *what, time_t whentime, char *where, char *how, char *why,char *icontext)
+ // EventClue(FILE *fp,char *who,char *what, time_t whentime, char *where, char *how, char *why,char *icontext)
 
  //        AnnotateOpenPort(consc,"ipv4 TCP listening port",ip->name,ip->classes);
 
@@ -1605,7 +1605,7 @@ static void AnnotateOpenPort(FILE *consc, char *type, char *number, char *addres
 
  time_t when = 0; // Don't want to remember every single sample
  
- Clue(consc,who,what,when,where,how,why,icontext);
+ EventClue(consc,who,what,when,where,how,why,icontext);
  RoleGr(consc,how,"how",attr,"system monitoring");
 }
 
