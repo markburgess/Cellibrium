@@ -190,7 +190,7 @@ class Cellibrium:
         if (whentime > 0):
             when = self.TimeGr(ofile,whentime);
         else:
-            when = "regular check";
+            when = "repeated event";
 
         event = who + " saw " + what + " at " + when + " location " + where + " " + how + " cause " + why
         attr = who + "," + what + "," + when + "," + where + "," + how + "," + why
@@ -238,7 +238,6 @@ class Cellibrium:
         self.RoleGr(ofile,month,"minutes past the hour","minutes","clock time");       
 
         return hub;
-
 
     # Could also use  WeekSlot (Mon-Sun,MinXX_YY),
     #                 MonthSlot (1stday, lastday, else DayN) etc
@@ -308,7 +307,6 @@ class Cellibrium:
 
         id = "host localhost domain undefined ipv4 127.0.0.1 ipv6 ::1" # how can we make this the outer ip?
 
-        print socket.gethostname()
         import netifaces
         macs = []
         ipv4s = []
@@ -492,15 +490,15 @@ class Cellibrium:
         p = "%d" % portnumber
         self.RoleGr(ofile,attr,"port",p,"client service query")
 
-        query = "%s requests %s from %s on port %d" % (SClientInstance(servicename,client),request,SServerInstance(servicename,server),portnumber)
-        attr = "%s,%s,port %d" % (SClientInstance(servicename,client),SServerInstance(servicename,server),portnumber)
+        query = "%s requests %s from %s on port %d" % (self.SClientInstance(servicename,client),request,self.SServerInstance(servicename,server),portnumber)
+        attr = "%s,%s,port %d" % (self.SClientInstance(servicename,client),self.SServerInstance(servicename,server),portnumber)
         id = "query request for %s" % request
         self.RoleGr(ofile,query,id,attr,"service relationship")
 
         # Causal model
 
         attr = "request %s from service %s port %d" % (request,servicename,portnumber)
-        self.ImpositionGr(ofile,SClientInstance(servicename,client),SServerInstance(servicename,server),attr)
+        self.ImpositionGr(ofile,self.SClientInstance(servicename,client),self.SServerInstance(servicename,server),attr)
 
         return query
 
@@ -512,15 +510,15 @@ class Cellibrium:
         p = "%d" % portnumber
         self.RoleGr(ofile,attr,"port",p,"client service query")
 
-        query = "%s pushes %s to %s on port %d" % (SClientInstance(servicename,client),request,SServerInstance(servicename,server),portnumber)
-        attr = "%s,%s,port %d" % (SClientInstance(servicename,client),SServerInstance(servicename,server),portnumber)
+        query = "%s pushes %s to %s on port %d" % (self.SClientInstance(servicename,client),request,self.SServerInstance(servicename,server),portnumber)
+        attr = "%s,%s,port %d" % (self.SClientInstance(servicename,client),self.SServerInstance(servicename,server),portnumber)
         id = "query pushes %s" % request
         self.RoleGr(ofile,query,id,attr,"service relationship")
 
         # Causal model
 
         attr = "push %s to service %s port %d" % (request,servicename,portnumber)
-        self.ImpositionGr(ofile,SClientInstance(servicename,client),SServerInstance(servicename,server),attr)
+        self.ImpositionGr(ofile,self.SClientInstance(servicename,client),self.SServerInstance(servicename,server),attr)
 
         return query
 
@@ -528,14 +526,14 @@ class Cellibrium:
 
     def ServerListenPromise(self,ofile,servername,servicename,port):
  
-        listen = "%s listens for requests on port %d" % (SServerInstance(servicename,servername),port)
-        attr = "%s,port %d" % (SServerInstance(servicename,servername),port)
+        listen = "%s listens for requests on port %d" % (self.SServerInstance(servicename,servername),port)
+        attr = "%s,port %d" % (self.SServerInstance(servicename,servername),port)
         self.RoleGr(ofile,listen,"listen on service port",attr,"service relationship")
 
         # Causation
  
         ports = "listening on port %d" % port
-        self.GivePromiseGr(ofile,SServerInstance(servicename,servername),"ip INADDR_ANY",ports)
+        self.GivePromiseGr(ofile,self.SServerInstance(servicename,servername),"ip INADDR_ANY",ports)
 
         return listen
 
@@ -543,8 +541,8 @@ class Cellibrium:
 
     def ServerAcceptPromise(self,ofile,servername,fromclient,servicename,port):
 
-        accept = "%s accept data from %s on port %d" % (SServerInstance(servicename,servername),SClientInstance(servicename,fromclient),port)
-        attr = "%s,%s,%s" % (SServerInstance(servicename,servername),SClientInstance(servicename,fromclient),self.IPPort(port))
+        accept = "%s accept data from %s on port %d" % (self.SServerInstance(servicename,servername),self.SClientInstance(servicename,fromclient),port)
+        attr = "%s,%s,%s" % (self.SServerInstance(servicename,servername),self.SClientInstance(servicename,fromclient),self.IPPort(port))
         id = "accept data on port %d" % port
         self.RoleGr(ofile,accept,id,attr,"service relationship")
  
@@ -557,7 +555,7 @@ class Cellibrium:
     def ServerReplyPromise(self,ofile,servername,toclient,servicename,port):
 
         reply = "%s reply to %s from port %d" % (self.SServerInstance(servicename,servername),self.SClientInstance(servicename,toclient),port)
-        attr = "%s,%s,%s" % (SServerInstance(servicename,servername),SClientInstance(servicename,toclient),self.IPPort(port))
+        attr = "%s,%s,%s" % (self.SServerInstance(servicename,servername),self.SClientInstance(servicename,toclient),self.IPPort(port))
         id = "reply to queries from port %d" % port
         self.RoleGr(ofile,reply,id,attr,"service relationship")
         self.GivePromiseGr(ofile,self.SServerInstance(servicename,servername),self.SClientInstance(servicename,toclient),id)

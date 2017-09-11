@@ -557,7 +557,7 @@ char *EventClue(FILE *fp,char *who,char *what, time_t whentime, char *where, cha
     }
  else
     {
-    when = "regular check";
+    when = "repeated event";
     }
  
  snprintf(event,CGN_BUFSIZE,"%s saw %s %s location %s %s cause %s",who,what,when,where,how,why);
