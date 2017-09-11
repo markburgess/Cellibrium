@@ -664,18 +664,18 @@ char *TimeGr(FILE *fp,time_t time)
 
     // Summary
     
-    snprintf(hub[tz], CGN_BUFSIZE,"on %s %s %s %s %s at %s %s %s",shift,dow,day,month,year,hour,min,quart);    
+    snprintf(hub[tz], CGN_BUFSIZE,"on %s %s %s %s %s at %s %s %s",shift,dow,day,month,year,hour,mins,quart);    
 
     char attributes[CGN_BUFSIZE];
 
     switch (tz)
        {
        case 0:
-           snprintf(attributes, CGN_BUFSIZE,"%s,%s,%s,%s,%s,%s,%s,%s",shift,dow,day,month,year,hour,min,quart);           
+           snprintf(attributes, CGN_BUFSIZE,"%s,%s,%s,%s,%s,%s,%s,%s",shift,dow,day,month,year,hour,mins,quart);           
            RoleGr(fp,hub[0],"when",attributes,ContextGr(fp,"local clock time"));
            break;
        default:
-           snprintf(attributes, CGN_BUFSIZE,"%s,%s,%s,%s,%s,%s,%s,%s",shift,dow,day,month,year,hour,min,quart);
+           snprintf(attributes, CGN_BUFSIZE,"%s,%s,%s,%s,%s,%s,%s,%s",shift,dow,day,month,year,hour,mins,quart);
            RoleGr(fp,hub[1],"when GMT",attributes,ContextGr(fp,"GMT clock time"));
            break;
        }

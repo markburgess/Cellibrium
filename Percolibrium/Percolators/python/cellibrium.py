@@ -225,8 +225,8 @@ class Cellibrium:
         interval_end = (interval_start + 5) % 60
         mins = "Min%02d_%02d" % (interval_start,interval_end)
 
-        hub = "on %s %s %s %s %s at %s %s %s" % (shift,dow,day,month,year,hour,min,quarter)
-        attributes = "%s,%s,%s,%s,%s,%s,%s,%s" % (shift,dow,day,month,year,hour,min,quarter)
+        hub = "on %s %s %s %s %s at %s %s %s" % (shift,dow,day,month,year,hour,mins,quarter)
+        attributes = "%s,%s,%s,%s,%s,%s,%s,%s" % (shift,dow,day,month,year,hour,mins,quarter)
 
         self.RoleGr(ofile,hub,"when",attributes,self.ContextGr(ofile,"local clock time"));
         self.RoleGr(ofile,shift,"time of day","work shift","time");
