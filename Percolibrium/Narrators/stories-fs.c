@@ -93,7 +93,8 @@ void SplitCompound(char *str, char *atoms[MAX_CONTEXT]);
 void ShowMatchingConcepts(char *context);
 char *Abbr(int n);
 int Overlap(char *set1, char *set2);
-void StartReport(void);
+void StartReport(int level);
+void EndReport(int level);
 void SectionBanner(char *s);
 void EndBanner(void);
 
@@ -215,7 +216,7 @@ void main(int argc, char** argv)
      }
   else
      {
-     StartReport();
+     StartReport(level);
      SectionBanner("=========== sequential, causal reasoning =======================\n\n");
      SearchForContextualizedAssociations(subject, GR_FOLLOWS, CGN_ROOT, level);
      SearchForContextualizedAssociations(subject, -GR_FOLLOWS, CGN_ROOT, level);
@@ -228,7 +229,7 @@ void main(int argc, char** argv)
      SectionBanner("=========== property or promise based reasoning =======================\n\n");
      SearchForContextualizedAssociations(subject, GR_EXPRESSES, CGN_ROOT, level);
      SearchForContextualizedAssociations(subject, -GR_EXPRESSES, CGN_ROOT, level);
-     EndReport();
+     EndReport(level);
      }
   
   printf("\n");
@@ -370,8 +371,8 @@ void SearchForContextualizedAssociations(char *concept, int atype, int prevtype,
     if (atype == -prevtype)
        {
        char trunc[CGN_BUFSIZE];
-       snprintf(trunc,CGN_BUFSIZE," (%d)%s `%s'",atype,(atype > 0) ? GR_TYPES[atype][0]: GR_TYPES[atype][1] ,array[i].concept);
-       if (!ConceptAlreadyUsed(trunc,0))
+       snprintf(trunc,CGN_BUFSIZE," (%d) %s `%s'",atype,(atype > 0) ? GR_TYPES[abs(atype)][0]: GR_TYPES[abs(atype)][1] ,array[i].concept);
+       if (abs(atype) == GR_FOLLOWS && !ConceptAlreadyUsed(trunc,0))
           {
           printf("                   (%s)\n",trunc);
           }
@@ -911,6 +912,16 @@ void StartReport(int level)
  if (JSON)
     {
     printf("%s{",Indent(level));
+    }
+}
+
+/**********************************************************/
+
+void EndReport(int level)
+{
+ if (JSON)
+    {
+    printf("%s}",Indent(level));
     }
 }
 
