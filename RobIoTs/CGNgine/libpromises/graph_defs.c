@@ -289,18 +289,16 @@ return compound_name;
 char *ServiceGr(FILE *fp,char *servicename, unsigned int portnumber)
 {
  static char name[CGN_BUFSIZE];
- char port[CGN_BUFSIZE],portname[CGN_BUFSIZE];
+ char port[CGN_BUFSIZE];
  
  snprintf(name,CGN_BUFSIZE,"%s on port %d",SService(servicename), portnumber);     // service ftp
- snprintf(port,CGN_BUFSIZE,"ip portnumber %d",portnumber);
- RoleGr(fp,name,SService(servicename),port,"service relationship");
+ RoleGr(fp,name,SService(servicename),IPPort(portnumber),"service relationship");
 
  Gr(fp,SService(servicename),a_hasrole,"service","service relationship");
  Gr(fp,SService(servicename),a_hasfunction,servicename,"service relationship");
 
- snprintf(portname,CGN_BUFSIZE,"ip portnumber %d",portnumber);
  snprintf(port,CGN_BUFSIZE,"%d",portnumber);
- RoleGr(fp,portname,"ip portnumber",port,"service relationship");
+ RoleGr(fp,IPPort(portnumber),"ip portnumber",port,"service relationship");
 
  // ancillary notes
  
@@ -474,7 +472,7 @@ char *ServerAcceptPromise(FILE *fp,char *servername, char *fromclient, char *ser
  char attr[CGN_BUFSIZE],id[CGN_BUFSIZE];
 
  snprintf(accept,CGN_BUFSIZE,"%s accept data from %s on port %d",SServerInstance(servicename,servername),SClientInstance(servicename,fromclient),port);
- snprintf(attr,CGN_BUFSIZE,"%s,%s,ip portnumber %d",SServerInstance(servicename,servername),SClientInstance(servicename,fromclient),port);
+ snprintf(attr,CGN_BUFSIZE,"%s,%s,%s",SServerInstance(servicename,servername),SClientInstance(servicename,fromclient),IPPort(port));
  snprintf(id,CGN_BUFSIZE,"accept data on port %d",port);
  RoleGr(fp,accept,id,attr,"service relationship");
  
@@ -490,7 +488,7 @@ char *ServerReplyPromise(FILE *fp,char *servername, char *toclient, char *servic
  char attr[CGN_BUFSIZE],id[CGN_BUFSIZE];
 
  snprintf(reply,CGN_BUFSIZE,"%s reply to %s from port %d",SServerInstance(servicename,servername),SClientInstance(servicename,toclient),port);
- snprintf(attr,CGN_BUFSIZE,"%s,%s,ip portnumber %d",SServerInstance(servicename,servername),SClientInstance(servicename,toclient),port);
+ snprintf(attr,CGN_BUFSIZE,"%s,%s,%s",SServerInstance(servicename,servername),SClientInstance(servicename,toclient),IPPort(port));
  snprintf(id,CGN_BUFSIZE,"reply to queries from port %d",port);
  RoleGr(fp,reply,id,attr,"service relationship");
  GivePromiseGr(fp,SServerInstance(servicename,servername),SClientInstance(servicename,toclient),id); 
@@ -720,48 +718,38 @@ char *WhereGr(FILE *fp,char *address, char *uqhn, char *domain, char *ipv4, char
 
   if (address && strlen(address) > 0)
      {
-     snprintf(attr,CGN_BUFSIZE,"hostname %s,domain %s,IPv4 %s,IPv6 %s,address %s",uqhn,domain,ipv4,ipv6,address);
+     snprintf(attr,CGN_BUFSIZE,"%s,%s,%s,%s,address %s",Hostname(uqhn),Domain(domain),IPv4(ipv4),IPv6(ipv6),address);
      }
   else
      {
-     snprintf(attr,CGN_BUFSIZE,"hostname %s,domain %s,IPv4 %s,IPv6 %s",uqhn,domain,ipv4,ipv6);
+     snprintf(attr,CGN_BUFSIZE,"%s,%s,%s,%s",Hostname(uqhn),Domain(domain),IPv4(ipv4),IPv6(ipv6));
      }
 
   RoleGr(fp,where,"where",attr, "host location identification");
   
-  char domainx[CGN_BUFSIZE];
-  snprintf(domainx,CGN_BUFSIZE,"domain %s",domain);
-  RoleGr(fp,domainx,"dns domain name",domain,"host location identification");
+  RoleGr(fp,Domain(domain),"dns domain name",domain,"host location identification");
 
-  char hostname[CGN_BUFSIZE];
-  snprintf(hostname,CGN_BUFSIZE,"hostname %s",uqhn);
+  char *hostname = Hostname(uqhn);
   RoleGr(fp,hostname,"hostname",uqhn,"host location identification");
   Gr(fp,where,a_alias,hostname,"host location identification");  // Alias for quick association
-  Gr(fp,domainx,a_contains,hostname,"host location identification");
+  Gr(fp,Domain(domain),a_contains,hostname,"host location identification");
 
-  char identity[CGN_BUFSIZE];
-  snprintf(identity,CGN_BUFSIZE,"host identity %s",uqhn);
+  char *identity = HostID(uqhn);
   Gr(fp,hostname,a_alias,identity,"host location identification");
   
-  char ipv4x[CGN_BUFSIZE];
-  snprintf(ipv4x,CGN_BUFSIZE,"ipv4 address %s",ipv4);
-  RoleGr(fp,ipv4x,"ipv4 address", ipv4,"host location identification");
-  Gr(fp,where,a_alias,ipv4x,"host location identification");  // Alias for quick association
-  Gr(fp,domainx,a_contains,ipv4x,"host location identification");
-
-  snprintf(identity,CGN_BUFSIZE,"host identity %s",ipv4);
-  Gr(fp,ipv4x,a_alias,identity,"host location identification");
+  RoleGr(fp,IPv4(ipv4),"ipv4 address", ipv4,"host location identification");
+  Gr(fp,where,a_alias,IPv4(ipv4),"host location identification");  // Alias for quick association
+  Gr(fp,Domain(domain),a_contains,IPv4(ipv4),"host location identification");
+  Gr(fp,IPv4(ipv4),a_alias,HostID(ipv4),"host location identification");
 
   if (ipv6 && strlen(ipv6) > 0)
      {
-     char ipv6x[CGN_BUFSIZE];
-     snprintf(ipv6x,CGN_BUFSIZE,"ipv6 address %s",ipv6);
-     RoleGr(fp,ipv6x,"ipv6 address", ipv6,"host location identification");
-     Gr(fp,where,a_alias,ipv6x,"host location identification");  // Alias for quick association
-     Gr(fp,domainx,a_contains,ipv6x,"host location identification");
-     snprintf(identity,CGN_BUFSIZE,"host identity %s",ipv6);
-     Gr(fp,ipv6x,a_alias,identity,"host location identification");
-     Gr(fp,hostname,a_alias,ipv6x,"host location identification");
+     RoleGr(fp,IPv6(ipv6),"ipv6 address", ipv6,"host location identification");
+     Gr(fp,where,a_alias,IPv6(ipv6),"host location identification");  // Alias for quick association
+     Gr(fp,Domain(domain),a_contains,IPv6(ipv6),"host location identification");
+     identity = HostID(ipv6);
+     Gr(fp,IPv6(ipv6),a_alias,identity,"host location identification");
+     Gr(fp,hostname,a_alias,IPv6(ipv6),"host location identification");
      }
 
   if (address && address > 0)
@@ -769,11 +757,11 @@ char *WhereGr(FILE *fp,char *address, char *uqhn, char *domain, char *ipv4, char
      char addressx[CGN_BUFSIZE];
      snprintf(addressx,CGN_BUFSIZE,"description address %s",address);
      RoleGr(fp,addressx,"description address",address,"host location identification");
-     Gr(fp,domainx,a_origin,addressx,"host location identification");
+     Gr(fp,Domain(domain),a_origin,addressx,"host location identification");
      Gr(fp,"description address",a_related_to,"street address","host location identification");
      }
   
-  Gr(fp,hostname,a_alias,ipv4x,"host location identification");
+  Gr(fp,hostname,a_alias,IPv4(ipv4),"host location identification");
 
   return where;
 }
@@ -815,6 +803,48 @@ char *SService(char *servicename)
 {
  static char ret[CGN_BUFSIZE];
  snprintf(ret,CGN_BUFSIZE,"service %s",servicename);
+ return ret;
+}
+
+char *HostID(char *id) // Generic ID
+{
+ static char ret[CGN_BUFSIZE];
+ snprintf(ret,CGN_BUFSIZE,"host identity %s",id);
+ return ret;
+}
+
+char *IPv4(char *id) // specific ID
+{
+ static char ret[CGN_BUFSIZE];
+ snprintf(ret,CGN_BUFSIZE,"ipv4 address %s",id);
+ return ret;
+}
+
+char *IPv6(char *id) // specific ID
+{
+ static char ret[CGN_BUFSIZE];
+ snprintf(ret,CGN_BUFSIZE,"ipv6 address %s",id);
+ return ret;
+}
+
+char *Hostname(char *id) // specific ID
+{
+ static char ret[CGN_BUFSIZE];
+ snprintf(ret,CGN_BUFSIZE,"hostname %s",id);
+ return ret;
+}
+
+char *Domain(char *id) // specific ID
+{
+ static char ret[CGN_BUFSIZE];
+ snprintf(ret,CGN_BUFSIZE,"domain %s",id);
+ return ret;
+}
+
+char *IPPort(int port)
+{
+ static char ret[CGN_BUFSIZE];
+ snprintf(ret,CGN_BUFSIZE,"ip portnumber %d",port);
  return ret;
 }
 

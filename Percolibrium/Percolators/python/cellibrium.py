@@ -264,42 +264,38 @@ class Cellibrium:
             attr = "hostname %s,domain %s,IPv4 %s,IPv6 %s" % (uqhn,domain,ipv4,ipv6)
              
         self.RoleGr(ofile,where,"where",attr,"host location identification");
-  
-        domainx = "domain %s" % domain
-        self.RoleGr(ofile,domainx,"dns domain name",domain,"host location identification")
+        self.RoleGr(ofile,self.Domain(domain),"dns domain name",domain,"host location identification")
 
-        hostname = "hostname %s" % uqhn
+        hostname = self.Hostname(uqhn)
         self.RoleGr(ofile,hostname,"hostname",uqhn,"host location identification")
         self.Gr(ofile,where,"a_alias",hostname,"host location identification");  # Alias for quick association
-        self.Gr(ofile,domainx,"a_contains",hostname,"host location identification");
+        self.Gr(ofile,self.Domain(domain),"a_contains",hostname,"host location identification");
         
-        identity = "host identity %s" % uqhn
+        identity = self.HostID(uqhn)
         self.Gr(ofile,hostname,"a_alias",identity,"host location identification");
             
-        ipv4x = "ipv4 address %s" % ipv4
-        self.RoleGr(ofile,ipv4x,"ipv4 address",ipv4,"host location identification");
-        self.Gr(ofile,where,"a_alias",ipv4x,"host location identification");  # Alias for quick association
-        self.Gr(ofile,domainx,"a_contains",ipv4x,"host location identification");
+        self.RoleGr(ofile,self.IPv4(ipv4),"ipv4 address",ipv4,"host location identification");
+        self.Gr(ofile,where,"a_alias",self.IPv4(ipv4),"host location identification");  # Alias for quick association
+        self.Gr(ofile,self.Domain(domain),"a_contains",self.IPv4(ipv4),"host location identification");
             
-        identity = "host identity %s" % ipv4
-        self.Gr(ofile,ipv4x,"a_alias",identity,"host location identification");
+        identity = self.HostID(ipv4)
+        self.Gr(ofile,self.IPv4(ipv4),"a_alias",identity,"host location identification");
             
         if len(ipv6) > 0:
-            ipv6x = "ipv6 address %s" % ipv6
-            self.RoleGr(ofile,ipv6x,"ipv6 address", ipv6,"host location identification");
-            self.Gr(ofile,where,"a_alias",ipv6x,"host location identification");  # Alias for quick association
-            self.Gr(ofile,domainx,"a_contains",ipv6x,"host location identification");
-            identity = "host identity %s" % ipv6
-            self.Gr(ofile,ipv6x,"a_alias",identity,"host location identification")
-            self.Gr(ofile,hostname,"a_alias",ipv6x,"host location identification");        
+            self.RoleGr(ofile,self.IPv6(ipv6),"ipv6 address", ipv6,"host location identification");
+            self.Gr(ofile,where,"a_alias",self.IPv6(ipv6),"host location identification");  # Alias for quick association
+            self.Gr(ofile,self.Domain(domain),"a_contains",self.IPv6(ipv6),"host location identification");
+            identity = self.HostID(ipv6)
+            self.Gr(ofile,self.IPv6(ipv6),"a_alias",identity,"host location identification")
+            self.Gr(ofile,hostname,"a_alias",self.IPv6(ipv6),"host location identification");        
             
         if len(address) > 0:
             addressx = "description address %s" % address
             self.RoleGr(ofile,addressx,"description address",address,"host location identification");
-            self.Gr(ofile,domainx,"a_origin",addressx,"host location identification");
+            self.Gr(ofile,self.Domain(domain),"a_origin",addressx,"host location identification");
             self.Gr(ofile,"description address","a_related_to","street address","host location identification");
             
-        self.Gr(ofile,hostname,"a_alias",ipv4x,"host location identification");
+        self.Gr(ofile,hostname,"a_alias",self.IPv4(ipv4),"host location identification");
             
         return where;
 
@@ -365,20 +361,20 @@ class Cellibrium:
         
         for ip in ipv4s:
             try:
-                identity = "host identity %s" % socket.gethostbyaddr(ip)[0]
+                identity = self.HostID(socket.gethostbyaddr(ip)[0])
                 self.Gr(ofile,identity,"a_alias",mainv4,"host location identification")
             except:
-                identity = "host identity %s" % ip
-            identity = "host identity %s" % ip
+                identity = self.HostID(ip)
+            identity = self.HostID(ip)
             self.Gr(ofile,identity,"a_alias",mainv4,"host location identification")
 
         for ip in ipv6s:
             try:
-                identity = "host identity %s" % socket.gethostbyaddr(ip)[0]
+                identity = self.HostID(socket.gethostbyaddr(ip)[0])
                 self.Gr(ofile,identity,"a_alias",mainv4,"host location identification")
             except:
-                identity = "host identity %s" % ip
-            identity = "host identity %s" % ip
+                identity = self.HostID(ip)
+            identity = self.HostID(ip)
 
             if not mainv6 == "::1":
                 self.Gr(ofile,identity,"a_alias",mainv6,"host location identification")
@@ -386,7 +382,7 @@ class Cellibrium:
                 self.Gr(ofile,identity,"a_alias",mainv4,"host location identification")
 
         for mac in macs:
-            identity = "host identity %s" % mac
+            identity = self.HostID(mac)
             if not mainv6 == "::1":
                 self.Gr(ofile,identity,"a_alias",mainv6,"host location identification")
             if not mainv4 == "127.0.0.1":
@@ -399,15 +395,13 @@ class Cellibrium:
     def ServiceGr(self,ofile,servicename,portnumber):
 
         name = "%s on port %d" % (self.SService(servicename), portnumber)
-        port = "ip portnumber %d" % portnumber
-        self.RoleGr(ofile,name,self.SService(servicename),port,"service relationship")
+        self.RoleGr(ofile,name,self.SService(servicename),self.IPPort(portnumber),"service relationship")
 
         self.Gr(ofile,self.SService(servicename),"a_hasrole","service","service relationship")
         self.Gr(ofile,self.SService(servicename),"a_hasfunction",servicename,"service relationship")
 
-        portname = "ip portnumber %d" % portnumber
         port = "%d" % portnumber
-        self.RoleGr(ofile,portname,"ip portnumber",port,"service relationship")
+        self.RoleGr(ofile,self.IPPort(portnumber),"ip portnumber",port,"service relationship")
 
         # ancillary notes
  
@@ -550,7 +544,7 @@ class Cellibrium:
     def ServerAcceptPromise(self,ofile,servername,fromclient,servicename,port):
 
         accept = "%s accept data from %s on port %d" % (SServerInstance(servicename,servername),SClientInstance(servicename,fromclient),port)
-        attr = "%s,%s,ip portnumber %d" % (SServerInstance(servicename,servername),SClientInstance(servicename,fromclient),port)
+        attr = "%s,%s,%s" % (SServerInstance(servicename,servername),SClientInstance(servicename,fromclient),self.IPPort(port))
         id = "accept data on port %d" % port
         self.RoleGr(ofile,accept,id,attr,"service relationship")
  
@@ -563,7 +557,7 @@ class Cellibrium:
     def ServerReplyPromise(self,ofile,servername,toclient,servicename,port):
 
         reply = "%s reply to %s from port %d" % (self.SServerInstance(servicename,servername),self.SClientInstance(servicename,toclient),port)
-        attr = "%s,%s,ip portnumber %d" % (SServerInstance(servicename,servername),SClientInstance(servicename,toclient),port)
+        attr = "%s,%s,%s" % (SServerInstance(servicename,servername),SClientInstance(servicename,toclient),self.IPPort(port))
         id = "reply to queries from port %d" % port
         self.RoleGr(ofile,reply,id,attr,"service relationship")
         self.GivePromiseGr(ofile,self.SServerInstance(servicename,servername),self.SClientInstance(servicename,toclient),id)
@@ -616,6 +610,30 @@ class Cellibrium:
 
     def SService(self,servicename):
         ret = "service %s" % servicename
+        return ret
+
+    def HostID(self,id):
+        ret = "host identity %s" % id
+        return ret
+
+    def Domain(self,id):
+        ret = "domain %s" % id
+        return ret
+
+    def IPv4(self,id):
+        ret = "ipv4 address %s" % id
+        return ret
+
+    def IPv6(self,id):
+        ret = "ipv6 address %s" % id
+        return ret
+
+    def Hostname(self,id):
+        ret = "hostname %s" % id
+        return ret
+
+    def IPPort(self,p):
+        ret = "ip portnumber %d" % p
         return ret
 
     ########################################################################################################

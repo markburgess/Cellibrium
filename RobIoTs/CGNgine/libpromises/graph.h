@@ -89,6 +89,12 @@ char *SServerInstance(char *service,char *server);
 char *SClientInstance(char *service,char *client);
 char *SServer(char *service);
 char *SClient(char *service);
+char *HostID(char *id);
+char *IPPort(int port);
+char *Domain(char *id);
+char *Hostname(char *id);
+char *IPv4(char *id);
+char *IPv6(char *id);
 #endif
 
 /*****************************************************************************/

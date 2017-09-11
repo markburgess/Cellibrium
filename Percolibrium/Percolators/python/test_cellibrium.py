@@ -13,33 +13,10 @@ import re
 from cellibrium import Cellibrium
 
 c = Cellibrium()
-s = "base\\topic"
-
-#
-# Using the primitive graph tuples
-#
-
-print "Testing...1"
-c.Gr(sys.stdout,"base/topic","a_contains", "sub topic", "all the time")
-
-print "Testing...2"
-c.Gr(sys.stdout,s,"a_contains", "sub topic", "all the time")
-
-print "Testing...3"
-c.Gr(sys.stdout,"base,topic","a_contains", "sub topic", "")
-
-print "test 4"
-
-print "------------------------------------------------------"
 
 #
 # Calling the role interface
 #
-
-compound_name = "Professor Plum murders Miss Scarlet in the library with a breadknife because she would not marry him" 
-c.RoleGr(sys.stdout,compound_name,"murder by breadknife","in the library,Professor plum,Miss Scarlet,Miss Scarlet refuses to marry Professory plum","*")
-
-# or
 
 now = time.time()
 
@@ -48,7 +25,7 @@ what = "murder by breaknife";
 why = "Miss Scarlet refuses to marry Professory plum"; 
 where = "in the library";
 when = now;
-how = "by breadknife" #MakeAnomalyGrName("anomaly",syndrome);
+how = "by breadknife"
 icontext = "cluedo";
 
 c.EventClue(sys.stdout,who,what,when,where,how,why,icontext);
