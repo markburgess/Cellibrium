@@ -585,7 +585,7 @@ class Cellibrium:
 
     def ServerReplyToGetData(self,ofile,server,client,servicename,data):
 
-        request = "conditional reply %.64s to %s request" % (data,SService(servicename))
+        request = "conditional reply %.64s to %s request" % (data,self.SService(servicename))
         return self.GivePromiseGr(ofile,server,client,request)
 
     ########################################################################################################
