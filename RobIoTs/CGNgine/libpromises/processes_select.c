@@ -48,11 +48,9 @@
 
 static int SelectProcRangeMatch(char *name1, char *name2, int min, int max, char **names, char **line);
 static bool SelectProcRegexMatch(const char *name1, const char *name2, const char *regex, char **colNames, char **line);
-static int SplitProcLine(const char *proc, time_t pstime, char **names, int *start, int *end, char **line);
 static int SelectProcTimeCounterRangeMatch(char *name1, char *name2, time_t min, time_t max, char **names, char **line);
 static int SelectProcTimeAbsRangeMatch(char *name1, char *name2, time_t min, time_t max, char **names, char **line);
 static int GetProcColumnIndex(const char *name1, const char *name2, char **names);
-static void GetProcessColumnNames(const char *proc, char **names, int *start, int *end);
 static int ExtractPid(char *psentry, char **names, int *end);
 
 /***************************************************************************/
@@ -499,7 +497,7 @@ static bool SelectProcRegexMatch(const char *name1, const char *name2,
 /* line must be char *line[CF_PROCCOLS] in fact. */
 /* pstime should be the time at which ps was run. */
 
-static int SplitProcLine(const char *proc, time_t pstime,
+int SplitProcLine(const char *proc, time_t pstime,
                          char **names, int *start, int *end,
                          char **line)
 {
@@ -921,7 +919,7 @@ bool IsProcessNameRunning(char *procNameRegex)
 }
 
 
-static void GetProcessColumnNames(const char *proc, char **names, int *start, int *end)
+void GetProcessColumnNames(const char *proc, char **names, int *start, int *end)
 {
     char title[16];
     int col, offset = 0;

@@ -31,5 +31,6 @@ int LoadProcessTable(Item **procdata);
 
 Item *SelectProcesses(const Item *processes, const char *process_name, ProcessSelect a, bool attrselect);
 bool IsProcessNameRunning(char *procNameRegex);
-
+void GetProcessColumnNames(const char *proc, char **names, int *start, int *end);
+int SplitProcLine(const char *proc, time_t pstime, char **names, int *start, int *end, char **line);
 #endif

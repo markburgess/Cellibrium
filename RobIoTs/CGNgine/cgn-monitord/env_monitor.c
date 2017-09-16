@@ -5,9 +5,12 @@
 /*
    Copyright (C) Mark Burgess
 
-   This file is derived in part from the code written by MB for CFEngine.
+   This file is derived in part from the code written by MB for ECG/CFEngine 1999-2013.
    It has been modified extensively in concept, but some attempt has been
-   made for preserve compatibility with CFEngine 3.x.
+   made for preserve compatibility with CFEngine 3.6-.
+
+   I have, however, abandoned the idea of generic platform support, to get appropriate
+   functionality, and this is now GNU/Linux specific, as suitable for cloud, IoT, etc.
 
    This program is free software; you can redistribute it and/or modify it
    under the terms of the GNU General Public License as published by the
@@ -22,10 +25,6 @@
   along with this program; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA
 
-  To the extent this program is licensed as part of the Enterprise
-  versions of CFEngine, the applicable Commercial Open Source License
-  (COSL) may apply to this file if you as a licensee so wish it. See
-  included file COSL.txt.
 */
 
 
@@ -840,8 +839,12 @@ static void BuildConsciousState(EvalContext *ctx, Averages av, Timescales t)
  PublishEnvironment(mon_data); 
  DeleteItemList(mon_data);
 
- // Now build the semantic graph based on these `smart sensor' inputs
+ // Get process table state for change detection
  
+ MonClassifyProcessState();
+
+ // Now build the semantic graph based on these `smart sensor' inputs
+
  if (consc)
     {
     // We can't afford to remember every moment in time, but we should remember unusual moments - anomalies

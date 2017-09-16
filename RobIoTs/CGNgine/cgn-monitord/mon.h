@@ -63,6 +63,7 @@ void MonNetworkSnifferGatherData(void);
 /* mon_processes.c */
 
 void MonProcessesGatherData(double *cf_this);
+int MonClassifyProcessState();
 
 /* mon_temp.c */
 

@@ -23,14 +23,14 @@
 */
 
 #include <cf3.defs.h>
-
 #include <mon.h>
 #include <item_lib.h>
 #include <files_interfaces.h>
 #include <pipes.h>
 #include <systype.h>
-
+#include <string_lib.h>
 #include <cf-windows-functions.h>
+#include <processes_select.h>
 
 /* Prototypes */
 
@@ -143,5 +143,67 @@ static bool GatherProcessUsers(Item **userList, int *userListSz, int *numRootPro
  free(vbuff);
  return true;
 }
+
+/***********************************************************************************************/
+
+int MonClassifyProcessState()
+{
+ // This is GNU/Linux only
+ FILE *prp;
+ Item *processtable = NULL, *ip;
+ char pscomm[CF_MAXVARSIZE]; 
+ snprintf(pscomm, CF_MAXLINKSIZE, "/bin/ps -eo user,ppid,pgid,pcpu,pmem,vsz,ni,rss:9,nlwp,stime,args");
+
+ if ((prp = cf_popen(pscomm, "r", false)) == NULL)
+    {
+    Log(LOG_LEVEL_ERR, "Couldn't open the process list with command '%s'. (popen: %s)", pscomm, GetErrorStr());
+    return false;
+    }
+
+ char *column[CF_PROCCOLS] = {0};
+ char *names[CF_PROCCOLS] = {0};
+ int start[CF_PROCCOLS] = {0};
+ int i,end[CF_PROCCOLS] = {0};
+ char line[CF_BUFSIZE];
+
+ while (!feof(prp))
+    {
+    line[0] = '\0';
+    fgets(line,CF_BUFSIZE,prp);
+    if (strlen(line)>0)
+       {
+       Chop(line, CF_BUFSIZE);
+       AppendItem(&processtable,line,NULL);
+       }
+    }
+
+
+ char *titles = processtable->name;
+ time_t pstime = time(NULL);
+ 
+ GetProcessColumnNames(titles, &names[0], start, end);
+
+ for (ip = processtable; ip != NULL; ip=ip->next)
+    {
+    if (!SplitProcLine(ip->name, pstime, names, start, end, column))
+       {
+       return false;
+       }
+    
+    for (i = 0; names[i] != NULL; i++)
+       {
+       Log(LOG_LEVEL_DEBUG, "In SelectProcess, COL[%s] = '%s'", names[i], column[i]);
+       printf("In SelectProcess, COL[%s] = '%s'\n", names[i], column[i]);
+       }
+
+    for (i = 0; column[i] != NULL; i++)
+       {
+       free(column[i]);
+       }
+    }
+ 
+ return 1;
+}
+
 
 #endif
