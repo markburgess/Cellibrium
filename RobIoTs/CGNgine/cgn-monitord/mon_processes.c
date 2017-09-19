@@ -146,25 +146,22 @@ static bool GatherProcessUsers(Item **userList, int *userListSz, int *numRootPro
 
 /***********************************************************************************************/
 
-int MonClassifyProcessState()
+Item *MonGetProcessState(void)
 {
+
  // This is GNU/Linux only
  FILE *prp;
- Item *processtable = NULL, *ip;
+ Item *processtable = NULL;
  char pscomm[CF_MAXVARSIZE]; 
- snprintf(pscomm, CF_MAXLINKSIZE, "/bin/ps -eo user,ppid,pgid,pcpu,pmem,vsz,ni,rss:9,nlwp,stime,args");
+ char line[CF_BUFSIZE];
+
+ snprintf(pscomm, CF_MAXLINKSIZE, "/bin/ps -eo user,pid,ppid,pgid,pcpu,pmem,vsz,ni,rss:9,nlwp,stime,args");
 
  if ((prp = cf_popen(pscomm, "r", false)) == NULL)
     {
     Log(LOG_LEVEL_ERR, "Couldn't open the process list with command '%s'. (popen: %s)", pscomm, GetErrorStr());
     return false;
     }
-
- char *column[CF_PROCCOLS] = {0};
- char *names[CF_PROCCOLS] = {0};
- int start[CF_PROCCOLS] = {0};
- int i,end[CF_PROCCOLS] = {0};
- char line[CF_BUFSIZE];
 
  while (!feof(prp))
     {
@@ -177,33 +174,7 @@ int MonClassifyProcessState()
        }
     }
 
-
- char *titles = processtable->name;
- time_t pstime = time(NULL);
- 
- GetProcessColumnNames(titles, &names[0], start, end);
-
- for (ip = processtable; ip != NULL; ip=ip->next)
-    {
-    if (!SplitProcLine(ip->name, pstime, names, start, end, column))
-       {
-       return false;
-       }
-    
-    for (i = 0; names[i] != NULL; i++)
-       {
-       Log(LOG_LEVEL_DEBUG, "In SelectProcess, COL[%s] = '%s'", names[i], column[i]);
-       printf("In SelectProcess, COL[%s] = '%s'\n", names[i], column[i]);
-       }
-
-    for (i = 0; column[i] != NULL; i++)
-       {
-       free(column[i]);
-       }
-    }
- 
- return 1;
+ return processtable;
 }
-
 
 #endif

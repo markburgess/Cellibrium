@@ -197,8 +197,8 @@ class Cellibrium:
 
         self.RoleGr(ofile,event,"event",attr,icontext)
         self.RoleGr(ofile,who,"who","",icontext)
-        self.RoleGr(ofile,what,"what",what,icontext)
-        self.RoleGr(ofile,how,"how",how,icontext)
+        self.RoleGr(ofile,what,"what","",icontext)
+        self.RoleGr(ofile,how,"how","",icontext)
         self.RoleGr(ofile,why,"why","",icontext)
         self.Gr(ofile,what,"a_caused_by",why,icontext)
         

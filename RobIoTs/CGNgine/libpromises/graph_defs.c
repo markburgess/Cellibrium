@@ -565,8 +565,8 @@ char *EventClue(FILE *fp,char *who,char *what, time_t whentime, char *where, cha
  RoleGr(fp,event,"event",attr,icontext);
  
  RoleGr(fp,who,"who","",icontext);
- RoleGr(fp,what,"what",what,icontext);
- RoleGr(fp,how,"how",how,icontext);
+ RoleGr(fp,what,"what","",icontext);
+ RoleGr(fp,how,"how","",icontext);
  RoleGr(fp,why,"why","",icontext);
 
  Gr(fp,what,a_caused_by,why,icontext);
@@ -845,6 +845,13 @@ char *IPPort(int port)
 {
  static char ret[CGN_BUFSIZE];
  snprintf(ret,CGN_BUFSIZE,"ip portnumber %d",port);
+ return ret;
+}
+
+char *SUser(char *name)
+{
+ static char ret[CGN_BUFSIZE];
+ snprintf(ret,CGN_BUFSIZE,"username %s",name);
  return ret;
 }
 

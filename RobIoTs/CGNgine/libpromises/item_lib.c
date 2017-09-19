@@ -172,7 +172,7 @@ Item *ReturnItemIn(Item *list, const char *item)
     CYCLE_DECLARE(ptr, slow, toggle);
     while (ptr != NULL)
     {
-        if (strcmp(ptr->name, item) == 0)
+    if (ptr->name && (strcmp(ptr->name, item) == 0))
         {
             return ptr;
         }
