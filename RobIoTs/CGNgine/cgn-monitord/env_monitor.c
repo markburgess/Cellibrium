@@ -1645,6 +1645,8 @@ static void AnnotateAnomaly(EvalContext *ctx,FILE *consc,time_t now,Item *proces
     {
     ActiveUsers(consc,hub);
     char *who = hub;
+
+    // Hypothesis workload changes cause performance changes - not generally true...
     strcpy(what,MakeAnomalyGrName(consc,"workload anomaly",performance_syndrome)); 
     strcpy(why,MakeAnomalyGrName(consc,"performance anomaly",process_syndrome));
     
@@ -1652,6 +1654,7 @@ static void AnnotateAnomaly(EvalContext *ctx,FILE *consc,time_t now,Item *proces
     
     EventClue(consc,who,what,now,where,how,why,icontext);
 
+    Log(LOG_LEVEL_VERBOSE,"--- Hypothesis workload changes cause performance changes --------------\n");
     Log(LOG_LEVEL_VERBOSE,"  WHO  : %s\n", who);
     Log(LOG_LEVEL_VERBOSE,"  WHAT : %s\n", what);
     Log(LOG_LEVEL_VERBOSE,"  HOW : %s\n", how);
@@ -1795,7 +1798,7 @@ void ClassifyProcessState(EvalContext *ctx, FILE *fp)
        }
     }
 
- Log(LOG_LEVEL_VERBOSE,"Autodetect active users");
+ Banner("Autodetect active users");
 
  ActiveUsers(fp,hub);
 
@@ -2236,7 +2239,7 @@ static void SaveStateList(Item *list,char *name)
 
  snprintf(fname,CF_BUFSIZE,"%s/state/%s",CFWORKDIR,name);
  
- if ((fp = fopen(name, "w")) == NULL)
+ if ((fp = fopen(fname, "w")) == NULL)
     {
     return;
     }
