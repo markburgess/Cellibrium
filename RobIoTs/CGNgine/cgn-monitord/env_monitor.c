@@ -2112,7 +2112,8 @@ static void DiffInvariants(EvalContext *ctx,Item **process_syndrome,Item **perfo
           {
           PrependItem(process_syndrome,ip1->name,NULL);
           }
-       else if (strncmp(ip1->name,"USER",4) == 0 || strstr(ip1->name,"6_port") || strstr(ip1->name,"4_port")
+       else if (((strncmp(ip1->name,"USER",4) == 0) && strstr(ip1->name,"appeared"))
+                || strstr(ip1->name,"6_port") || strstr(ip1->name,"4_port")
                 || strstr(ip1->name,"ipv4")|| strstr(ip1->name,"ipv6"))
           {
           PrependItem(security_syndrome,ip1->name,NULL);
