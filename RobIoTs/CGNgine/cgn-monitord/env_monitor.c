@@ -1632,10 +1632,10 @@ static void AnnotateAnomaly(EvalContext *ctx,FILE *consc,time_t now,Item *proces
     how = MakeAnomalyGrName(consc,"security anomaly",security_syndrome);
     Gr(consc,how,a_hasrole,"how",icontext);
     
-    snprintf(what,CF_BUFSIZE,"security event %s at %s %s",how,where,when);
+    snprintf(what,CF_BUFSIZE,"event %s at %s %s",how,where,when);
     snprintf(attr,CF_BUFSIZE,"%s,%s,%s",how,where,when); 
     
-    RoleGr(consc,what,"security event",attr,icontext);
+    RoleGr(consc,what,"event",attr,icontext);
     Log(LOG_LEVEL_VERBOSE,"  SECURITY cluster : %s\n",what);
     }
 
