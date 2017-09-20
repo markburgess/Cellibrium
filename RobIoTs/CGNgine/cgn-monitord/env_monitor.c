@@ -2275,7 +2275,9 @@ char *MakeAnomalyGrName(FILE *fp,char *title,Item *list)
     
 {
  static char result[CF_BUFSIZE] = {0};
- snprintf(result, CF_BUFSIZE, "%s %s",title,MakeFlatList(fp,list));
+ char *digest = MakeFlatList(fp,list);
+ snprintf(result, CF_BUFSIZE, "%s %s",title,digest);
+ RoleGr(fp,result,title,digest,"anomaly cluster");
  return result;
 }
 
