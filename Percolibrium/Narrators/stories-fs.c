@@ -178,8 +178,6 @@ void main(int argc, char** argv)
 
   snprintf(VBASEDIR,255,"%s-%d",BASEDIR,getuid());
 
-  printf("\nExploring stories in knowledge bank at %s\n",VBASEDIR);
-  
   if (CONTEXT_OPT)
      {
      // Should we add the subject and first order connections to the context list?
@@ -192,17 +190,17 @@ void main(int argc, char** argv)
      CONTEXT_OPT = strdup(ALL_CONTEXTS);
      }
 
-  printf("Found context: \"%s\"\n", CONTEXT_OPT);
-
   if (subject)
      {
-     printf("Found story subject: \"%s\" (%s)\n\n", subject,sdigest);
+     printf("=======================================================================\n");
+     printf(" STORY TOPIC SEARCH ...  \"%s\" (%s)\n\n", subject,sdigest);
+     printf(" Looking for stories from this concepts\n");
+     printf("=======================================================================\n");
      }
   else
      {
      if (strcmp(CONTEXT_OPT,ALL_CONTEXTS) != 0)
         {
-        printf("No subject provided, so searching/looking for possibly relevant contexts\n\n");
         NewManyWorldsContext(CONTEXT_OPT,CONTEXT_OPT);
         ShowMatchingConcepts(CONTEXT_OPT);
         return;
@@ -231,16 +229,16 @@ void main(int argc, char** argv)
   else
      {
      StartReport(level);
-     SectionBanner("=========== sequential, causal reasoning =======================\n\n");
+     //SectionBanner("=========== sequential, causal reasoning =======================\n\n");
      SearchForContextualizedAssociations(sdigest, GR_FOLLOWS, CGN_ROOT, level);
      SearchForContextualizedAssociations(sdigest, -GR_FOLLOWS, CGN_ROOT, level);
-     SectionBanner("=========== proximity reasoning =======================\n\n");
+     //SectionBanner("=========== proximity reasoning =======================\n\n");
      SearchForContextualizedAssociations(sdigest, GR_NEAR, CGN_ROOT, level);
      SearchForContextualizedAssociations(sdigest, -GR_NEAR, CGN_ROOT, level);
-     SectionBanner("=========== boundary or enclosure reasoning =======================\n\n");
+     //SectionBanner("=========== boundary or enclosure reasoning =======================\n\n");
      SearchForContextualizedAssociations(sdigest, GR_CONTAINS, CGN_ROOT, level);
      SearchForContextualizedAssociations(sdigest, -GR_CONTAINS, CGN_ROOT, level);
-     SectionBanner("=========== property or promise based reasoning =======================\n\n");
+     //SectionBanner("=========== property or promise based reasoning =======================\n\n");
      SearchForContextualizedAssociations(sdigest, GR_EXPRESSES, CGN_ROOT, level);
      SearchForContextualizedAssociations(sdigest, -GR_EXPRESSES, CGN_ROOT, level);
      EndReport(level);
@@ -321,7 +319,11 @@ void ShowMatchingConcepts(char *context)
 
  CONTEXT_OPT = strdup(context);
 
- printf("Looking for concepts to match %s...\n",context);
+ printf("=======================================================================\n");
+ printf(" STORY TOPIC SEARCH ..\n");
+ printf(" Looking for concepts to match \"%s\"...\n",context);
+ printf("=======================================================================\n");
+ 
  snprintf(filename,CGN_BUFSIZE,"%s",VBASEDIR);
 
  if ((dirh_context = opendir(filename)) == NULL)
@@ -405,7 +407,7 @@ void SearchForContextualizedAssociations(char *cdigest, int atype, int prevtype,
        {
        char buffer[CGN_BUFSIZE];
        char *subject = GetConceptFromDigest(cdigest,buffer);       
-       printf("\nFound related: %s %s `%s'\n\n",subject,(atype > 0) ? GR_TYPES[abs(atype)][0]: GR_TYPES[abs(atype)][1] ,GetConceptFromDigest(array[i].cdigest,dg));
+       printf("\nnew story) \"%s\" %s \"%s\"\n\n",subject,(atype > 0) ? GR_TYPES[abs(atype)][0]: GR_TYPES[abs(atype)][1] ,GetConceptFromDigest(array[i].cdigest,dg));
        }
     
     if (level < RECURSE_OPT+1) // Arbitrary curb on length of stories
