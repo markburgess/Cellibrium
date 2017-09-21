@@ -6,7 +6,59 @@
 /*                                                                           */
 /*****************************************************************************/
 
-void WriteConceptAssociations(FILE *fin, LinkAssociation *array,int maxentries);
+#define CF_MD5_LEN 16
+extern char VBASEDIR[256];
+
+/*****************************************************************************/
+
+char *NameDigest(char *name, unsigned char digest[EVP_MAX_MD_SIZE + 1])
+{
+const EVP_MD *md = EVP_get_digestbyname("md5");
+static char printable[2*CF_MD5_LEN+1] = {0};
+
+if (!md)
+   {
+   printf("Unable to initialize digest, digests added?\n");
+   return NULL;
+   }
+
+EVP_MD_CTX context;
+unsigned int md_len = 0;
+unsigned int i;
+
+EVP_DigestInit(&context,md);
+EVP_DigestUpdate(&context,name,strlen(name));
+EVP_DigestFinal(&context, digest, &md_len);
+
+for (i = 0; i < CF_MD5_LEN; i++)
+   {
+   snprintf(printable + 2 * i, sizeof(printable) - (2 * i), "%02x", digest[i]);
+   }
+
+return printable;
+}
+
+/*****************************************************************************/
+
+char *GetConceptFromDigest(char *digeststr,char *name)
+{
+ FILE *fp;
+ char filename[CGN_BUFSIZE];
+
+ snprintf(filename,CGN_BUFSIZE,"%s/%s/concept",VBASEDIR,digeststr);
+ 
+ if ((fp = fopen(filename,"r")) != NULL)
+    {
+    fscanf(fp,"%4095[^\n]",name);
+    fclose(fp);
+    }
+ else
+    {
+    printf("Unable to get the concept name for digest `%s'\n",digeststr);
+    }
+ 
+ return name;
+}
 
 /*****************************************************************************/
 
@@ -19,7 +71,7 @@ void InitializeAssociations(LinkAssociation *array)
     array[i].fwd = NULL;
     array[i].bwd = NULL;
     array[i].icontext = NULL;
-    array[i].concept = NULL;
+    array[i].cdigest = NULL;
     array[i].weight = 0;
     array[i].lastseen = 0;
     array[i].relevance = 0;
@@ -37,7 +89,7 @@ void DeleteAssociations(LinkAssociation *array)
     free(array[i].fwd);
     free(array[i].bwd);
     free(array[i].icontext);
-    free(array[i].concept);
+    free(array[i].cdigest);
     }
 }
 
@@ -68,9 +120,9 @@ void GetConceptAssociations(FILE *fin, char *concept, LinkAssociation *array,int
     array[i].fwd = strdup(fwd);
     array[i].bwd = strdup(bwd);
     array[i].icontext = strdup(context);
-    array[i].concept = strdup(concept);
+    array[i].cdigest = strdup(concept);
 
-    //printf("FOUND(%s: %s(%s) in context %s(%s)\n", array[i].concept,fwd,array[i].fwd,context,array[i].icontext);
+    //printf("FOUND(%s: %s(%s) in context %s(%s)\n", array[i].cdigest,fwd,array[i].fwd,context,array[i].icontext);
     }
 }
 
@@ -96,7 +148,6 @@ void UpdateAssociation(char *context, char *concept1, int atype, char *fwd, char
  FILE *fp;
  int i, done;
  time_t now = time(NULL);
- extern char VBASEDIR[256];
  
  // (fwd,bwd,lastseen,weight)
 
@@ -149,6 +200,14 @@ void UpdateAssociation(char *context, char *concept1, int atype, char *fwd, char
     {
     WriteConceptAssociations(fp,array,MAX_ASSOC_ARRAY);
     fclose(fp);
+    }
+ else
+    {
+    printf("Can't write file (%s)\n",filename);
+    printf(" - from concept %d (%s)\n",strlen(concept1),concept1);
+    printf(" - to concept %d (%s)\n",strlen(concept2),concept2);
+    printf(" - total %d\n",strlen(filename));
+    perror("fopen");
     }
 }
 

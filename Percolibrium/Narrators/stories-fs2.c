@@ -29,7 +29,6 @@
 
 #define true 1
 #define false 0
-#define CGN_BUFSIZE 1024
 #define MAX_WORD_SZ 256
 #define MAX_CONTEXT 2048
 #define MAX_STORIES 256
@@ -241,7 +240,7 @@ void main(int argc, char** argv)
         printf("\n %s ...\n",subject);
         for (j = 0; (j < MAX_STORY_LEN)&&(ALLSTORIES[i].episode[j] != NULL); j++)
            {
-           printf(" - which %s \"%s\" (in the context %s %d%%)\n",ALLSTORIES[i].episode[j]->fwd,ALLSTORIES[i].episode[j]->concept,ALLSTORIES[i].episode[j]->icontext, ALLSTORIES[i].episode[j]->relevance);
+           printf(" - which %s \"%s\" (in the context %s %d%%)\n",ALLSTORIES[i].episode[j]->fwd,ALLSTORIES[i].episode[j]->cdigest,ALLSTORIES[i].episode[j]->icontext, ALLSTORIES[i].episode[j]->relevance);
            }
         }
      }
@@ -325,7 +324,7 @@ int ConceptAlreadyUsed(char *concept, Story *story)
 
  for (i = 0; (i < MAX_STORY_LEN) && (story->episode[i] != NULL); i++)
     {
-    if (strcmp(concept,story->episode[i]->concept) == 0)
+    if (strcmp(concept,story->episode[i]->cdigest) == 0)
        {
        return true;
        }
@@ -341,7 +340,7 @@ int FollowNextAssociation(int prevtype,int atype,int level,char *concept,LinkAss
 { int relevance;
   const int dontwanttoseethis = 0;
 
-  if (ConceptAlreadyUsed(assoc->concept,&thisstory))
+  if (ConceptAlreadyUsed(assoc->cdigest,&thisstory))
      {
      return false;
      }
@@ -353,22 +352,22 @@ int FollowNextAssociation(int prevtype,int atype,int level,char *concept,LinkAss
   
   if (ATYPE_OPT != CGN_ROOT)
      {
-     SearchForContextualizedAssociations(assoc->concept,ATYPE_OPT, atype, level+1, thisstory);
-     SearchForContextualizedAssociations(assoc->concept,-ATYPE_OPT, atype, level+1, thisstory);
+     SearchForContextualizedAssociations(assoc->cdigest,ATYPE_OPT, atype, level+1, thisstory);
+     SearchForContextualizedAssociations(assoc->cdigest,-ATYPE_OPT, atype, level+1, thisstory);
      }
   else
      {
-     SearchForContextualizedAssociations(assoc->concept,GR_EXPRESSES, atype, level+1, thisstory);
-     SearchForContextualizedAssociations(assoc->concept,-GR_EXPRESSES, atype, level+1, thisstory);
+     SearchForContextualizedAssociations(assoc->cdigest,GR_EXPRESSES, atype, level+1, thisstory);
+     SearchForContextualizedAssociations(assoc->cdigest,-GR_EXPRESSES, atype, level+1, thisstory);
 
-     SearchForContextualizedAssociations(assoc->concept,GR_FOLLOWS, atype, level+1, thisstory);
-     SearchForContextualizedAssociations(assoc->concept,-GR_FOLLOWS, atype, level+1, thisstory);
+     SearchForContextualizedAssociations(assoc->cdigest,GR_FOLLOWS, atype, level+1, thisstory);
+     SearchForContextualizedAssociations(assoc->cdigest,-GR_FOLLOWS, atype, level+1, thisstory);
 
-     SearchForContextualizedAssociations(assoc->concept,GR_NEAR, atype, level+1, thisstory);
-     SearchForContextualizedAssociations(assoc->concept,-GR_NEAR, atype, level+1, thisstory);
+     SearchForContextualizedAssociations(assoc->cdigest,GR_NEAR, atype, level+1, thisstory);
+     SearchForContextualizedAssociations(assoc->cdigest,-GR_NEAR, atype, level+1, thisstory);
      
-     SearchForContextualizedAssociations(assoc->concept,GR_CONTAINS, atype, level+1, thisstory);
-     SearchForContextualizedAssociations(assoc->concept,-GR_CONTAINS, atype, level+1, thisstory);
+     SearchForContextualizedAssociations(assoc->cdigest,GR_CONTAINS, atype, level+1, thisstory);
+     SearchForContextualizedAssociations(assoc->cdigest,-GR_CONTAINS, atype, level+1, thisstory);
      }
 
   return true;
@@ -440,7 +439,7 @@ int RankAssociationsByContext(LinkAssociation array[MAX_ASSOC_ARRAY], char *base
        continue;
        }
     
-    array[count].concept = strdup(nextconcept);
+    array[count].cdigest = strdup(nextconcept);
     array[count].icontext = strdup(relevance_context);
     array[count].fwd = strdup(best_association);
     count++;

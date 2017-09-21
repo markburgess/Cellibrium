@@ -79,15 +79,15 @@ static const char *HINTS[7] =
 
 /*****************************************************************************/
 
-void NewManyWorldsContext(char *concept, char *context);
+void NewManyWorldsContext(char *cdigest, char *context);
 void DeleteManyWorldsContext(void);
-void SearchForContextualizedAssociations(char *concept, int atype, int prevtype, int level);
-int FollowNextAssociation(int prevtype,int atype,int level,char *concept,LinkAssociation *assoc);
-int GetBestAssoc(char *best_association, char *concept,int atype,char *nextconcept,char *context);
-int RankAssociationsByContext(LinkAssociation array[MAX_ASSOC_ARRAY], char *basedir, char* concept, int atype);
-int RelevantToCurrentContext(char *concept,char *assoc,char *nextconcept,char *context);
-int ConceptAlreadyUsed(char *concept,int level);
-void DeleteConcept(char *concept);
+void SearchForContextualizedAssociations(char *cdigest, int atype, int prevtype, int level);
+int FollowNextAssociation(int prevtype,int atype,int level,char *cdigest,LinkAssociation *assoc);
+int GetBestAssoc(char *best_association, char *cdigest,int atype,char *nextcdigest,char *context);
+int RankAssociationsByContext(LinkAssociation array[MAX_ASSOC_ARRAY], char *basedir, char* cdigest, int atype);
+int RelevantToCurrentContext(char *cdigest,char *assoc,char *nextcdigest,char *context);
+int CdigestAlreadyUsed(char *cdigest,int level);
+void DeleteCdigest(char *cdigest);
 char *Indent(int level);
 void SplitCompound(char *str, char *atoms[MAX_CONTEXT]);
 void ShowMatchingConcepts(char *context);
@@ -108,7 +108,11 @@ void main(int argc, char** argv)
  int level = 0;
  int optindex = 0, i;
  char c;
- char *subject = NULL, *context = NULL;
+ char *subject = NULL, *sdigest,*context = NULL;
+ unsigned char digest[EVP_MAX_MD_SIZE + 1];
+ char buffer[CGN_BUFSIZE];
+ 
+ OpenSSL_add_all_digests();
  
   while ((c = getopt_long(argc, argv, "jht:s:c:r:", OPTIONS, &optindex)) != EOF)
     {
@@ -135,7 +139,9 @@ void main(int argc, char** argv)
            break;
 
        case 's':
-           subject = strdup((const char *)optarg);
+           sscanf(optarg,"%[^\n]",buffer);
+           sdigest = NameDigest(buffer,digest);
+           subject = strdup(buffer);
            break;
 
        case 'c':
@@ -182,7 +188,7 @@ void main(int argc, char** argv)
 
   if (subject)
      {
-     printf("Found story subject: \"%s\"\n\n", subject);
+     printf("Found story subject: \"%s\" (%s)\n\n", subject,sdigest);
      }
   else
      {
@@ -207,28 +213,28 @@ void main(int argc, char** argv)
   
   // off we go
 
-  NewManyWorldsContext(subject,CONTEXT_OPT);
-  ConceptAlreadyUsed(subject,0);
+  NewManyWorldsContext(sdigest,CONTEXT_OPT);
+  ConceptAlreadyUsed(sdigest,0);
   
   if (ATYPE_OPT != CGN_ROOT)
      {
-     SearchForContextualizedAssociations(subject, ATYPE_OPT, CGN_ROOT, level);
+     SearchForContextualizedAssociations(sdigest, ATYPE_OPT, CGN_ROOT, level);
      }
   else
      {
      StartReport(level);
      SectionBanner("=========== sequential, causal reasoning =======================\n\n");
-     SearchForContextualizedAssociations(subject, GR_FOLLOWS, CGN_ROOT, level);
-     SearchForContextualizedAssociations(subject, -GR_FOLLOWS, CGN_ROOT, level);
+     SearchForContextualizedAssociations(sdigest, GR_FOLLOWS, CGN_ROOT, level);
+     SearchForContextualizedAssociations(sdigest, -GR_FOLLOWS, CGN_ROOT, level);
      SectionBanner("=========== proximity reasoning =======================\n\n");
-     SearchForContextualizedAssociations(subject, GR_NEAR, CGN_ROOT, level);
-     SearchForContextualizedAssociations(subject, -GR_NEAR, CGN_ROOT, level);
+     SearchForContextualizedAssociations(sdigest, GR_NEAR, CGN_ROOT, level);
+     SearchForContextualizedAssociations(sdigest, -GR_NEAR, CGN_ROOT, level);
      SectionBanner("=========== boundary or enclosure reasoning =======================\n\n");
-     SearchForContextualizedAssociations(subject, GR_CONTAINS, CGN_ROOT, level);
-     SearchForContextualizedAssociations(subject, -GR_CONTAINS, CGN_ROOT, level);
+     SearchForContextualizedAssociations(sdigest, GR_CONTAINS, CGN_ROOT, level);
+     SearchForContextualizedAssociations(sdigest, -GR_CONTAINS, CGN_ROOT, level);
      SectionBanner("=========== property or promise based reasoning =======================\n\n");
-     SearchForContextualizedAssociations(subject, GR_EXPRESSES, CGN_ROOT, level);
-     SearchForContextualizedAssociations(subject, -GR_EXPRESSES, CGN_ROOT, level);
+     SearchForContextualizedAssociations(sdigest, GR_EXPRESSES, CGN_ROOT, level);
+     SearchForContextualizedAssociations(sdigest, -GR_EXPRESSES, CGN_ROOT, level);
      EndReport(level);
      }
   
@@ -238,12 +244,12 @@ void main(int argc, char** argv)
 
 /**********************************************************/
 
-void NewManyWorldsContext(char *concept, char *context)
+void NewManyWorldsContext(char *cdigest, char *context)
 {
  char name[CGN_BUFSIZE];
 
  umask(0); 
- snprintf(MANY_WORLDS_CONTEXT,CGN_BUFSIZE,"/tmp/story_world_%s_%s_%d",concept,context,getuid());
+ snprintf(MANY_WORLDS_CONTEXT,CGN_BUFSIZE,"/tmp/story_world_%s_%s_%d",cdigest,context,getuid());
  mkdir(MANY_WORLDS_CONTEXT,((mode_t)0755));
  DIR *dirh;
  struct dirent *dirp;
@@ -307,8 +313,10 @@ void ShowMatchingConcepts(char *context)
 
  RECURSE_OPT = 1;
  CONTEXT_OPT = strdup(context);
-
- snprintf(filename,CGN_BUFSIZE,"%s/%s/%d",VBASEDIR,ALL_CONTEXTS,GR_CONTEXT);
+ unsigned char digest[EVP_MAX_MD_SIZE + 1];
+ char *ctx_digest = NameDigest(ALL_CONTEXTS,digest);
+    
+ snprintf(filename,CGN_BUFSIZE,"%s/%s/%d",VBASEDIR,ctx_digest,GR_CONTEXT);
 
  if ((dirh_context = opendir(filename)) == NULL)
     {
@@ -329,14 +337,16 @@ void ShowMatchingConcepts(char *context)
 
     if (strstr(subject,context))
        {
-       SearchForContextualizedAssociations(subject, GR_FOLLOWS, CGN_ROOT, level);
-       SearchForContextualizedAssociations(subject, -GR_FOLLOWS, CGN_ROOT, level);
-       SearchForContextualizedAssociations(subject, GR_NEAR, CGN_ROOT, level);
-       SearchForContextualizedAssociations(subject, -GR_NEAR, CGN_ROOT, level);
-       SearchForContextualizedAssociations(subject, GR_CONTAINS, CGN_ROOT, level);
-       SearchForContextualizedAssociations(subject, -GR_CONTAINS, CGN_ROOT, level);
-       SearchForContextualizedAssociations(subject, GR_EXPRESSES, CGN_ROOT, level);
-       SearchForContextualizedAssociations(subject, -GR_EXPRESSES, CGN_ROOT, level);
+       unsigned char digest[EVP_MAX_MD_SIZE + 1];
+       char *sdigest = NameDigest(subject,digest);
+       SearchForContextualizedAssociations(sdigest, GR_FOLLOWS, CGN_ROOT, level);
+       SearchForContextualizedAssociations(sdigest, -GR_FOLLOWS, CGN_ROOT, level);
+       SearchForContextualizedAssociations(sdigest, GR_NEAR, CGN_ROOT, level);
+       SearchForContextualizedAssociations(sdigest, -GR_NEAR, CGN_ROOT, level);
+       SearchForContextualizedAssociations(sdigest, GR_CONTAINS, CGN_ROOT, level);
+       SearchForContextualizedAssociations(sdigest, -GR_CONTAINS, CGN_ROOT, level);
+       SearchForContextualizedAssociations(sdigest, GR_EXPRESSES, CGN_ROOT, level);
+       SearchForContextualizedAssociations(sdigest, -GR_EXPRESSES, CGN_ROOT, level);
        }
     }
 }
@@ -345,16 +355,17 @@ void ShowMatchingConcepts(char *context)
 /* L1                                                                        */
 /*****************************************************************************/
 
-void SearchForContextualizedAssociations(char *concept, int atype, int prevtype, int level)
+void SearchForContextualizedAssociations(char *cdigest, int atype, int prevtype, int level)
 
 { int i, count = 0;
+ char dg[CGN_BUFSIZE];
   LinkAssociation array[MAX_ASSOC_ARRAY];
   const int threshold_for_relevance = 0;
   const int max_stories = 10;
 
  InitializeAssociations(array);
 
- if (!RankAssociationsByContext(array,VBASEDIR,concept,atype))
+ if (!RankAssociationsByContext(array,VBASEDIR,cdigest,atype))
     {
     return;
     }
@@ -371,8 +382,10 @@ void SearchForContextualizedAssociations(char *concept, int atype, int prevtype,
     if (atype == -prevtype)
        {
        char trunc[CGN_BUFSIZE];
-       snprintf(trunc,CGN_BUFSIZE," (%d) %s `%s'",atype,(atype > 0) ? GR_TYPES[abs(atype)][0]: GR_TYPES[abs(atype)][1] ,array[i].concept);
-       if (abs(atype) == GR_FOLLOWS && !ConceptAlreadyUsed(trunc,0))
+       char digest[EVP_MAX_MD_SIZE + 1];
+       
+       snprintf(trunc,CGN_BUFSIZE," (%d) %s `%s'",atype,(atype > 0) ? GR_TYPES[abs(atype)][0]: GR_TYPES[abs(atype)][1] ,GetConceptFromDigest(array[i].cdigest,dg));
+       if (abs(atype) == GR_FOLLOWS && !ConceptAlreadyUsed(NameDigest(trunc,digest),0))
           {
           printf("                   (%s)\n",trunc);
           }
@@ -384,7 +397,7 @@ void SearchForContextualizedAssociations(char *concept, int atype, int prevtype,
 
     if (level < RECURSE_OPT+1) // Arbitrary curb on length of stories
        {
-       if (!FollowNextAssociation(prevtype,atype,level,concept,&(array[i])))
+       if (!FollowNextAssociation(prevtype,atype,level,cdigest,&(array[i])))
           {
           //printf("          %s << End of unique story\n",Indent(level));
           }
@@ -397,13 +410,13 @@ void SearchForContextualizedAssociations(char *concept, int atype, int prevtype,
        }
     }
 
-// DeleteConcept(concept);
+// DeleteConcept(cdigest);
  DeleteAssociations(array);
 }
 
 /*****************************************************************************/
 
-int ConceptAlreadyUsed(char *concept, int plevel)
+int ConceptAlreadyUsed(char *cdigest, int plevel)
 
 { FILE *fp;
   struct stat statbuf;
@@ -413,7 +426,7 @@ int ConceptAlreadyUsed(char *concept, int plevel)
   // filenames are only 255 while paths can be 4096, so we have to shorten long concepts
   // This is a simple approx hash
 
-  for (sp = concept; *sp != '\0'; sp++, pos++)
+  for (sp = cdigest; *sp != '\0'; sp++, pos++)
      {
      hash += *sp * pos;
      }
@@ -446,25 +459,28 @@ int ConceptAlreadyUsed(char *concept, int plevel)
 
 /*****************************************************************************/
 
-void DeleteConcept(char *concept)
+void DeleteConcept(char *cdigest)
 
 { FILE *fp;
   struct stat statbuf;
   char name[CGN_BUFSIZE];
   int level = -1;
 
- snprintf(name,CGN_BUFSIZE,"%s/%s",MANY_WORLDS_CONTEXT,concept);
+ snprintf(name,CGN_BUFSIZE,"%s/%s",MANY_WORLDS_CONTEXT,cdigest);
  unlink(name); 
 }
 
 /*****************************************************************************/
 
-int FollowNextAssociation(int prevtype,int atype,int level,char *concept,LinkAssociation *assoc)
+int FollowNextAssociation(int prevtype,int atype,int level,char *cdigest,LinkAssociation *assoc)
 
 { int relevance;
   const int dontwanttoseethis = 0;
+  char cb1[CGN_BUFSIZE];
+  char cb2[CGN_BUFSIZE];
+  char cb3[CGN_BUFSIZE];
 
-  if (ConceptAlreadyUsed(assoc->concept,level) || strcmp(concept,assoc->concept) == 0)
+  if (ConceptAlreadyUsed(assoc->cdigest,level) || strcmp(cdigest,assoc->cdigest) == 0)
      {
      if (level > 0)
         {
@@ -476,34 +492,34 @@ int FollowNextAssociation(int prevtype,int atype,int level,char *concept,LinkAss
      {
      if ((atype == -prevtype) && (abs(atype) != GR_FOLLOWS)) // Don't double back
         {
-        printf ("%s and also note \"%s\" %s \"%s\" (icontext %s)\n", Indent(level), concept,assoc->fwd, assoc->concept,assoc->icontext);
+        printf ("%s and also note \"%s\" %s \"%s\" (icontext %s)\n", Indent(level),GetConceptFromDigest(cdigest,cb1),assoc->fwd,GetConceptFromDigest(assoc->cdigest,cb2),assoc->icontext);
         //return; 
         }
      else
         {
-        printf ("%d:%s) %s \"%s\" %s \"%s\" (icontext: %s - %d%%)\n", level,Abbr(atype), Indent(level),concept,assoc->fwd, assoc->concept,assoc->icontext,assoc->relevance);
+        printf ("%d:%s) %s \"%s\" %s \"%s\" (icontext: %s - %d%%)\n", level,Abbr(atype), Indent(level),GetConceptFromDigest(cdigest,cb1),assoc->fwd,GetConceptFromDigest(assoc->cdigest,cb2),assoc->icontext,assoc->relevance);
         }
      }
 
   if (ATYPE_OPT != CGN_ROOT)
      {
-     SearchForContextualizedAssociations(assoc->concept,ATYPE_OPT, atype, level+1);
-     SearchForContextualizedAssociations(assoc->concept,-ATYPE_OPT, atype, level+1);
+     SearchForContextualizedAssociations(assoc->cdigest,ATYPE_OPT, atype, level+1);
+     SearchForContextualizedAssociations(assoc->cdigest,-ATYPE_OPT, atype, level+1);
      }
   else
      {
-     SearchForContextualizedAssociations(assoc->concept,GR_EXPRESSES, atype, level+1);
-     SearchForContextualizedAssociations(assoc->concept,-GR_EXPRESSES, atype, level+1);
+     SearchForContextualizedAssociations(assoc->cdigest,GR_EXPRESSES, atype, level+1);
+     SearchForContextualizedAssociations(assoc->cdigest,-GR_EXPRESSES, atype, level+1);
 
-     SearchForContextualizedAssociations(assoc->concept,GR_FOLLOWS, atype, level+1);
-     SearchForContextualizedAssociations(assoc->concept,-GR_FOLLOWS, atype, level+1);
+     SearchForContextualizedAssociations(assoc->cdigest,GR_FOLLOWS, atype, level+1);
+     SearchForContextualizedAssociations(assoc->cdigest,-GR_FOLLOWS, atype, level+1);
 
-     SearchForContextualizedAssociations(assoc->concept,GR_NEAR, atype, level+1);
-     SearchForContextualizedAssociations(assoc->concept,-GR_NEAR, atype, level+1);
+     SearchForContextualizedAssociations(assoc->cdigest,GR_NEAR, atype, level+1);
+     SearchForContextualizedAssociations(assoc->cdigest,-GR_NEAR, atype, level+1);
      
      // Exploring next, policy only if previous connection was also quasi-transitive
-     SearchForContextualizedAssociations(assoc->concept,GR_CONTAINS, atype, level+1);
-     SearchForContextualizedAssociations(assoc->concept,-GR_CONTAINS, atype, level+1);
+     SearchForContextualizedAssociations(assoc->cdigest,GR_CONTAINS, atype, level+1);
+     SearchForContextualizedAssociations(assoc->cdigest,-GR_CONTAINS, atype, level+1);
      }
 
   if (level == 0)
@@ -531,7 +547,7 @@ char *Indent(int level)
 
 /*************************************************************/
 
-int RankAssociationsByContext(LinkAssociation array[MAX_ASSOC_ARRAY], char *basedir, char* fromconcept, int atype)
+int RankAssociationsByContext(LinkAssociation array[MAX_ASSOC_ARRAY], char *basedir, char* fromcdigest, int atype)
 {
  char filename[CGN_BUFSIZE];
  DIR *dirh_context,*dirh_assocs;
@@ -542,7 +558,7 @@ int RankAssociationsByContext(LinkAssociation array[MAX_ASSOC_ARRAY], char *base
 
  // Open the directory and read the possible outgoing links
  
- snprintf(filename,CGN_BUFSIZE,"%s/%s/%d",basedir,fromconcept,atype);
+ snprintf(filename,CGN_BUFSIZE,"%s/%s/%d",basedir,fromcdigest,atype);
 
  if ((dirh_assocs = opendir(filename)) == NULL)
     {
@@ -558,7 +574,7 @@ int RankAssociationsByContext(LinkAssociation array[MAX_ASSOC_ARRAY], char *base
 
     // Don't go back to places we've already been... (simplistic . could use atime as deadtime lock)
     
-    char *nextconcept = dirp_a->d_name;
+    char *nextcdigest = dirp_a->d_name;
        
     if (count >= MAX_ASSOC_ARRAY)
        {
@@ -572,21 +588,21 @@ int RankAssociationsByContext(LinkAssociation array[MAX_ASSOC_ARRAY], char *base
     best_association[0] = '\0';
     relevance_context[0] = '\0';
         
-    array[count].relevance = GetBestAssoc(best_association,fromconcept,atype,nextconcept,relevance_context);
+    array[count].relevance = GetBestAssoc(best_association,fromcdigest,atype,nextcdigest,relevance_context);
 
     if (array[count].relevance < threshold)
        {
        continue;
        }
 
-    array[count].concept = strdup(nextconcept);
+    array[count].cdigest = strdup(nextcdigest);
     array[count].icontext = strdup(relevance_context);
     array[count].fwd = strdup(best_association);
     array[count].bwd = strdup("n/a"); // Don't need this here
     count++;
     }
 
- qsort(array,(size_t)count, sizeof(LinkAssociation),cmprel);
+ //qsort(array,(size_t)count, sizeof(LinkAssociation),cmprel);
 
  closedir(dirh_assocs);
  return true;
@@ -594,7 +610,7 @@ int RankAssociationsByContext(LinkAssociation array[MAX_ASSOC_ARRAY], char *base
 
 /*****************************************************************************/
 
-int GetBestAssoc(char *best_association, char *fromconcept,int atype,char *nextconcept,char *relevance_context)
+int GetBestAssoc(char *best_association, char *fromcdigest,int atype,char *nextcdigest,char *relevance_context)
 
 { int i, relevance = 0;
   FILE *fin;
@@ -604,14 +620,14 @@ int GetBestAssoc(char *best_association, char *fromconcept,int atype,char *nextc
 
  *relevance_context = '\0';
   
- snprintf(filename,CGN_BUFSIZE,"%s/%s/%d/%s",VBASEDIR,fromconcept,atype,nextconcept);
+ snprintf(filename,CGN_BUFSIZE,"%s/%s/%d/%s",VBASEDIR,fromcdigest,atype,nextcdigest);
 
  if ((fin = fopen(filename, "r")) == NULL)
     {
     return 0;
     }
 
- GetConceptAssociations(fin,fromconcept,array,MAX_ASSOC_ARRAY);
+ GetConceptAssociations(fin,fromcdigest,array,MAX_ASSOC_ARRAY);
  fclose(fin);
 
  if (array[0].fwd == NULL)
@@ -667,7 +683,9 @@ int GetBestAssoc(char *best_association, char *fromconcept,int atype,char *nextc
 
  // WARN: not checking for overflow here ... very unlikely but ...
 
- relevance = RelevantToCurrentContext(fromconcept,best_association,nextconcept,relevance_context);
+ char dg1[CGN_BUFSIZE],dg2[CGN_BUFSIZE];
+ 
+ relevance = RelevantToCurrentContext(GetConceptFromDigest(fromcdigest,dg1),best_association,GetConceptFromDigest(nextcdigest,dg2),relevance_context);
  DeleteAssociations(array);
  return relevance;
 }

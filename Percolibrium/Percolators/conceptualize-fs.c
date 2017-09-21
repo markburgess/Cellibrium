@@ -41,7 +41,7 @@ typedef int Policy; // Hack to use CGNgine defs
 /*****************************************************************************/
 
 void ReadTupleFile(char *filename);
-void UpdateConcept(char *name);
+char *UpdateConcept(char *name);
 void Canonify(char *str);
 
 char VBASEDIR[256];
@@ -56,6 +56,8 @@ int main(int argc, char** argv)
     exit(1);
     }
 
+ OpenSSL_add_all_digests();
+  
  snprintf(VBASEDIR,255,"%s-%d",BASEDIR,getuid());
  mkdir(VBASEDIR,0755);
  
@@ -85,9 +87,11 @@ void ReadTupleFile(char *filename)
  char linebuff[CGN_BUFSIZE];
  int atype;
  int line = 0;
+ char from_digest[129];
+ char to_digest[129];
+ char ictx_digest[129];
+ char any_digest[129];
 
- UpdateConcept(ALL_CONTEXTS);
- 
  if ((fin = fopen(filename,"r")) == NULL)
     {
     return;
@@ -97,8 +101,13 @@ void ReadTupleFile(char *filename)
  
  while (!feof(fin))
     {
-    from[0] = to[0] = afwd[0] = abwd[0] = icontext[0] = '\0';
     linebuff[0] = '\0';
+
+    memset(from,0,CGN_BUFSIZE);
+    memset(to,0,CGN_BUFSIZE);
+    memset(icontext,0,CGN_BUFSIZE);
+    memset(afwd,0,CGN_BUFSIZE);
+    memset(abwd,0,CGN_BUFSIZE);
     
     fgets(linebuff, CGN_BUFSIZE, fin);
 
@@ -148,28 +157,27 @@ void ReadTupleFile(char *filename)
        }
 
     // End validation
-        
-    Canonify(from);
-    Canonify(to);
     
-    UpdateConcept(from);
-    UpdateConcept(to);
-
+    strcpy(from_digest,UpdateConcept(from));
+    strcpy(to_digest,UpdateConcept(to));
+                                
     // In all contexts, the contextualized qualified version is a member of the cluster of all (class instance)
        
-    UpdateAssociation(icontext,from,atype,afwd,abwd,to);
-    UpdateAssociation(icontext,to,-atype,abwd,afwd,from);
+    UpdateAssociation(icontext,from_digest,atype,afwd,abwd,to_digest);
+    UpdateAssociation(icontext,to_digest,-atype,abwd,afwd,from_digest);
 
     // Now create an introspective feedback to context as a scaled concept of its own
 
-    UpdateConcept(icontext);
-    UpdateAssociation(ALL_CONTEXTS,from,-GR_CONTEXT,"appears in the context of","mentions the story topic",icontext);
-    UpdateAssociation(ALL_CONTEXTS,icontext,GR_CONTEXT,"mentions the story topic","appears in the context of",from);
-    UpdateAssociation(ALL_CONTEXTS,to,-GR_CONTEXT,"appears in the context of","mentions the story topic",icontext);
-    UpdateAssociation(ALL_CONTEXTS,icontext,GR_CONTEXT,"mentions the story topic","appears in the context of",to);
+    strcpy(ictx_digest,UpdateConcept(icontext));
+    strcpy(any_digest,UpdateConcept(ALL_CONTEXTS));
+    
+    UpdateAssociation(ALL_CONTEXTS,from_digest,-GR_CONTEXT,"appears in the context of","mentions the story topic",ictx_digest);
+    UpdateAssociation(ALL_CONTEXTS,ictx_digest,GR_CONTEXT,"mentions the story topic","appears in the context of",from_digest);
+    UpdateAssociation(ALL_CONTEXTS,to_digest,-GR_CONTEXT,"appears in the context of","mentions the story topic",ictx_digest);
+    UpdateAssociation(ALL_CONTEXTS,ictx_digest,GR_CONTEXT,"mentions the story topic","appears in the context of",to_digest);
 
-    UpdateAssociation(ALL_CONTEXTS,ALL_CONTEXTS,GR_CONTEXT,"contains","is contained by",icontext);
-    UpdateAssociation(ALL_CONTEXTS,icontext,-GR_CONTEXT,"is contained by","contains",ALL_CONTEXTS);
+    UpdateAssociation(ALL_CONTEXTS,any_digest,GR_CONTEXT,"contains","is contained by",ictx_digest);
+    UpdateAssociation(ALL_CONTEXTS,ictx_digest,-GR_CONTEXT,"is contained by","contains",any_digest);
     
     line++;
     }
@@ -179,15 +187,38 @@ void ReadTupleFile(char *filename)
 
 /*****************************************************************************/
 
-void UpdateConcept(char *name)
+char *UpdateConcept(char *name)
 {
  char filename[CGN_BUFSIZE];
-
- // Represent a concept as a directory of associations (idempotent)
+ unsigned char digest[EVP_MAX_MD_SIZE + 1];
+ char *digeststr;
+ FILE *fp;
  
- snprintf(filename,CGN_BUFSIZE,"%s/%s",VBASEDIR,name);
- mkdir(filename,0755); 
- utime(filename, NULL);
+ if (digeststr = NameDigest(name,digest))
+    {
+    // Represent a concept as a directory of associations (idempotent) using digest
+
+    snprintf(filename,CGN_BUFSIZE,"%s/%s",VBASEDIR,digeststr);
+    mkdir(filename,0755); 
+    utime(filename, NULL);
+    
+    snprintf(filename,CGN_BUFSIZE,"%s/%s/concept",VBASEDIR,digeststr);
+    
+    if ((fp = fopen(filename,"w")) != NULL)
+       {
+       fprintf(fp,"%s",name);
+       fclose(fp);
+       return digeststr;
+       }
+    
+    printf("Unable to write %s\n",filename);
+    perror("fopen");
+    return "failed";
+    }
+ 
+ printf("Unable to compute digest for %s\n",name);
+ perror("evp");
+ return "failed";
 }
 
 /*****************************************************************************/
