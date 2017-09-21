@@ -52,27 +52,30 @@ char *CONTEXT_OPT;
 
 char MANY_WORLDS_CONTEXT[CGN_BUFSIZE];
 char VBASEDIR[256];
+char **PRUNELIST;
 
 /*****************************************************************************/
 
-static const struct option OPTIONS[7] =
+static const struct option OPTIONS[8] =
 {
     {"help", no_argument, 0, 'h'},
     {"subject", required_argument, 0, 's'},
     {"context", required_argument, 0, 'c'},
     {"type", required_argument, 0, 't'},
     {"recurse", required_argument, 0, 'r'},
+    {"prune", required_argument, 0, 'p'},
     {"json", no_argument, 0, 'j'},
     {NULL, 0, 0, '\0'}
 };
 
-static const char *HINTS[7] =
+static const char *HINTS[8] =
 {
     "Print the help message",
     "The subject of the story (initial condition)", 
     "Context relevance string (would be provided by a running short term history)",
     "Association type 1-4 (see paper III theory)",
     "Recursion depth",
+    "prune comma separated keywords",
     "JSON-like output",
     NULL
 };
@@ -97,7 +100,8 @@ void StartReport(int level);
 void EndReport(int level);
 void SectionBanner(char *s);
 void EndBanner(void);
-
+void BuildPruneList(char *list);
+int Prune(char *s);
 static int cmpassoc(const void *p1, const void *p2);
 static int cmprel(const void *p1, const void *p2);
 
@@ -114,7 +118,7 @@ void main(int argc, char** argv)
  
  OpenSSL_add_all_digests();
  
-  while ((c = getopt_long(argc, argv, "jht:s:c:r:", OPTIONS, &optindex)) != EOF)
+  while ((c = getopt_long(argc, argv, "jht:s:c:r:p:", OPTIONS, &optindex)) != EOF)
     {
     switch ((char) c)
        {
@@ -158,6 +162,10 @@ void main(int argc, char** argv)
 
        case 'j':
            JSON = true;
+           break;
+
+       case 'p':
+           BuildPruneList(optarg);
            break;
            
        default:
@@ -311,12 +319,10 @@ void ShowMatchingConcepts(char *context)
  struct dirent *dirp_c;
  int level = 0;
 
- RECURSE_OPT = 1;
  CONTEXT_OPT = strdup(context);
- unsigned char digest[EVP_MAX_MD_SIZE + 1];
- char *ctx_digest = NameDigest(ALL_CONTEXTS,digest);
-    
- snprintf(filename,CGN_BUFSIZE,"%s/%s/%d",VBASEDIR,ctx_digest,GR_CONTEXT);
+
+ printf("Looking for concepts to match %s...\n",context);
+ snprintf(filename,CGN_BUFSIZE,"%s",VBASEDIR);
 
  if ((dirh_context = opendir(filename)) == NULL)
     {
@@ -326,27 +332,28 @@ void ShowMatchingConcepts(char *context)
 
  for (dirp_c = readdir(dirh_context); dirp_c != NULL; dirp_c = readdir(dirh_context))
     {
-    if (dirp_c->d_name[0] == '.')
+    if (dirp_c->d_name[0] == '.' || Prune(dirp_c->d_name))
        {
        continue;
        }
 
     // Don't go back to places we've already been... (simplistic . could use atime as deadtime lock)
-    
-    char *subject = dirp_c->d_name;
+
+    char buffer[CGN_BUFSIZE];
+    char *subject = GetConceptFromDigest(dirp_c->d_name,buffer);
 
     if (strstr(subject,context))
        {
-       unsigned char digest[EVP_MAX_MD_SIZE + 1];
-       char *sdigest = NameDigest(subject,digest);
-       SearchForContextualizedAssociations(sdigest, GR_FOLLOWS, CGN_ROOT, level);
-       SearchForContextualizedAssociations(sdigest, -GR_FOLLOWS, CGN_ROOT, level);
-       SearchForContextualizedAssociations(sdigest, GR_NEAR, CGN_ROOT, level);
-       SearchForContextualizedAssociations(sdigest, -GR_NEAR, CGN_ROOT, level);
-       SearchForContextualizedAssociations(sdigest, GR_CONTAINS, CGN_ROOT, level);
-       SearchForContextualizedAssociations(sdigest, -GR_CONTAINS, CGN_ROOT, level);
-       SearchForContextualizedAssociations(sdigest, GR_EXPRESSES, CGN_ROOT, level);
-       SearchForContextualizedAssociations(sdigest, -GR_EXPRESSES, CGN_ROOT, level);
+       ConceptAlreadyUsed(dirp_c->d_name,0);
+       
+       SearchForContextualizedAssociations(dirp_c->d_name, GR_FOLLOWS, CGN_ROOT, level);
+       SearchForContextualizedAssociations(dirp_c->d_name, -GR_FOLLOWS, CGN_ROOT, level);
+       SearchForContextualizedAssociations(dirp_c->d_name, GR_NEAR, CGN_ROOT, level);
+       SearchForContextualizedAssociations(dirp_c->d_name, -GR_NEAR, CGN_ROOT, level);
+       SearchForContextualizedAssociations(dirp_c->d_name, GR_CONTAINS, CGN_ROOT, level);
+       SearchForContextualizedAssociations(dirp_c->d_name, -GR_CONTAINS, CGN_ROOT, level);
+       SearchForContextualizedAssociations(dirp_c->d_name, GR_EXPRESSES, CGN_ROOT, level);
+       SearchForContextualizedAssociations(dirp_c->d_name, -GR_EXPRESSES, CGN_ROOT, level);
        }
     }
 }
@@ -385,7 +392,7 @@ void SearchForContextualizedAssociations(char *cdigest, int atype, int prevtype,
        char digest[EVP_MAX_MD_SIZE + 1];
        
        snprintf(trunc,CGN_BUFSIZE," (%d) %s `%s'",atype,(atype > 0) ? GR_TYPES[abs(atype)][0]: GR_TYPES[abs(atype)][1] ,GetConceptFromDigest(array[i].cdigest,dg));
-       if (abs(atype) == GR_FOLLOWS && !ConceptAlreadyUsed(NameDigest(trunc,digest),0))
+       if ((abs(atype) == GR_FOLLOWS) && !ConceptAlreadyUsed(array[i].cdigest,0))
           {
           printf("                   (%s)\n",trunc);
           }
@@ -393,8 +400,14 @@ void SearchForContextualizedAssociations(char *cdigest, int atype, int prevtype,
        }
 
     // Explore next level, if context and everything matches
-
-
+    
+    if (level == 0)
+       {
+       char buffer[CGN_BUFSIZE];
+       char *subject = GetConceptFromDigest(cdigest,buffer);       
+       printf("\nFound related: %s %s `%s'\n\n",subject,(atype > 0) ? GR_TYPES[abs(atype)][0]: GR_TYPES[abs(atype)][1] ,GetConceptFromDigest(array[i].cdigest,dg));
+       }
+    
     if (level < RECURSE_OPT+1) // Arbitrary curb on length of stories
        {
        if (!FollowNextAssociation(prevtype,atype,level,cdigest,&(array[i])))
@@ -480,7 +493,7 @@ int FollowNextAssociation(int prevtype,int atype,int level,char *cdigest,LinkAss
   char cb2[CGN_BUFSIZE];
   char cb3[CGN_BUFSIZE];
 
-  if (ConceptAlreadyUsed(assoc->cdigest,level) || strcmp(cdigest,assoc->cdigest) == 0)
+  if (ConceptAlreadyUsed(assoc->cdigest,level) || strcmp(cdigest,assoc->cdigest) == 0 || Prune(assoc->cdigest))
      {
      if (level > 0)
         {
@@ -492,12 +505,12 @@ int FollowNextAssociation(int prevtype,int atype,int level,char *cdigest,LinkAss
      {
      if ((atype == -prevtype) && (abs(atype) != GR_FOLLOWS)) // Don't double back
         {
-        printf ("%s and also note \"%s\" %s \"%s\" (icontext %s)\n", Indent(level),GetConceptFromDigest(cdigest,cb1),assoc->fwd,GetConceptFromDigest(assoc->cdigest,cb2),assoc->icontext);
+        printf ("%s and also note \"%s\" %s \"%s\" (icontext %s)\n\n", Indent(level),GetConceptFromDigest(cdigest,cb1),assoc->fwd,GetConceptFromDigest(assoc->cdigest,cb2),assoc->icontext);
         //return; 
         }
      else
         {
-        printf ("%d:%s) %s \"%s\" %s \"%s\" (icontext: %s - %d%%)\n", level,Abbr(atype), Indent(level),GetConceptFromDigest(cdigest,cb1),assoc->fwd,GetConceptFromDigest(assoc->cdigest,cb2),assoc->icontext,assoc->relevance);
+        printf ("%d:%s) %s \"%s\" %s \"%s\" (icontext: %s - %d%%)\n\n", level,Abbr(atype), Indent(level),GetConceptFromDigest(cdigest,cb1),assoc->fwd,GetConceptFromDigest(assoc->cdigest,cb2),assoc->icontext,assoc->relevance);
         }
      }
 
@@ -567,9 +580,14 @@ int RankAssociationsByContext(LinkAssociation array[MAX_ASSOC_ARRAY], char *base
 
  for (dirp_a = readdir(dirh_assocs); dirp_a != NULL; dirp_a = readdir(dirh_assocs))
     {
-    if (dirp_a->d_name[0] == '.')
+    if (dirp_a->d_name[0] == '.' || Prune(dirp_a->d_name))
        {
        continue;
+       }
+
+    if (strcmp(fromcdigest,dirp_a->d_name) == 0)
+       {
+       continue; // can't avoid self-reference, but no need to mention it
        }
 
     // Don't go back to places we've already been... (simplistic . could use atime as deadtime lock)
@@ -961,4 +979,65 @@ void SectionBanner(char *s)
 void EndBanner(void)
 
 {
+}
+
+/**********************************************************/
+
+void BuildPruneList(char *s)
+{
+ char *sp, item[CGN_BUFSIZE];
+ int i = 0, n = 2;
+
+ for (sp = s; *sp != '\0'; sp++)
+    {
+    if (*sp == ',')
+       {
+       n++;
+       }
+    }
+
+ PRUNELIST = (char **)malloc((sizeof(char *)*n));
+ 
+ for (sp = s, i = 0; (sp < s+strlen(s)) && (i < n); sp += strlen(item)+1, i++)
+    {
+    item[0] = '\0';
+    sscanf(sp,"%[^,\n]",item);
+
+    if (*item == '\0')
+       {
+       PRUNELIST[i] = NULL;
+       break;
+       }
+    else
+       {
+       PRUNELIST[i] = strdup(item);
+       }
+    }
+ 
+for (i = 0; PRUNELIST[i] != NULL; i++)
+   {
+   printf(" - Prune search on strings containing `%s'\n",PRUNELIST[i]);
+   }
+}
+
+/**********************************************************/
+
+int Prune(char *s)
+{
+ int i;
+ char buffer[CGN_BUFSIZE];
+
+ if (!PRUNELIST)
+    {
+    return false;
+    }
+ 
+ for (i = 0; PRUNELIST[i] != NULL; i++)
+    {
+    if (strstr(GetConceptFromDigest(s,buffer),PRUNELIST[i]))
+       {
+       return true;
+       }
+    }
+ return false;
 }

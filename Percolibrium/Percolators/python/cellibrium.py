@@ -253,7 +253,7 @@ class Cellibrium:
             domain = "unknown domain";
 
         if len(ipv6) == 0:
-            domain = "no ipv6"
+            ipv6 = "no ipv6"
 
         where = "host %s.%s IPv4 %s ipv6 %s" % (uqhn,domain,ipv4,ipv6)
 

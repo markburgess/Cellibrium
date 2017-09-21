@@ -42,7 +42,6 @@ typedef int Policy; // Hack to use CGNgine defs
 
 void ReadTupleFile(char *filename);
 char *UpdateConcept(char *name);
-void Canonify(char *str);
 
 char VBASEDIR[256];
 
@@ -180,6 +179,11 @@ void ReadTupleFile(char *filename)
     UpdateAssociation(ALL_CONTEXTS,ictx_digest,-GR_CONTEXT,"is contained by","contains",any_digest);
     
     line++;
+
+    if (line % 100 == 0)
+       {
+       printf("  ..doing line %d\n",line);
+       }
     }
  
  fclose(fin);
@@ -221,21 +225,3 @@ char *UpdateConcept(char *name)
  return "failed";
 }
 
-/*****************************************************************************/
-
-void Canonify(char *str)
-    
-{ char *sp;
- 
- for (sp = str; *sp != '\0'; sp++)
-    {
-    if (*sp == '/' || *sp == '\\' || *sp == ',')
-       {
-       *sp = '!';
-       }
-    else
-       {
-       *sp = tolower(*sp);
-       }
-    }
-}
