@@ -569,7 +569,7 @@ char *EventClue(FILE *fp,char *who,char *what, time_t whentime, char *where, cha
  RoleGr(fp,how,"how","",icontext);
  RoleGr(fp,why,"why","",icontext);
 
- Gr(fp,what,a_caused_by,why,icontext);
+ Gr(fp,what,a_related_to,why,icontext);
  return event;
 }
 

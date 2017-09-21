@@ -1635,7 +1635,9 @@ static void AnnotateAnomaly(EvalContext *ctx,FILE *consc,time_t now,Item *proces
     snprintf(what,CF_BUFSIZE,"event %s at %s %s",how,where,when);
     snprintf(attr,CF_BUFSIZE,"%s,%s,%s",how,where,when); 
     
-    RoleGr(consc,what,"event",attr,icontext);
+    RoleGr(consc,what,"security event",attr,icontext);
+    Gr(consc,what,a_hasattr,"security","cgn_monitord system monitoring");
+    Gr(consc,what,a_hasattr,"event","cgn_monitord system monitoring");
     Log(LOG_LEVEL_VERBOSE,"  SECURITY cluster : %s\n",what);
     }
 
@@ -1653,6 +1655,9 @@ static void AnnotateAnomaly(EvalContext *ctx,FILE *consc,time_t now,Item *proces
     how = "unknown";
     
     EventClue(consc,who,what,now,where,how,why,icontext);
+    Gr(consc,what,a_hasattr,"performance","cgn_monitord system monitoring");
+    Gr(consc,what,a_hasattr,"workload","cgn_monitord system monitoring");
+    Gr(consc,what,a_hasattr,"event","cgn_monitord system monitoring");
 
     Log(LOG_LEVEL_VERBOSE,"--- Hypothesis workload changes cause performance changes --------------\n");
     Log(LOG_LEVEL_VERBOSE,"  WHO  : %s\n", who);
