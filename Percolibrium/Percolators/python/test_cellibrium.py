@@ -14,6 +14,10 @@ from cellibrium import Cellibrium
 
 c = Cellibrium()
 
+
+print "------------------------------------------------------"
+print "Test event function 1"
+print "------------------------------------------------------"
 #
 # Calling the role interface
 #
@@ -31,6 +35,8 @@ icontext = "cluedo";
 c.EventClue(sys.stdout,who,what,when,where,how,why,icontext);
 
 
+print "------------------------------------------------------"
+print "Test event function 2"
 print "------------------------------------------------------"
 
 #
@@ -52,8 +58,8 @@ wherex = c.WhereGr(sys.stdout,"Oslo","marklaptop","unknown","192.168.1.183","");
 c.EventClue(sys.stdout,who,what,when,wherex,how,why,icontext);
 
 print "------------------------------------------------------"
-
-# Causation 
+print " Rules of causation ?? (this is speculative)"
+print "------------------------------------------------------"
 
 c.Gr(sys.stdout,"performance anomaly at downstream host","a_origin","performance anomaly at upstream host","distributed system causation")
 c.RoleGr(sys.stdout,"performance anomaly at upstream host","performance anomaly","at upstream host","distributed system")
@@ -61,6 +67,8 @@ c.RoleGr(sys.stdout,"performance anomaly at downstream host","performance anomal
 
 where = c.HereGr(sys.stdout,"mark's laptop")
 
+print "------------------------------------------------------"
+print "test service functions"
 print "------------------------------------------------------"
 
 # Service relationships
@@ -117,9 +125,16 @@ c.ServerInstanceGr(sys.stdout,
            )
 
 print "------------------------------------------------------"
+print "Test time functions"
+print "------------------------------------------------------"
 
 
 c.LogTimeFormat1(sys.stdout,"2017-01-20 15:43:33")
+
+print "------------------------------------------------------"
+print "Generate invariant time keys"
+print "------------------------------------------------------"
+
 
 print "current time granule key = " + c.TimeKeyGen(now)
 

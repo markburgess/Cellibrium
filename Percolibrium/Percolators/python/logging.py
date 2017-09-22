@@ -194,3 +194,62 @@ icontext = "Rubbos service"
 
 c.EventClue(sys.stdout,who,what,0,where,how,why,icontext);
 
+
+###############################################################################
+
+print "extracted log time granule key = " + c.LogTimeKeyGen1("2017-01-20 15:43:33")
+
+###############################################################################
+
+# Register each node, foreach IP
+
+namenodehub = "hadoop namenode %s %s" % (c.HostID("192.168.5.65"),c.IPv4("192.168.5.65"))
+attr = "%s,%s" % (c.HostID("192.168.5.65"),c.IPv4("192.168.5.65"))
+c.RoleGr(sys.stdout,namenodehub,"hadoop namenode",attr,icontext)
+
+
+# Events currently recognized
+
+
+
+# 1. 'addToInvalidates', '' - see sourcecode http://grepcode.com/file/repo1.maven.org/maven2/org.apache.hadoop/hadoop-hdfs/0.22.0/org/apache/hadoop/hdfs/server/namenode/BlockManager.java#BlockManager.addToInvalidates%28org.apache.hadoop.hdfs.protocol.Block%29
+# descr "Adds block to list of blocks which will be invalidated on all its datanodes" 
+
+# 2. 'allocateBlock', 'replica'
+# 3. 'addStoredBlock', 'replica'
+# 4. 'replicate', 'replica'
+
+
+# All of these are pipeline pushes (2 x IP addresses and a timestamp)
+
+c.ServerAcceptPostData(sys.stdout,"192.168.5.55","192.168.7.176","Hadoop DataNode","scheduling file for deletion")
+c.ClientPush(sys.stdout,"192.168.7.210","192.168.7.65","replica block","Hadoop DataNode",50010)
+c.ServerListenPromise(sys.stdout,"192.168.5.65","Hadoop Datanode",50010)
+c.LogTimeFormat1(sys.stdout,"2017-01-20 15:43:33")
+
+
+# THERE MAY BE 2 KINDS OF ANOMALY
+
+# a) There might be some semantic anomalies (message type unknown)
+#  see https://issues.apache.org/jira/browse/HDFS-9650 anomaly "Redundant addStoredBlock request received"
+
+who  = "from %s to %s" % (c.HostID(src),c.HostID(dst))
+what = "ANOMALOUS LOG MESSAGE";
+why = "Redundant addStoredBlock request received " + who
+when = datetime.strptime(str,'%Y-%m-%d %H:%M:%S') 
+src  = "192.168.5.176"
+dst  = "192.168.5.55"
+where = c.HereGr(sys.stdout,"NYC cloud")          # on loghost, or adapt to give argument
+how = ""
+
+c.EventClue(sys.stdout,who,what,when,where,how,why,icontext);
+
+#
+# b) We can try to get more by looking for frequency anomalies (frequency is non-invariant, so we need to detect an invariant set
+# of anomaly conditions from the frequencies by preprocessing
+#
+
+# Store (timekey, from_IP_to_IP, granule_average)
+
+print "current time granule key = " + c.TimeKeyGen(now)
+print "extracted log time granule key = " + c.LogTimeKeyGen1("2017-01-20 15:43:33")

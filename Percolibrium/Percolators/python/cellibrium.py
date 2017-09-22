@@ -246,16 +246,13 @@ class Cellibrium:
     ########################################################################################################
 
     def LogTimeFormat1(self,ofile,str):
-        datetimeFormat = '%Y-%m-%d %H:%M:%S'
-        now = datetime.strptime(str, datetimeFormat) 
-        #print "time verify " + now.ctime()
-        self.TimeGr(ofile,time.mktime(now.timetuple()))
+        now = datetime.strptime(str,'%Y-%m-%d %H:%M:%S') 
+        return self.TimeGr(ofile,time.mktime(now.timetuple()))
 
     ########################################################################################################
 
     def LogTimeKeyGen1(self,str):
-        datetimeFormat = '%Y-%m-%d %H:%M:%S'
-        now = datetime.strptime(str, datetimeFormat) 
+        now = datetime.strptime(str,'%Y-%m-%d %H:%M:%S') 
         return self.TimeKeyGen(time.mktime(now.timetuple()))
 
     ########################################################################################################
@@ -690,4 +687,30 @@ class Cellibrium:
         self.Gr(ofile,origin,"a_related_to",logmessage,"???? TBD")
 
         return "something"
+
+    ########################################################################################################
+    # Key-value data store (could use an embedded DB, here just with tmp files)
+    ########################################################################################################
+
+    #def UpdateRealQ(self,qname,newq):
+ 
+    #    if (self.LoadSpecialQ(qname,&oldav,&oldvar)):
+    #        nextav = self.Average(newq,oldav,WAGE);
+    #        newvar = (newq-oldav)*(newq-oldav);
+    #        nextvar = self.Average(newvar,oldvar,WAGE);
+    #        devq = sqrt(oldvar);
+    #    else:
+    #        nextav = 0.5;
+    #        newvar = (newq-oldav)*(newq-oldav);
+    #        nextvar = self.Average(newvar,oldvar,WAGE);
+    #        devq = sqrt(oldvar);
+
+    #    if (newq > oldav + 3*devq):
+    #        anomaly = "%s_high_anomaly" % qname
+    #    if (newq < oldav - 3*devq):
+    #        anomaly = "%s_low_anomaly" % qname
+            
+    #    self.SaveSpecialQ(qname,nextav,nextvar);
+            
+    #    return anomaly            
 
