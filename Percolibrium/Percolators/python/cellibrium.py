@@ -2,6 +2,7 @@ import sys
 import time
 import re
 import socket
+from datetime import datetime
 
 class Cellibrium:
 
@@ -241,6 +242,49 @@ class Cellibrium:
 
     # Could also use  WeekSlot (Mon-Sun,MinXX_YY),
     #                 MonthSlot (1stday, lastday, else DayN) etc
+
+    ########################################################################################################
+
+    def LogTimeFormat1(self,ofile,str):
+        datetimeFormat = '%Y-%m-%d %H:%M:%S'
+        now = datetime.strptime(str, datetimeFormat) 
+        #print "time verify " + now.ctime()
+        self.TimeGr(ofile,time.mktime(now.timetuple()))
+
+    ########################################################################################################
+
+    def LogTimeKeyGen1(self,str):
+        datetimeFormat = '%Y-%m-%d %H:%M:%S'
+        now = datetime.strptime(str, datetimeFormat) 
+        return self.TimeKeyGen(time.mktime(now.timetuple()))
+
+    ########################################################################################################
+
+    def TimeKeyGen(self,maketime):
+        #datetimeFormat = '%Y-%m-%d %H:%M:%S'
+        #now = datetime.strptime(str, datetimeFormat) 
+        #print "time verify " + now.ctime()
+        #maketime = time.mktime(now.timetuple()))
+
+        lt = time.localtime(maketime)
+
+        # Time semantics
+        
+        lifecycle = "Lcycle_%d" % (lt[0] % 3)
+        year = "Yr%d" % lt[0]
+        month = self.GR_MONTH_TEXT[lt[1]-1]
+        day = "Day%02d" % lt[2]
+        dow = "%3.3s" % self.GR_DAY_TEXT[lt[6]]
+        hour = "Hr%02d" % lt[3]
+        shift = "%s" % self.GR_SHIFT_TEXT[lt[3] / 6];
+        quarter = "Q%d" % ((lt[4] / 15) + 1)
+        min = "Min%02d" % lt[4]
+        interval_start = (lt[4] / 5) * 5
+        interval_end = (interval_start + 5) % 60
+        mins = "Min%02d_%02d" % (interval_start,interval_end)
+
+        key = "%s:%s:%s" % (dow,hour,mins)
+        return key
 
     ########################################################################################################
 

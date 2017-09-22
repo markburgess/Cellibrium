@@ -118,3 +118,9 @@ c.ServerInstanceGr(sys.stdout,
 
 print "------------------------------------------------------"
 
+
+c.LogTimeFormat1(sys.stdout,"2017-01-20 15:43:33")
+
+print "current time granule key = " + c.TimeKeyGen(now)
+
+print "extracted log time granule key = " + c.LogTimeKeyGen1("2017-01-20 15:43:33")
