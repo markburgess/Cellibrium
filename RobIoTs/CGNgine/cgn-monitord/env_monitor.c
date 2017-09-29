@@ -90,7 +90,6 @@ static double CF_THIS[CF_OBSERVABLES] = { 0.0 };
 
 static char *MY_LOCATION = "Mark's hideout address in Oslo"; // Need some way of reading this, e.g. serial number
 
-static Item *STIME = NULL;
 static Item *USERS = NULL;
 static Item *ARGS = NULL;
 
@@ -1754,8 +1753,8 @@ void ClassifyProcessState(EvalContext *ctx, FILE *fp)
  char *titles = PROCESSTABLE->name;
  time_t pstime = time(NULL);
  int total_processes = 0;
- int process_group_0 = 0,process_group_1 = 0,process_group_2 = 0, process_group_user = 0;
- int defuncts = 0;
+ double process_group_0 = 0,process_group_1 = 0,process_group_2 = 0, process_group_user = 0;
+ double defuncts = 0;
  char *column[CF_PROCCOLS] = {0};
  char *names[CF_PROCCOLS] = {0};
  int start[CF_PROCCOLS] = {0};
@@ -1770,6 +1769,19 @@ void ClassifyProcessState(EvalContext *ctx, FILE *fp)
     if (!SplitProcLine(ip->name, pstime, names, start, end, column))
        {
        return;
+       }
+
+    // Sanitize some specifics to extract invariant parts by removing IDs
+
+    if (*column[11] == '[')
+       {
+       for (char *sp = column[11]; *sp != '\0'; sp++)
+          {
+          if (isdigit(*sp)) // replace and specific instance numbers with N
+             {
+             *sp = 'N';
+             }
+          }
        }
 
     total_processes++;
@@ -1789,13 +1801,9 @@ void ClassifyProcessState(EvalContext *ctx, FILE *fp)
     // Count processes per user
     IdempPrependItem(&USERS,column[0],NULL);
     IncrementItemListCounter(USERS,column[0]);
-
-    // Count processes per stime - how many started and when?
-    IdempPrependItem(&STIME,column[10],NULL);
-    IncrementItemListCounter(STIME,column[10]);
     
-    // ARGS
     IdempPrependItem(&ARGS,column[11],NULL);
+    IncrementItemListCounter(ARGS,column[11]);
 
     for (i = 0; column[i] != NULL; i++)
        {
@@ -1821,13 +1829,11 @@ void ClassifyProcessState(EvalContext *ctx, FILE *fp)
  UpdateRealQResourceImpact(ctx,"processgroupUSERcount",process_group_user);
      
  ClassifyListChanges(ctx,ARGS, "JOB command change");
- ClassifyListChanges(ctx,STIME,"JOB started process at");
  ClassifyListChanges(ctx,USERS,"USERname change");
  
  DeleteItemList(USERS);
- DeleteItemList(STIME);
  DeleteItemList(ARGS);
- USERS = STIME = ARGS = NULL;
+ USERS = ARGS = NULL;
  
 }
 
@@ -1913,78 +1919,6 @@ static void UsernameConcepts(FILE *fp,char *user)
  RoleGr(fp,hub,"active username",attr,"host process table");
 }
 
-/***********************************************************************************************/
-
-void UpdateStrQResourceImpact(EvalContext *ctx, char *name,char *value,char *user,char *args)
-{
- double newq = 0.1;
- char qname[CF_BUFSIZE];
- 
- if (strcmp(value,"-") == 0 ||strcmp(value,"0.0") == 0)
-    {
-    return; // uninteresting
-    }
-
-  sscanf(value,"%lf",&newq);
- 
-  if (fabs(newq) > 99.0)
-     {
-     // parsing error?
-     return;
-     }
-  
-  // The reporting is already coarse grained by ps
-  
-  snprintf(qname,CF_BUFSIZE,"%s_%s_%.64s",user,name,CanonifyName(args));
-  UpdateRealQResourceImpact(ctx,qname,newq);
-      
-}
-
-/***********************************************************************************************/
-
-void UpdateRealQResourceImpact(EvalContext *ctx, char *qname,double newq)
-{
- double oldav = 0, oldvar = 0.1;
- char cname[CF_BUFSIZE];
- 
- if (LoadSpecialQ(qname,&oldav,&oldvar))
-    {
-    // Because the coarse resolution is only 0.1
-    
-    if (oldvar == 0) // desensitize
-       {
-       oldvar = 0.5;
-       }
-    
-    double nextav = WAverage(newq,oldav,WAGE);
-    double newvar = (newq-oldav)*(newq-oldav);
-    double nextvar = WAverage(newvar,oldvar,WAGE);
-    double devq = sqrt(oldvar);
-
-    if (devq < 0.1)
-       {
-       devq = 0.1; // Minimum sensitivity
-       }
-    
-    if (newq > oldav + 3*devq)
-       {
-       snprintf(cname,CF_BUFSIZE,"%s_high_anomaly",qname);
-       EvalContextClassPutSoft(ctx, cname, CONTEXT_SCOPE_NAMESPACE, "process state");
-       Log(LOG_LEVEL_VERBOSE," [pr] Process anomaly %s (%lf > %lf)\n",cname,newq,oldav+3*devq);
-       }
-    else if (newq < oldav - 3*devq)
-       {
-       snprintf(cname,CF_BUFSIZE,"%s_low_anomaly",qname);
-       EvalContextClassPutSoft(ctx, cname, CONTEXT_SCOPE_NAMESPACE, "process state");
-       Log(LOG_LEVEL_VERBOSE," [pr] Process anomaly %s (%lf < %lf)\n",cname,newq,oldav+3*devq);
-       }
-    
-    SaveSpecialQ(qname,nextav,nextvar);
-    }
-  // if more 30% of resource flag this specially
-  
-}
-
 /*********************************************************************/
 
 void ClassifyListChanges(EvalContext *ctx, Item *current_state, char *comment)
@@ -1995,38 +1929,20 @@ void ClassifyListChanges(EvalContext *ctx, Item *current_state, char *comment)
  // Now separate the lists into (invariant/intesect + delta/NOT-intersect) sets
 
  Item *ip1 = current_state, *ip2 = prev_state, *match;
+
+ // Learn the current number of each named item, in the usual WAverage way
  
  for (ip1 = current_state; ip1 != NULL; ip1=ip1->next)
     {
-    if ((match = ReturnItemIn(prev_state,ip1->name)))
-       {
-       if (ip1->counter > match->counter)
-          {
-          snprintf(name,CF_BUFSIZE,"%s %s_increased",comment,ip1->name);
-          }
-       else if (ip1->counter < match->counter)
-          {
-          snprintf(name,CF_BUFSIZE,"%s %s_decreased",comment,ip1->name);
-          }
-       else
-          {
-          // Blissfully silent invariance
-          }
-
-       DeleteItemLiteral(&prev_state,ip1->name);
-       }
-    else
-       {
-       snprintf(name,CF_BUFSIZE,"%s %s_appeared",comment,ip1->name);
-       }
-    
-    EvalContextClassPutSoft(ctx,name, CONTEXT_SCOPE_NAMESPACE, "process state");
+    snprintf(name,CF_BUFSIZE,"%s_%s",comment,ip1->name);
+    UpdateRealQResourceImpact(ctx,name,(double)(ip1->counter));
+    DeleteItemLiteral(&prev_state,ip1->name);
     }
  
  for (ip2 = prev_state; ip2 != NULL; ip2=ip2->next)
     {
-    snprintf(name,CF_BUFSIZE,"%s %s_disappeared",comment,ip2->name);
-    EvalContextClassPutSoft(ctx,name, CONTEXT_SCOPE_NAMESPACE, "process state");          
+    snprintf(name,CF_BUFSIZE,"%s_%s",comment,ip2->name);
+    UpdateRealQResourceImpact(ctx,name,0);
     }
  
  SaveStateList(current_state,comment);
@@ -2113,37 +2029,43 @@ static void DiffInvariants(EvalContext *ctx,Item **process_syndrome,Item **perfo
        }
     else
        {
+       char name[CF_BUFSIZE];
+       snprintf(name,CF_BUFSIZE,"+%s",ip1->name);
+       
        if (strncmp(ip1->name,"JOB",3) == 0)
           {
-          PrependItem(process_syndrome,ip1->name,NULL);
+          PrependItem(process_syndrome,name,NULL);
           }
        else if (((strncmp(ip1->name,"USER",4) == 0) && strstr(ip1->name,"appeared"))
                 || strstr(ip1->name,"6_port") || strstr(ip1->name,"4_port")
                 || strstr(ip1->name,"ipv4")|| strstr(ip1->name,"ipv6"))
           {
-          PrependItem(security_syndrome,ip1->name,NULL);
+          PrependItem(security_syndrome,name,NULL);
           }
        else
           {
-          PrependItem(performance_syndrome,ip1->name,NULL);
+          PrependItem(performance_syndrome,name,NULL);
           }
        }
     }
  
  for (ip2 = prev_state; ip2 != NULL; ip2=ip2->next)
     {
+    char name[CF_BUFSIZE];
+    snprintf(name,CF_BUFSIZE,"-%s",ip2->name);
+
     if (strncmp(ip2->name,"JOB",3) == 0)
        {
-       PrependItem(process_syndrome,ip2->name,NULL);
+       PrependItem(process_syndrome,name,NULL);
        }
     else if (strncmp(ip2->name,"USER",4) == 0 || strstr(ip2->name,"6_port") || strstr(ip2->name,"4_port")
              || strstr(ip2->name,"ipv4")|| strstr(ip2->name,"ipv6"))
        {
-       PrependItem(security_syndrome,ip2->name,NULL);
+       PrependItem(security_syndrome,name,NULL);
        }
     else
        {
-       PrependItem(performance_syndrome,ip2->name,NULL);
+       PrependItem(performance_syndrome,name,NULL);
        }
     }
  
@@ -2319,13 +2241,85 @@ char *MakeFlatList(FILE *fp,Item *list)
 
  members:
 
-
  for (ip = list; ip != NULL; ip=ip->next)
     {
     Gr(fp,result,a_contains,ip->name,"system monitoring measurement");
     }
 
  return result;
+}
+
+/***********************************************************************************************/
+
+void UpdateStrQResourceImpact(EvalContext *ctx, char *name,char *value,char *user,char *args)
+{
+ double newq = 0.1;
+ char qname[CF_BUFSIZE];
+ 
+ if (strcmp(value,"-") == 0 ||strcmp(value,"0.0") == 0)
+    {
+    return; // uninteresting
+    }
+
+  sscanf(value,"%lf",&newq);
+ 
+  if (fabs(newq) > 99.0)
+     {
+     // parsing error?
+     return;
+     }
+  
+  // The reporting is already coarse grained by ps
+  
+  snprintf(qname,CF_BUFSIZE,"%s_%s_%.64s",user,name,CanonifyName(args));
+  UpdateRealQResourceImpact(ctx,qname,newq);
+      
+}
+
+/***********************************************************************************************/
+
+void UpdateRealQResourceImpact(EvalContext *ctx, char *qname,double newq)
+{
+ double oldav = 0, oldvar = 0.1;
+ char cname[CF_BUFSIZE];
+ 
+ if (LoadSpecialQ(qname,&oldav,&oldvar))
+    {
+    // Because the coarse resolution is only 0.1
+    
+    if (oldvar == 0) // desensitize
+       {
+       oldvar = 0.5;
+       }
+    
+    double nextav = WAverage(newq,oldav,WAGE);
+    double newvar = (newq-oldav)*(newq-oldav);
+    double nextvar = WAverage(newvar,oldvar,WAGE);
+    double devq = sqrt(oldvar);
+
+    if (devq < 0.1)
+       {
+       devq = 0.1; // Minimum sensitivity
+       }
+    
+    if (newq > oldav + 3*devq)
+       {
+       snprintf(cname,CF_BUFSIZE,"%s_high_anomaly",qname);
+       EvalContextClassPutSoft(ctx, cname, CONTEXT_SCOPE_NAMESPACE, "process state");
+       Log(LOG_LEVEL_VERBOSE," [pr] Process anomaly %s (%lf > %lf)\n",cname,newq,oldav+3*devq);
+       }
+    else if (newq < oldav - 3*devq)
+       {
+       snprintf(cname,CF_BUFSIZE,"%s_low_anomaly",qname);
+       EvalContextClassPutSoft(ctx, cname, CONTEXT_SCOPE_NAMESPACE, "process state");
+       Log(LOG_LEVEL_VERBOSE," [pr] Process anomaly %s (%lf < %lf)\n",cname,newq,oldav+3*devq);
+       }
+    
+    SaveSpecialQ(qname,nextav,nextvar);
+    }
+
+ // if more 30% of resource flag this specially
+  
 }
 
 /*********************************************************************/
