@@ -434,17 +434,8 @@ void MonNetworkGatherData(double *cf_this)
        {
        Log(LOG_LEVEL_VERBOSE, "[%d] port sensor incoming '%s' q = %.0lf", i, ECGSOCKS[i].name, cf_this[ECGSOCKS[i].in]);
        }
-    snprintf(vbuff, CF_MAXVARSIZE, "%s/state/cf_incoming.%s", CFWORKDIR, ECGSOCKS[i].name);
-    if (stat(vbuff, &statbuf) != -1)
-       {
-       if ((ItemListSize(in[i]) < statbuf.st_size) && (now < statbuf.st_mtime + 40 * 60))
-          {
-          Log(LOG_LEVEL_VERBOSE, "     New state '%s' is smaller than %s, retaining old for %ld mins longer", ECGSOCKS[i].name, vbuff, (statbuf.st_mtime + 40 * 60 - now)/60);
-          DeleteItemList(in[i]);
-          continue;
-          }
-       }
     
+    snprintf(vbuff, CF_MAXVARSIZE, "%s/state/cf_incoming.%s", CFWORKDIR, ECGSOCKS[i].name);    
     SetNetworkEntropyClasses(CanonifyName(ECGSOCKS[i].name), "in", in[i]);
     RawSaveItemList(in[i], vbuff, NewLineMode_Unix);
     DeleteItemList(in[i]);
@@ -461,17 +452,6 @@ void MonNetworkGatherData(double *cf_this)
        Log(LOG_LEVEL_VERBOSE, "[%d] port sensor outgoing '%s' q = %.0lf", i, ECGSOCKS[i].name, cf_this[ECGSOCKS[i].out]);
        }
     snprintf(vbuff, CF_MAXVARSIZE, "%s/state/cf_outgoing.%s", CFWORKDIR, ECGSOCKS[i].name);
-    
-    if (stat(vbuff, &statbuf) != -1)
-       {
-       if ((ItemListSize(out[i]) < statbuf.st_size) && (now < statbuf.st_mtime + 40 * 60))
-          {
-          Log(LOG_LEVEL_VERBOSE, "     New state '%s' is smaller than %s, retaining old for %ld mins longer", ECGSOCKS[i].name, vbuff, (statbuf.st_mtime + 40 * 60 - now)/60);
-          DeleteItemList(out[i]);
-          continue;
-          }
-       }
-    
     SetNetworkEntropyClasses(CanonifyName(ECGSOCKS[i].name), "out", out[i]);
     RawSaveItemList(out[i], vbuff, NewLineMode_Unix);
     DeleteItemList(out[i]);
