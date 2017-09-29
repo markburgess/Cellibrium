@@ -1925,7 +1925,7 @@ void ClassifyListChanges(EvalContext *ctx, Item *current_state, char *comment)
 {
  Item *prev_state = LoadStateList(comment); // Assume pre-sorted, no tampering
  char name[CF_BUFSIZE];
- 
+
  // Now separate the lists into (invariant/intesect + delta/NOT-intersect) sets
 
  Item *ip1 = current_state, *ip2 = prev_state, *match;
@@ -1934,13 +1934,24 @@ void ClassifyListChanges(EvalContext *ctx, Item *current_state, char *comment)
  
  for (ip1 = current_state; ip1 != NULL; ip1=ip1->next)
     {
-    snprintf(name,CF_BUFSIZE,"%s_%s",comment,ip1->name);
+    if ((match = ReturnItemIn(prev_state,ip1->name)))
+       {   
+       }
+    else
+       {
+       snprintf(name,CF_BUFSIZE,"%s %s_appeared",comment,ip1->name);
+       EvalContextClassPutSoft(ctx,name, CONTEXT_SCOPE_NAMESPACE, "process state");
+       }
+    
+    snprintf(name,CF_BUFSIZE,"%s_%s",comment,ip1->name); 
     UpdateRealQResourceImpact(ctx,name,(double)(ip1->counter));
     DeleteItemLiteral(&prev_state,ip1->name);
     }
  
  for (ip2 = prev_state; ip2 != NULL; ip2=ip2->next)
     {
+    snprintf(name,CF_BUFSIZE,"%s %s_disappeared",comment,ip2->name);
+    EvalContextClassPutSoft(ctx,name, CONTEXT_SCOPE_NAMESPACE, "process state"); 
     snprintf(name,CF_BUFSIZE,"%s_%s",comment,ip2->name);
     UpdateRealQResourceImpact(ctx,name,0);
     }
@@ -2314,7 +2325,7 @@ void UpdateRealQResourceImpact(EvalContext *ctx, char *qname,double newq)
        EvalContextClassPutSoft(ctx, cname, CONTEXT_SCOPE_NAMESPACE, "process state");
        Log(LOG_LEVEL_VERBOSE," [pr] Process anomaly %s (%lf < %lf)\n",cname,newq,oldav+3*devq);
        }
-    
+
     SaveSpecialQ(qname,nextav,nextvar);
     }
 
