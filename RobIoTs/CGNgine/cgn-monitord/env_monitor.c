@@ -160,6 +160,7 @@ static void SaveStateList(Item *list,char *name);
 static Item *LoadStateList(char *name);
 void ClassifyListChanges(EvalContext *ctx, Item *current_state, char *comment);
 void ActiveUsers(FILE *fp,char *hub);
+void CheckExpectedSpacetime(EvalContext *ctx);
 
 /****************************************************************/
 
@@ -667,8 +668,9 @@ static void BuildConsciousState(EvalContext *ctx, Averages av, Timescales t)
 
  char now[CF_SMALLBUF];
  time_t nowt = time(NULL);
- snprintf(now,CF_SMALLBUF, "sample at t_%s", GenTimeKey(nowt));
+
  UpdateTimeClasses(ctx, nowt);
+ CheckExpectedSpacetime(ctx);
 
  unlink(GRAPHFILE_NEW);
  FILE *consc = fopen(GRAPHFILE_NEW, "w");
@@ -918,17 +920,13 @@ static void BuildConsciousState(EvalContext *ctx, Averages av, Timescales t)
        char *icontext = "system monitoring measurment";
        char *where =  HereGr(consc,MY_LOCATION);
 
-       Log(LOG_LEVEL_VERBOSE, "Detected a restart anomaly - noting, and skipping turmoil details");
+       Log(LOG_LEVEL_VERBOSE, "\n ***********\n * DETECTED A RESTART anomaly\n ***********\n");
        EventClue(consc,who,what,when,where,how,why,icontext);
        RoleGr(consc,how,"how",howattr,"system monitoring measurement");
        }
 
     DiffInvariants(ctx,&process_syndrome,&performance_syndrome,&security_syndrome,&invariants);
-
-    if (!JUST_REVIVED)
-       {
-       AnnotateAnomaly(ctx,consc,nowt,process_syndrome,performance_syndrome,security_syndrome,invariants);
-       }
+    AnnotateAnomaly(ctx,consc,nowt,process_syndrome,performance_syndrome,security_syndrome,invariants);
 
     DeleteItemList(performance_syndrome);
     DeleteItemList(security_syndrome);
@@ -1256,25 +1254,7 @@ static void SetVariable(FILE *consc, char *name, double value, double average, d
  snprintf(var, CF_MAXVARSIZE, "dev_%s=%.2lf", name, stddev);
  AppendItem(classlist, var, "");
 
- /* Now for the semantic map - this seems too much detail
 
- char attr[CF_BUFSIZE];
- 
- snprintf(var, CF_MAXVARSIZE, "measurement estimator %s", name);
- snprintf(attr, CF_MAXVARSIZE, "measurement value %s, measurement expectation %s,measurement standard deviation %s", name, name, name);
- RoleGr(consc,var,"state measurement estimator", attr, ContextGr(consc,"quantitative host state measurement monitoring here now"));
-
- snprintf(var, CF_MAXVARSIZE, "measurement value %s", name);
- snprintf(attr, CF_MAXVARSIZE, "%.2lf", value);
- RoleGr(consc,var,"current value or state", attr, "quantitative host state measurement monitoring here now");
-
- snprintf(var, CF_MAXVARSIZE, "measurement expectation %s", name);
- snprintf(attr, CF_MAXVARSIZE, "%.2lf", average);
- RoleGr(consc,var,"expectation value", attr, "quantitative host state measurement monitoring here now");
-
- snprintf(var, CF_MAXVARSIZE, "measurement standard deviation %s", name);
- snprintf(attr, CF_MAXVARSIZE, "%.2lf", stddev);
- RoleGr(consc,var,"standard deviation", attr, "quantitative host state measurement monitoring here now"); */
 }
 
 /*****************************************************************************/
@@ -1610,18 +1590,27 @@ static void AnnotateAnomaly(EvalContext *ctx,FILE *consc,time_t now,Item *proces
  char attr[CF_BUFSIZE];
 
  // Report
+ int dimension = 0;
  
  for (ip = process_syndrome; ip != NULL; ip=ip->next)
     {
     Log(LOG_LEVEL_VERBOSE,"  PROCSYMPTOMS : %s\n",ip->name);
+    dimension++;
     }
  for (ip = performance_syndrome; ip != NULL; ip=ip->next)
     {
     Log(LOG_LEVEL_VERBOSE,"  PERFSYMPTOMS : %s\n",ip->name);
+    dimension++;
     } 
  for (ip = security_syndrome; ip != NULL; ip=ip->next)
     {
     Log(LOG_LEVEL_VERBOSE,"  SECURITY : %s\n",ip->name);
+    dimension++;
+    }
+
+ if (dimension)
+    {
+    Log(LOG_LEVEL_VERBOSE,"\n  ANOMALY OF DIMENSION : %d\n",dimension);
     }
 
  // End reporting
@@ -2378,3 +2367,96 @@ void ActiveUsers(FILE *fp,char *hub)
  snprintf(hub,CF_BUFSIZE,"active users %s",HereGr(fp,MY_LOCATION));
  RoleGr(fp,hub,"active users","users,username","host process table");
 }
+
+/*********************************************************************/
+
+void CheckExpectedSpacetime(EvalContext *ctx)
+{
+ FILE *fp;
+ char name[CF_BUFSIZE];
+ char lastip[CF_BUFSIZE],lastname[CF_BUFSIZE],lastdomain[CF_BUFSIZE];
+ int normal = true;
+ 
+ Banner(" * Checking spacetime location");
+
+ if (strlen(VDOMAIN) == 0)
+    {
+    strcpy(VDOMAIN,"unknown_domain");
+    }
+
+ snprintf(name,CF_BUFSIZE,"%s/state/location",CFWORKDIR);
+
+ lastip[0] = lastname[0] = lastdomain[0] = '\0';
+
+ if ((fp = fopen(name,"r")) != NULL)
+    {
+    fscanf(fp,"%[^, ],%[^, ],%s",lastname,lastdomain,lastip);
+    fclose(fp);
+    }
+
+ if (strcmp(lastname,VUQNAME) || strcmp(lastdomain,VDOMAIN) || strcmp(lastip,VIPADDRESS))
+    {
+    EvalContextClassPutSoft(ctx,"teleportation_event", CONTEXT_SCOPE_NAMESPACE, "check location");
+
+    Log(LOG_LEVEL_VERBOSE," * teleportation event - sensors moved to a new IP location - from (%s,%s,%s) to (%s,%s,%s)\n",lastname,lastdomain,lastip,VUQNAME,VDOMAIN,VIPADDRESS);
+    
+    if ((fp = fopen(name,"w")) != NULL)
+       {
+       fprintf(fp,"%s,%s,%s\n",VUQNAME,VDOMAIN,VIPADDRESS);
+       fclose(fp);
+       }
+
+    normal = false;
+    }
+
+ snprintf(name,CF_BUFSIZE,"%s/state/clock",CFWORKDIR);
+
+ time_t then = 0, now = time(NULL);
+
+ if ((fp = fopen(name,"r")) != NULL)
+    {
+    fscanf(fp,"%ld",&then);
+    fclose(fp);
+    }
+
+ if (now < then)
+    {
+    // System blacked out
+    EvalContextClassPutSoft(ctx,"clock_jumped_backwards_event", CONTEXT_SCOPE_NAMESPACE, "check clock time");
+    Log(LOG_LEVEL_VERBOSE," * clock jump event - possible clock reset - jump %d secs\n",(int)(now-then));
+    normal = false;
+    }
+
+ if (now > then + 2*SLEEPTIME)
+    {
+    // System blacked out
+    EvalContextClassPutSoft(ctx,"clock_jumped_forwards_event", CONTEXT_SCOPE_NAMESPACE, "check clock time");
+    Log(LOG_LEVEL_VERBOSE," * clock jump event - possible system blackout - jump %d secs\n",(int)(now-then));
+    normal = false;
+    }
+
+ if ((fp = fopen(name,"w")) != NULL)
+    {
+    fprintf(fp,"%ld",now);
+    fclose(fp);
+    }
+
+ if (normal)
+    {
+    Log(LOG_LEVEL_VERBOSE," * no changes\n");
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
