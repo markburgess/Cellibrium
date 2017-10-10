@@ -2317,6 +2317,13 @@ void UpdateRealQResourceImpact(EvalContext *ctx, char *qname,double newq)
 
     SaveSpecialQ(qname,nextav,nextvar);
     }
+ else
+    {
+    double nextav = WAverage(newq,0,WAGE);
+    double nextvar = WAverage(newq/2,0,WAGE);
+    
+    SaveSpecialQ(qname,nextav,nextvar);
+    }
 
  // if more 30% of resource flag this specially
   
