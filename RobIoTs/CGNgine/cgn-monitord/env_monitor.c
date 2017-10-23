@@ -1928,7 +1928,7 @@ void ClassifyListChanges(EvalContext *ctx, Item *current_state, char *comment)
        }
     else
        {
-       snprintf(name,CF_BUFSIZE,"%s %s_appeared",comment,ip1->name);
+       snprintf(name,CF_BUFSIZE,"%s %.64s_appeared",comment,ip1->name);
        EvalContextClassPutSoft(ctx,name, CONTEXT_SCOPE_NAMESPACE, "process state");
        }
     
@@ -1939,9 +1939,9 @@ void ClassifyListChanges(EvalContext *ctx, Item *current_state, char *comment)
  
  for (ip2 = prev_state; ip2 != NULL; ip2=ip2->next)
     {
-    snprintf(name,CF_BUFSIZE,"%s %s_disappeared",comment,ip2->name);
+    snprintf(name,CF_BUFSIZE,"%s %.64s_disappeared",comment,ip2->name);
     EvalContextClassPutSoft(ctx,name, CONTEXT_SCOPE_NAMESPACE, "process state"); 
-    snprintf(name,CF_BUFSIZE,"%s_%s",comment,ip2->name);
+    snprintf(name,CF_BUFSIZE,"%s_%.64s",comment,ip2->name);
     UpdateRealQResourceImpact(ctx,name,0);
     }
  
