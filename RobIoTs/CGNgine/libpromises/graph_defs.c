@@ -711,7 +711,7 @@ char *WhereGr(FILE *fp,char *address, char *uqhn, char *domain, char *ipv4, char
 
   if (ipv6 == NULL || strlen(ipv6) == 0)
     {
-    ipv6 = "no ipv6";
+    ipv6 = "";
     }
 
   snprintf(where,CGN_BUFSIZE,"host location %s.%s IPv4 %s ipv6 %s",uqhn,domain,ipv4,ipv6);
