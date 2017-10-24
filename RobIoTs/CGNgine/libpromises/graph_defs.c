@@ -709,12 +709,14 @@ char *WhereGr(FILE *fp,char *address, char *uqhn, char *domain, char *ipv4, char
     domain = "unknown domain";
     }
 
-  if (ipv6 == NULL || strlen(ipv6) == 0)
-    {
-    ipv6 = "";
-    }
-
-  snprintf(where,CGN_BUFSIZE,"host location %s.%s IPv4 %s ipv6 %s",uqhn,domain,ipv4,ipv6);
+  if (ipv6 && strlen(ipv6) > 0)
+     {
+     snprintf(where,CGN_BUFSIZE,"host location %s.%s IPv4 %s ipv6 %s",uqhn,domain,ipv4,ipv6);
+     }
+  else
+     {
+     snprintf(where,CGN_BUFSIZE,"host location %s.%s IPv4 %s",uqhn,domain,ipv4);
+     }
 
   if (address && strlen(address) > 0)
      {
@@ -823,6 +825,10 @@ char *IPv4(char *id) // specific ID
 char *IPv6(char *id) // specific ID
 {
  static char ret[CGN_BUFSIZE];
+ if (id == NULL || strlen(id) > 0)
+    {
+    return "";
+    }
  snprintf(ret,CGN_BUFSIZE,"ipv6 address %s",id);
  return ret;
 }

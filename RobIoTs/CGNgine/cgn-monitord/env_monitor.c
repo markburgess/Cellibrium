@@ -1591,6 +1591,7 @@ static void AnnotateAnomaly(EvalContext *ctx,FILE *consc,time_t now,Item *proces
 
  // Report
  int dimension = 0;
+ int invariant = 0;
  
  for (ip = process_syndrome; ip != NULL; ip=ip->next)
     {
@@ -1608,9 +1609,15 @@ static void AnnotateAnomaly(EvalContext *ctx,FILE *consc,time_t now,Item *proces
     dimension++;
     }
 
+ for (ip = invariants; ip != NULL; ip=ip->next)
+    {
+    //Log(LOG_LEVEL_VERBOSE,"  persistent : %s\n",ip->name);
+    invariant++;
+    }
+ 
  if (dimension)
     {
-    Log(LOG_LEVEL_VERBOSE,"\n  ANOMALY OF DIMENSION : %d\n",dimension);
+    Log(LOG_LEVEL_VERBOSE,"\n  ANOMALY OF DIMENSION : %d, with %d persistent anomalies\n\n",dimension,invariant);
     }
 
  // End reporting
