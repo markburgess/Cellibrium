@@ -390,31 +390,31 @@ void MonNetworkGatherData(double *cf_this)
        }
     else
        {
-       // Count incoming clients
+       // Count incoming clients, by invariant remote IP, not by random port
        switch (packet)
           {
           case cfn_udp4:
-              IdempPrependItem(&MON_CLIENTS, localport, "udp4");
+              IdempPrependItem(&MON_CLIENTS,remote, "udp4");
               IncrementItemListCounter(MON_CLIENTS,localport);
               break;
           case cfn_udp6:
-              IdempPrependItem(&MON_CLIENTS, localport, "udp6");
+              IdempPrependItem(&MON_CLIENTS,remote, "udp6");
               IncrementItemListCounter(MON_CLIENTS,localport);
               break;
           case cfn_tcp4:
-              IdempPrependItem(&MON_CLIENTS, localport, "tcp4");
+              IdempPrependItem(&MON_CLIENTS,remote, "tcp4");
               IncrementItemListCounter(MON_CLIENTS,localport);
               break;
           case cfn_tcp6:
-              IdempPrependItem(&MON_CLIENTS, localport, "tcp6");
+              IdempPrependItem(&MON_CLIENTS,remote, "tcp6");
               IncrementItemListCounter(MON_CLIENTS,localport);
               break;
           case cfn_raw4:
-              IdempPrependItem(&MON_CLIENTS, localport, "raw4");
+              IdempPrependItem(&MON_CLIENTS,remote, "raw4");
               IncrementItemListCounter(MON_CLIENTS,localport);
               break;
           case cfn_raw6:
-              IdempPrependItem(&MON_CLIENTS, localport, "raw6");
+              IdempPrependItem(&MON_CLIENTS,remote, "raw6");
               IncrementItemListCounter(MON_CLIENTS,localport);
               break;
           default:
