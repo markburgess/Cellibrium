@@ -1217,24 +1217,6 @@ if (dev > 3.0 * sqrt(2.0))
    return sigma;
    }
 
-if (dev > 2.0 * sqrt(2.0))
-   {
-   strcpy(buffer2, buffer);
-   strcat(buffer2, "_dev2");
-   strcpy(degree, "2sigma");
-   AppendItem(classlist, buffer2, "2");
-
-   //EvalContextHeapPersistentSave(ctx, buffer2, CF_PERSISTENCE, CONTEXT_STATE_POLICY_PRESERVE, "");
-   //EvalContextClassPutSoft(ctx, buffer2, CONTEXT_SCOPE_NAMESPACE, "");
-
-   // Note the semantic connection
-   char topic[CF_BUFSIZE];
-   snprintf(topic,CF_BUFSIZE,"anomaly %s",buffer2);
-   RoleGr(consc,topic, "measurement anomaly", buffer2,"system monitoring measurement");
-   //
-
-   return sigma;
-   }
 
 if (dev <= sqrt(2.0))
    {
@@ -1244,18 +1226,6 @@ if (dev <= sqrt(2.0))
    AppendItem(classlist, buffer2, "0");
    return sigma;
    }
-else
-   {
-   strcpy(buffer2, buffer);
-   strcat(buffer2, "_dev1");
-   strcpy(degree, "sigma");
-   AppendItem(classlist, buffer2, "0");
-   return sigma;
-   }
-
-// TODO - handle t_expect, t_dev, etc
-
-
 }
 
 /*****************************************************************************/
@@ -1270,8 +1240,6 @@ static void SetVariable(FILE *consc, char *name, double value, double average, d
  AppendItem(classlist, var, "");
  snprintf(var, CF_MAXVARSIZE, "dev_%s=%.2lf", name, stddev);
  AppendItem(classlist, var, "");
-
-
 }
 
 /*****************************************************************************/
@@ -1842,7 +1810,7 @@ void ClassifyProcessState(EvalContext *ctx, FILE *fp)
  UpdateRealQResourceImpact(ctx,"processgroupUSERcount",process_group_user);
      
  ClassifyListChanges(ctx,ARGS, "JOB command change");
- ClassifyListChanges(ctx,USERS,"USERname change");
+ ClassifyListChanges(ctx,USERS,"USERprocs change");
  
  DeleteItemList(USERS);
  DeleteItemList(ARGS);
