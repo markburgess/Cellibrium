@@ -59,6 +59,8 @@
 #include <item_lib.h>
 #include <graph.h>
 #include <processes_select.h>
+#include <pipes.h>
+#include <files_interfaces.h>
 
 /*****************************************************************************/
 /* Globals                                                                   */
@@ -72,6 +74,14 @@
 #define CF_GRAPHNEW_FILE "env_graph.new"
 #define CF_GRAPH_FILE    "env_graph"
 #define CF_INV_FILE      "invariant_classes"
+
+
+#define CF_LINUX_IFCONF "/etc/network/interfaces"
+#define CF_LINUX_IP_COMM "/sbin/ip"
+#define CF_LINUX_BRCTL "/usr/sbin/brctl"
+#define CF_LINUX_IFQUERY "/usr/sbin/ifquery"
+#define CF_LINUX_IFUP "/usr/sbin/ifup"
+#define CF_LINUX_ETHTOOL "/usr/bin/ethtool"
 
 /*****************************************************************************/
 
@@ -161,6 +171,7 @@ static Item *LoadStateList(char *name);
 void ClassifyListChanges(EvalContext *ctx, Item *current_state, char *comment);
 void ActiveUsers(FILE *fp,char *hub);
 void CheckExpectedSpacetime(EvalContext *ctx);
+static int GetInterfaceInformation(EvalContext *ctx);
 
 /****************************************************************/
 
@@ -403,7 +414,8 @@ void MonitorStartServer(EvalContext *ctx, const Policy *policy)
     EvalContextClear(ctx);
     DetectEnvironment(ctx);
     UpdateTimeClasses(ctx, time(NULL));
-    
+    GetInterfaceInformation(ctx);
+
     GetQ(ctx, policy);
     snprintf(timekey, sizeof(timekey), "%s", GenTimeKey(time(NULL)));
     EvalAvQ(ctx, timekey, &averages, &times);
@@ -2198,7 +2210,7 @@ char *HereGr(FILE *fp, char *address)
  snprintf(identity,CGN_BUFSIZE,"host identity %s",VIPADDRESS); 
  Gr(fp,identitymain,a_alias,identity,"host location identification");
 
- return WhereGr(fp,address,VUQNAME,VDOMAIN,VIPADDRESS,NULL);
+ return WhereGr(fp,address,VUQNAME,VDOMAIN,VIPADDRESS,VIPV6ADDRESS);
 }
 
 /*********************************************************************/
@@ -2461,7 +2473,126 @@ void CheckExpectedSpacetime(EvalContext *ctx)
     }
 }
 
+/****************************************************************************/
 
+static int GetInterfaceInformation(EvalContext *ctx)
+{
+    FILE *pfp;
+    size_t line_size = CF_BUFSIZE;
+    char *line = xmalloc(line_size);
+    char indent[CF_SMALLBUF];
+    char hw_addr[CF_MAX_IP_LEN + 1];
+    char v4_addr[CF_MAX_IP_LEN + 1];
+    char v6_addr[CF_MAX_IP_LEN + 1];
+    char if_name[CF_SMALLBUF];
+    char endline[CF_BUFSIZE];
+    char comm[CF_BUFSIZE];
+    char buff[CF_BUFSIZE];
+    char *sp;
+    int mtu = CF_NOINT;
+
+    snprintf(comm, CF_BUFSIZE, "%s addr", CF_LINUX_IP_COMM);
+    
+    if ((pfp = cf_popen(comm, "r", true)) == NULL)
+       {
+       Log(LOG_LEVEL_ERR, "Unable to execute '%s'", CF_LINUX_IP_COMM);
+       return false;
+       }
+    
+    while (!feof(pfp))
+       {
+        CfReadLine(&line, &line_size, pfp);
+        
+        if (feof(pfp))
+           {
+           break;
+           }
+        
+        if (isdigit(*line))
+           {
+           sscanf(line, "%*d: %32[^@ ]", if_name);
+           
+           if (if_name[strlen(if_name)-1] == ':')
+              {
+              if_name[strlen(if_name)-1] = '\0';
+              }
+           
+           sscanf(line, "%*[^>]> mtu %d %[^\n]", &mtu, endline);
+           
+           if (strstr(endline, "state UP")) // The intended link state is in <..>, the actual is after "state"
+              {
+              // interface up
+              }
+           else
+              {
+              // interface down
+              }
+           
+           // mtu contains mtu
+           
+           if (strstr(line, "SLAVE"))
+              {
+              if ((sp = strstr(endline, "master"))) // The interface seems to be subordinate to an aggregate
+                 {
+                 char parent_interface[CF_SMALLBUF];
+                 
+                 parent_interface[0] = '\0';
+                 sscanf(sp, "master %s", parent_interface);
+                 
+                 if (parent_interface[0] != '\0')
+                    {
+                    // parent_interface
+                    }
+                 }
+              }
+           else if (strstr(line, "MASTER"))
+              {
+              // is_parent = true;
+              }
+           }
+        else 
+           {
+           *indent = '\0';
+           *hw_addr = '\0';
+           *v4_addr = '\0';
+           *v6_addr = '\0';
+           
+           sscanf(line, "%31s", indent);
+
+           if (strncmp(indent, "inet6", 5) == 0)
+              {
+              sscanf(line, "%*s %64s", v6_addr);
+              Log(LOG_LEVEL_VERBOSE, "FOUND IPV6 %s.....\n", v6_addr);
+
+              snprintf(buff, CF_BUFSIZE,"ipv6_%s",CanonifyName(v6_addr));
+              EvalContextClassPutSoft(ctx, buff, CONTEXT_SCOPE_NAMESPACE, "interface state");
+              
+              if (strncmp(v6_addr,"fe80",4) != 0)
+                 {
+                 strcpy(VIPV6ADDRESS,v6_addr);
+                 }
+              }
+           else if (strncmp(indent, "inet", 4) == 0)
+              {
+              sscanf(line, "%*s %64s", v4_addr);
+              Log(LOG_LEVEL_VERBOSE,"FOUND IPV4 %s.....\n", v4_addr);
+              snprintf(buff, CF_BUFSIZE,"ipv4_%s",CanonifyName(v4_addr));
+              EvalContextClassPutSoft(ctx, buff, CONTEXT_SCOPE_NAMESPACE, "interface state");
+              }
+           else if (strncmp(indent, "link", 4) == 0)
+              {
+              sscanf(line, "%*s %64s", hw_addr);
+              Log(LOG_LEVEL_VERBOSE,"FOUND MAC %s.....\n", hw_addr);
+              snprintf(buff, CF_BUFSIZE,"mac_%s",CanonifyName(hw_addr));
+              EvalContextClassPutSoft(ctx, buff, CONTEXT_SCOPE_NAMESPACE, "interface state");              
+              }
+           }
+       }
+    
+    free(line);
+    cf_pclose(pfp);
+    return true;
+}
 
 
 

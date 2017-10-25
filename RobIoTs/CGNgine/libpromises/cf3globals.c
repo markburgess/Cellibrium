@@ -85,6 +85,7 @@ RSA *PRIVKEY = NULL, *PUBKEY = NULL; /* GLOBAL_X */
   sporadically in other situations.
 */
 char VIPADDRESS[CF_MAX_IP_LEN] = ""; /* GLOBAL_E */
+char VIPV6ADDRESS[CF_MAX_IP_LEN] = ""; /* GLOBAL_E */
 
 /*
   Edition-time constant (MD5 for community, something else for Enterprise)
