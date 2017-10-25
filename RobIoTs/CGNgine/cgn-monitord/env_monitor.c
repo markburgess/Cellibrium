@@ -902,7 +902,7 @@ static void BuildConsciousState(EvalContext *ctx, Averages av, Timescales t)
     char ipaddr[CF_BUFSIZE];
     ipaddr[0] = '\0';
     sscanf(ip->name,"%[^:]",ipaddr);
-    snprintf(buff,CF_BUFSIZE,"port_%s_%s_clients",ip->classes,ipaddr);
+    snprintf(buff,CF_BUFSIZE,"port_%s_clients",ip->classes);
     UpdateRealQResourceImpact(ctx,buff,(double)ip->counter);
     Log(LOG_LEVEL_VERBOSE, "  [%d] %s = %d", count++, buff, ip->counter);
     EvalContextClassPutSoft(ctx,buff,CONTEXT_SCOPE_NAMESPACE, "process state");
