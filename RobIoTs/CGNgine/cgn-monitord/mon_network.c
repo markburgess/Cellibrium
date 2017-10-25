@@ -37,7 +37,8 @@
 #define ATTR        22
 
 Item *ALL_INCOMING = NULL;
-Item *MON_UDP4 = NULL, *MON_UDP6 = NULL, *MON_TCP4 = NULL, *MON_TCP6 = NULL, *MON_RAW4 = NULL, *MON_RAW6 = NULL;
+Item *MON_UDP4 = NULL, *MON_UDP6 = NULL, *MON_TCP4 = NULL, *MON_TCP6 = NULL,
+     *MON_RAW4 = NULL, *MON_RAW6 = NULL, *MON_CLIENTS = NULL;
 
 /*******************************************************************/
 /* Anomaly                                                         */
@@ -204,7 +205,8 @@ void MonNetworkGatherData(double *cf_this)
  DeleteItemList(MON_TCP6);
  DeleteItemList(MON_UDP4);
  DeleteItemList(MON_UDP6);
- MON_UDP4 = MON_UDP6 = MON_TCP4 = MON_TCP6 = NULL;
+ DeleteItemList(MON_CLIENTS);
+ MON_UDP4 = MON_UDP6 = MON_TCP4 = MON_TCP6 = MON_CLIENTS = NULL;
  
  sscanf(VNETSTAT[VSYSTEMHARDCLASS], "%s", comm);
  
@@ -360,11 +362,7 @@ void MonNetworkGatherData(double *cf_this)
     
     if (strstr(vbuff, "LISTEN"))
        {
-       // General bucket
-       
        IdempPrependItem(&ALL_INCOMING, sp, NULL);
-       
-       // Categories the incoming ports by packet types
        
        switch (packet)
           {
@@ -390,9 +388,39 @@ void MonNetworkGatherData(double *cf_this)
               break;
           }
        }
-    
-    
-    // Now look at outgoing
+    else
+       {
+       // Count incoming clients
+       switch (packet)
+          {
+          case cfn_udp4:
+              IdempPrependItem(&MON_CLIENTS, localport, "udp4");
+              IncrementItemListCounter(MON_CLIENTS,localport);
+              break;
+          case cfn_udp6:
+              IdempPrependItem(&MON_CLIENTS, localport, "udp6");
+              IncrementItemListCounter(MON_CLIENTS,localport);
+              break;
+          case cfn_tcp4:
+              IdempPrependItem(&MON_CLIENTS, localport, "tcp4");
+              IncrementItemListCounter(MON_CLIENTS,localport);
+              break;
+          case cfn_tcp6:
+              IdempPrependItem(&MON_CLIENTS, localport, "tcp6");
+              IncrementItemListCounter(MON_CLIENTS,localport);
+              break;
+          case cfn_raw4:
+              IdempPrependItem(&MON_CLIENTS, localport, "raw4");
+              IncrementItemListCounter(MON_CLIENTS,localport);
+              break;
+          case cfn_raw6:
+              IdempPrependItem(&MON_CLIENTS, localport, "raw6");
+              IncrementItemListCounter(MON_CLIENTS,localport);
+              break;
+          default:
+              break;
+          }
+       }
     
     for (sp = remote + strlen(remote) - 1; (sp >= remote) && (isdigit((int) *sp)); sp--)
        {

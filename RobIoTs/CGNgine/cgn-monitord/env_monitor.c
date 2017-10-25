@@ -674,7 +674,7 @@ static void BuildConsciousState(EvalContext *ctx, Averages av, Timescales t)
  char buff[CF_BUFSIZE], ldt_buff[CF_BUFSIZE], name[CF_MAXVARSIZE], namespace[CF_MAXVARSIZE];
  static int anomaly[CF_OBSERVABLES][LDT_BUFSIZE] = { { 0 } };
  extern Item *ALL_INCOMING;
- extern Item *MON_UDP4, *MON_UDP6, *MON_TCP4, *MON_TCP6, *MON_RAW4, *MON_RAW6;
+ extern Item *MON_UDP4, *MON_UDP6, *MON_TCP4, *MON_TCP6, *MON_RAW4, *MON_RAW6, *MON_CLIENTS;
  Item *openports = NULL;
  int count = 1;
 
@@ -895,6 +895,14 @@ static void BuildConsciousState(EvalContext *ctx, Averages av, Timescales t)
     AnnotateOpenPort(consc,buff,ip->name,ip->classes);
     EvalContextClassPutSoft(ctx,buff, CONTEXT_SCOPE_NAMESPACE, "process state");
     PrependItem(&openports,buff,NULL);
+    }
+
+ for (ip = MON_CLIENTS; ip != NULL; ip=ip->next)
+    {
+    snprintf(buff,CF_BUFSIZE,"port_%s_%s_clients",ip->classes,ip->name);
+    UpdateRealQResourceImpact(ctx,buff,(double)ip->counter);
+    Log(LOG_LEVEL_VERBOSE, "  [%d] %s = %d", count++, buff, ip->counter);
+    EvalContextClassPutSoft(ctx,buff,CONTEXT_SCOPE_NAMESPACE, "process state");
     }
  
  PublishEnvironment(mon_data); 
@@ -1226,6 +1234,8 @@ if (dev <= sqrt(2.0))
    AppendItem(classlist, buffer2, "0");
    return sigma;
    }
+
+return 0;
 }
 
 /*****************************************************************************/
@@ -1735,7 +1745,7 @@ void ClassifyProcessState(EvalContext *ctx, FILE *fp)
  time_t pstime = time(NULL);
  int total_processes = 0;
  double process_group_0 = 0,process_group_1 = 0,process_group_2 = 0, process_group_user = 0;
- double defuncts = 0;
+ int defuncts = 0;
  char *column[CF_PROCCOLS] = {0};
  char *names[CF_PROCCOLS] = {0};
  int start[CF_PROCCOLS] = {0};
@@ -1803,14 +1813,14 @@ void ClassifyProcessState(EvalContext *ctx, FILE *fp)
     Log(LOG_LEVEL_VERBOSE,"  active user - %20s in %s\n",SUser(ip->name),hub);
     }
 
- UpdateRealQResourceImpact(ctx,"defuncts",defuncts);
+ UpdateRealQResourceImpact(ctx,"defuncts",(double)defuncts);
  UpdateRealQResourceImpact(ctx,"processgroup0count",process_group_0);
  UpdateRealQResourceImpact(ctx,"processgroup1count",process_group_1);
  UpdateRealQResourceImpact(ctx,"processgroup2count",process_group_2);
  UpdateRealQResourceImpact(ctx,"processgroupUSERcount",process_group_user);
      
- ClassifyListChanges(ctx,ARGS, "JOB command change");
- ClassifyListChanges(ctx,USERS,"USERprocs change");
+ ClassifyListChanges(ctx,ARGS, "JOBcommand");
+ ClassifyListChanges(ctx,USERS,"USERprocs");
  
  DeleteItemList(USERS);
  DeleteItemList(ARGS);
@@ -1824,19 +1834,19 @@ static void UpdateProcessGroup(char *value,int *process_group_0, int *process_gr
 {
  if (strcmp(value,"0") == 0)
     {
-    *process_group_0++;
+    (*process_group_0)++;
     }
  else if (strcmp(value,"1") == 0)
     {
-    *process_group_1++;
+    (*process_group_1)++;
     }
  else if (strcmp(value,"2") == 0)
     {
-    *process_group_2++;
+    (*process_group_2)++;
     }
  else
     {
-    *process_group_user++;
+    (*process_group_user)++;
     }
 }
 
@@ -1846,7 +1856,7 @@ static void CountDefunctProcesses(FILE *fp,char *command, int *defunct)
 {
  if (strstr(command,"<defunct>"))
     {
-    *defunct++;
+    (*defunct)++;
     }
  
  char hub[CF_BUFSIZE];
