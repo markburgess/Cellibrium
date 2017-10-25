@@ -388,9 +388,9 @@ void MonNetworkGatherData(double *cf_this)
               break;
           }
        }
-    else if ((strncmp(remote,"127.0.0.1",10) != 0) || (strncmp(remote,"::1",3) != 0))
+    else if ((strncmp(remote,"127",3) != 0))
        {
-       // Count incoming clients, by invariant remote IP, not by random port
+       // Count incoming clients, by invariant remote IP, not by random port and drop loopback
        switch (packet)
           {
           case cfn_udp4:
