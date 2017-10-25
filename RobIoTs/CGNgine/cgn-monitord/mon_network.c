@@ -395,27 +395,27 @@ void MonNetworkGatherData(double *cf_this)
           {
           case cfn_udp4:
               IdempPrependItem(&MON_CLIENTS,remote, "udp4");
-              IncrementItemListCounter(MON_CLIENTS,localport);
+              IncrementItemListCounter(MON_CLIENTS,remote);
               break;
           case cfn_udp6:
               IdempPrependItem(&MON_CLIENTS,remote, "udp6");
-              IncrementItemListCounter(MON_CLIENTS,localport);
+              IncrementItemListCounter(MON_CLIENTS,remote);
               break;
           case cfn_tcp4:
               IdempPrependItem(&MON_CLIENTS,remote, "tcp4");
-              IncrementItemListCounter(MON_CLIENTS,localport);
+              IncrementItemListCounter(MON_CLIENTS,remote);
               break;
           case cfn_tcp6:
               IdempPrependItem(&MON_CLIENTS,remote, "tcp6");
-              IncrementItemListCounter(MON_CLIENTS,localport);
+              IncrementItemListCounter(MON_CLIENTS,remote);
               break;
           case cfn_raw4:
               IdempPrependItem(&MON_CLIENTS,remote, "raw4");
-              IncrementItemListCounter(MON_CLIENTS,localport);
+              IncrementItemListCounter(MON_CLIENTS,remote);
               break;
           case cfn_raw6:
               IdempPrependItem(&MON_CLIENTS,remote, "raw6");
-              IncrementItemListCounter(MON_CLIENTS,localport);
+              IncrementItemListCounter(MON_CLIENTS,remote);
               break;
           default:
               break;
