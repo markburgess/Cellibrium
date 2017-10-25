@@ -1167,6 +1167,11 @@ if (strcmp(name,"spare") == 0)
 delta = variable - av_expect;
 sigma = sqrt(av_var);
 
+if (av_expect < 4*sigma) // Don't report on noise
+   {
+   return 0;
+   }
+
 if ((variable == 0.0) && (av_expect == 0))
    {
    return 0.0;
