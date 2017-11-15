@@ -53,6 +53,7 @@ conceptualize
 rpmvercmp
 /Percolibrium/Percolators/conceptualize
 /Percolibrium/Percolators/scan_logs
+/Percolibrium/Percolators/get_k8s_context
 /Percolibrium/Narrators/stories
 /Percolibrium/Percolators/echo.fcgi
 

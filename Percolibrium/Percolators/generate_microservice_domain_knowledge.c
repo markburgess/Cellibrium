@@ -51,25 +51,16 @@ int main()
  char *context = "software ops operations develop write";
  ContextGr(stdout,context);
 
-
-
-
-
+/*
 
 starvation
-    memory
-    cpu
-    network
+memory
+cpu
+network
 
-    thrashing
+thrashing
     
-
-
-
-
-
-
-
+*/
  
  // Roles etc.
  

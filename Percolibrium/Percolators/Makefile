@@ -2,6 +2,8 @@
 
 INCLUDES = -I. -I../../RobIoTs/CGNgine/libpromises -I../../RobIoTs/CGNgine/libutils -I../../RobIoTs/CGNgine/libcfnet
 
+normal: build
+
 all: update_cgn build generate graph
 
 update: update_cgn graph
@@ -20,6 +22,7 @@ build:
 	gcc $(INCLUDES) -o gen_monbas -g generate_monitoring_basis.c
 	gcc -o conceptualize -g conceptualize-fs.c -lcrypto
 	gcc -g scan_logs.c -o scan_logs -lhiredis -lm
+	gcc -g get_k8s_context.c -o get_k8s_context
 	gcc -g -o echo.fcgi RESTAPI-echo.c -lfcgi; chmod 755 echo.fcgi
 
 generate: microservice doctor lddscan monitord movies murder monbas
