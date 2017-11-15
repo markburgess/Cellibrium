@@ -52,6 +52,7 @@ stories2
 conceptualize
 rpmvercmp
 /Percolibrium/Percolators/conceptualize
+/Percolibrium/Percolators/scan_logs
 /Percolibrium/Narrators/stories
 /Percolibrium/Percolators/echo.fcgi
 

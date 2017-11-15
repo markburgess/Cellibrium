@@ -19,6 +19,7 @@ build:
 	gcc $(INCLUDES) -o gen_plum -g generate_plum.c
 	gcc $(INCLUDES) -o gen_monbas -g generate_monitoring_basis.c
 	gcc -o conceptualize -g conceptualize-fs.c -lcrypto
+	gcc -g scan_logs.c -o scan_logs -lhiredis -lm
 	gcc -g -o echo.fcgi RESTAPI-echo.c -lfcgi; chmod 755 echo.fcgi
 
 generate: microservice doctor lddscan monitord movies murder monbas
