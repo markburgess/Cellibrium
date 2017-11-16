@@ -810,9 +810,9 @@ char *SService(char *servicename)
 
 char *HostID(char *id) // Generic ID
 {
- static char ret[CGN_BUFSIZE];
- snprintf(ret,CGN_BUFSIZE,"host identity %s",id);
- return ret;
+ //static char ret[CGN_BUFSIZE];
+ //snprintf(ret,CGN_BUFSIZE,"host identity %s",id);
+ return Hostname(id);
 }
 
 char *IPv4(char *id) // specific ID
