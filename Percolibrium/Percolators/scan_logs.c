@@ -26,12 +26,11 @@
 
 #define true 1
 #define false 0
-#define CGN_BUFSIZE 1024
-#define INSIGNIFICANT 10
+#define INSIGNIFICANT 12
 #define HIGH +1
 #define LOW -1
 #define HASHTABLESIZE 8197
-#define DEBUG 0
+#define DEBUG 1
 #define Debug if (DEBUG) printf
 
 /*****************************************************************************/
@@ -39,6 +38,8 @@
 
 #include "item.h"
 #include "item.c"
+#include "../../RobIoTs/CGNgine/libpromises/graph.h"
+#include "../../RobIoTs/CGNgine/libpromises/graph_defs.c"
 
 /*****************************************************************************/
 /* include some definitions from CFEngine monitor */
@@ -67,7 +68,7 @@ typedef struct
    char *container;
    char *appsysname;
 }
-    ClusterLocation;
+    ClusterContext;
 
 /*****************************************************************************/
 /* Global context                                                            */
@@ -87,19 +88,19 @@ Item *APPL_CONTEXT = NULL;
 
 /*****************************************************************************/
 
-ClusterLocation ExtractLocation(char *name);
-char *MatchDateTime(char *buffer,char *timekey, time_t *stamp);
-void CheckKeyValue(char *timekey,ClusterLocation location,char *name,double value);
-char *MatchURI(char *buffer,char *URI,char *timekey, ClusterLocation location);
-char *MatchIPv4addr(char *buffer,char *addr,char *timekey, ClusterLocation location);
-char *MatchIPv6addr(char *buffer,char *addr,char *timekey, ClusterLocation location);
-int MatchJSON(char *buffer, FILE *fp, char *uri,char *timekey, ClusterLocation location);
-void ExtractMessages(char *msg,char *timekey, ClusterLocation location);
-void IncrementCounter(char *timekey,char *namekey, ClusterLocation location, int value);
+ClusterContext ExtractContext(char *name);
+char *MatchDateTime(char *buffer,char *timekey, time_t *stamp, char **start, char **end);
+void CheckKeyValue(char *timekey,ClusterContext context,char *name,double value);
+char *MatchURI(char *buffer,char *URI,char *timekey, ClusterContext context);
+char *MatchIPv4addr(char *buffer,char *addr, char **start, char **end);
+char *MatchIPv6addr(char *buffer,char *addr, char **start, char **end);
+int MatchJSON(char *buffer, FILE *fp, char *uri,char *timekey, ClusterContext context);
+void ExtractMessages(char *msg,char *timekey, ClusterContext context);
+void IncrementCounter(char *timekey,char *namekey, ClusterContext context, int value);
 char *TimeKey(struct tm tz);
 char *MatchDatePosition(char *buffer);
 unsigned int Hash(char* str, unsigned int tablelength);
-void FlushContext(char *timekey,ClusterLocation location);
+void FlushContext(char *timekey,ClusterContext context);
 char *Canonify(char *name);
 void ScanLog(char *name);
 double WAverage(double old, double new);
@@ -108,6 +109,8 @@ int TimeKeyChange(char *timekey);
 void SaveInvariants(Item *list);
 Item *LoadInvariants(void);
 void DiffInvariants(Item **performance_syndrome,Item **security_syndrome,Item **invariants);
+int StupidString(char *s);
+void Erase(char *start, char *end);
 
 /*****************************************************************************/
 /* BEGIN                                                                     */
@@ -165,11 +168,14 @@ void ScanLog(char *name)
     return;
     }
 
- ClusterLocation location = ExtractLocation(name);
+ ClusterContext context = ExtractContext(name);
  
  while (!feof(fp))
     {
     memset(buffer,0,4096);
+    memset(addr4,0,4096);
+    memset(addr6,0,4096);
+    memset(URI,0,4096);
     fgets(buffer,4096,fp);
 
     if (strlen(buffer) == 0 || feof(fp))
@@ -180,64 +186,73 @@ void ScanLog(char *name)
     lines++;
     char *mesg = buffer;
     
-    if (mesg = MatchDateTime(buffer,timekey,&stamp))
-       {       
-       while (!isalpha(*(mesg+1)))
-          {
-          mesg++;
-          }
-       }
-
     Debug("---------------------------------------------\n");
     Debug("LOG ENTRY: %s\n",buffer);
+
+    // Use a process of elimination to classify bits
+    // Match IP addresses first, because they are easier to spot
     
+    char *start, *end;
+    
+    MatchDateTime(buffer,timekey,&stamp,&start,&end);
+
+    // Erase date stamp from buffer
+
+    Erase(start,end);
+    
+    // Next dates, if they exist at all(!)
+
     if (TimeKeyChange(timekey))
        {
        strcpy(TIMEKEY,timekey);
-       FlushContext(timekey,location);
+       FlushContext(timekey,context);
        
        if (last_t > 0 && (stamp > last_t))
           {
           delta_t = stamp - last_t;
-          IncrementCounter(timekey,"message interval",location,(int)delta_t);
+          IncrementCounter(timekey,"Message-interval *? log aggrEg+te",context,(int)delta_t);
           sum_delta += delta_t;
           }
 
-       IncrementCounter(timekey,"lines per sample",location,sum_count);
+       IncrementCounter(timekey,"lines of aggregate log messages per time interval sample",context,sum_count);
        sum_count = 0;
        last_t = stamp;
        }
 
     sum_count++;
-    
-    if (MatchIPv4addr(buffer,addr4,timekey,location))
-       {
-       }
-    
-    if (MatchIPv6addr(buffer,addr6,timekey,location))
-       {
-       }
 
-    if (MatchURI(buffer,URI,timekey,location))
-       {
-       }
+    MatchIPv4addr(buffer,addr4,&start,&end);
+    Erase(start,end);
 
-    if (MatchJSON(buffer,fp,URI,timekey,location))
+    MatchIPv6addr(buffer,addr6,&start,&end);
+    Erase(start,end);
+    
+    MatchURI(buffer,URI,timekey,context);    
+
+    ///deployment depends on, expresses "role ipv4" when/where?
+    IncrementCounter(timekey,addr4,context,1);
+    IncrementCounter(timekey,addr6,context,1);
+
+    // Dumped JSON - is it significant?
+    
+    if (MatchJSON(buffer,fp,URI,timekey,context))
        {
+//              deployment depends on, expresses "role ipv4" when/where?
        // diff file changes...and assume last URI is the filename
        continue;
        }
-    
-    ExtractMessages(mesg,timekey,location);
+
+    // What remains, however improbable, must be noise
+    ExtractMessages(buffer,timekey,context);
     }
 
  // Final flush at exit
  strcpy(TIMEKEY,timekey);
- FlushContext(timekey,location);
+ FlushContext(timekey,context);
 
   // Measure average time jump in logging
 
- IncrementCounter(timekey,"log lines",location,lines);
+ IncrementCounter(timekey,"log lines",context,lines);
  
  printf("\nSUMMARY of %d lines\n\n",lines);
  printf("Average interval between (%d) log bursts = %.2lf seconds\n",sum_count,(double)sum_delta/(double)sum_count);
@@ -249,15 +264,17 @@ void ScanLog(char *name)
 /* Smart Probes                                                              */
 /*****************************************************************************/
 
-ClusterLocation ExtractLocation(char *pathname)
+ClusterContext ExtractContext(char *pathname)
 {
- ClusterLocation loc;
+ ClusterContext loc;
  char ns[CGN_BUFSIZE],nsp[CGN_BUFSIZE];
  char pod[CGN_BUFSIZE];
  char ctnr[CGN_BUFSIZE];
  char app[CGN_BUFSIZE];
  char *name;
 
+ char *context = "kubernetes cluster log output";
+ 
  for (name = pathname+strlen(pathname); name > pathname && *name != '/'; name--)
     {
     }
@@ -296,6 +313,12 @@ ClusterLocation ExtractLocation(char *pathname)
  loc.appsysname = strdup(app);
 
  printf("name(%s,%s,%s,%s)\n",ns,pod,ctnr,app);
+
+ char namespace[1024],deployment[1024];
+ snprintf(namespace,1024,"kubernetes namespace %s",ns);
+ snprintf(deployment,1024,"kubernetes deployment %s",pod);
+ Gr(stdout,namespace,a_contains,deployment,context);
+ 
  return loc;
 }
 
@@ -308,7 +331,7 @@ int TimeKeyChange(char *timekey)
 
 /*****************************************************************************/
 
-char *MatchDateTime(char *buffer,char *timekey, time_t *stamp)
+char *MatchDateTime(char *buffer,char *timekey, time_t *stamp, char **start, char **end)
 {
  // Should return pointer to after the date for later elimination
  
@@ -316,8 +339,7 @@ char *MatchDateTime(char *buffer,char *timekey, time_t *stamp)
  static char timestring[CGN_BUFSIZE]; // may capture whole line
  char *sp = buffer,*spt = timestring;
  int glog = false;
- char *ret;
- 
+
  switch (*sp)
     {
     // “[IWEF]mmdd hh:mm:ss.uuuuuu threadid file:line] msg”   (FATAL, ERROR, WARNING, and INFO)
@@ -327,6 +349,7 @@ char *MatchDateTime(char *buffer,char *timekey, time_t *stamp)
     case 'E':
     case 'F':
         glog = true;
+        *start = sp;
         sp++;
         break;
 
@@ -334,11 +357,12 @@ char *MatchDateTime(char *buffer,char *timekey, time_t *stamp)
     // [restful] 2017/11/01 02:18:24 log.go:33: [restful/swagger] available at https://10.184.147.252:6443/s...
 
     case '[':
-        sp = MatchDatePosition(buffer);
+        *start = sp = MatchDatePosition(buffer);
         if (sp == NULL)
            {
            strncpy(timekey,"NoTime",64);
            *stamp = 0;
+           *end = NULL;
            return buffer;
            }
 
@@ -347,10 +371,19 @@ char *MatchDateTime(char *buffer,char *timekey, time_t *stamp)
     case 't':
         if (strncmp(sp,"t=",2) == 0)
            {
+           *start = sp;
            sp += 2;
            }
+
+        if (strncmp(sp,"time=\"",6) == 0)
+           {
+           *start = sp;
+           sp += 6;
+           }
+
         break;
     default:
+        *start = sp;
         break;
     }
  
@@ -361,7 +394,7 @@ char *MatchDateTime(char *buffer,char *timekey, time_t *stamp)
  while (isalnum(*sp) || *sp == ':' || *sp == '-'  || *sp == ' '|| *sp == '/')
     {
     *spt++ = *sp++;
-    *(sp-1) = ' ';
+    //*(sp-1) = ' ';
     if (*sp == '\0')
        {
        break;
@@ -369,7 +402,8 @@ char *MatchDateTime(char *buffer,char *timekey, time_t *stamp)
     }
 
  *spt = '\0';
-
+ *end = sp;
+ 
  time_t now = 0;
  localtime_r(&now, &tm);
 
@@ -392,46 +426,47 @@ char *MatchDateTime(char *buffer,char *timekey, time_t *stamp)
  
  // Simple new format
 
- ret = strptime(timestring,"%Y-%m-%d %H:%M:%S.", &tm);
+ strptime(timestring,"%Y-%m-%d %H:%M:%S.", &tm);
 
  if (tm.tm_year > 70)
     {
     Debug("Extracted time format 1: %s\n", TimeKey(tm));
     strncpy(timekey,TimeKey(tm),64);
     *stamp = mktime(&tm);
-    return sp-1;
+    return timestring;
     }
 
- ret = strptime(timestring,"%Y/%m/%d %H:%M:%S.", &tm);
+ strptime(timestring,"%Y/%m/%d %H:%M:%S.", &tm);
 
  if (tm.tm_year > 70)
     {
     Debug("Extracted time format 2: %s\n", TimeKey(tm));
     strncpy(timekey,TimeKey(tm),64);
     *stamp = mktime(&tm);
-    return sp-1;
+    return timestring;
     }
 
   // [httpd] 192.168.54.14 - root [03/Oct/2017:17:57:05 +0000] "POST /write?con
 
- ret = strptime(timestring,"%d/%B/%Y:%H:%M:%S ", &tm);
+ strptime(timestring,"%d/%B/%Y:%H:%M:%S ", &tm);
  
  if (tm.tm_year > 70)
     {
     Debug("Extracted time format 3: %s\n", TimeKey(tm));
     strncpy(timekey,TimeKey(tm),64);
     *stamp = mktime(&tm);
-    return sp-1;
+    return timestring;
     }
 
  strncpy(timekey,"NoTime",64);
  *stamp = 0;
- return timestring;
+ *start = *end = NULL;
+ return NULL;
 }
 
 /*****************************************************************************/
 
-void FlushContext(char *timekey,ClusterLocation location)
+void FlushContext(char *timekey,ClusterContext context)
 {
  int i;
 
@@ -441,16 +476,16 @@ void FlushContext(char *timekey,ClusterLocation location)
     {
     if (METRICS.name[i])
        {
-       Debug("%6.0lf %s\n",METRICS.name[i],METRICS.Q[i].q);
+       //printf("* %6.0lf %s\n",METRICS.Q[i].q,METRICS.name[i]);
 
        // Store in REDIS
        // First store the long-term weekly pattern
 
-       CheckKeyValue(TIMEKEY,location,METRICS.name[i],METRICS.Q[i].q);
+       CheckKeyValue(TIMEKEY,context,METRICS.name[i],METRICS.Q[i].q);
 
        // Then the recent aggregate
 
-       CheckKeyValue("recent",location,METRICS.name[i],METRICS.Q[i].q);
+       CheckKeyValue("recent",context,METRICS.name[i],METRICS.Q[i].q);
        
        free(METRICS.name[i]);
        METRICS.name[i] = NULL;
@@ -458,24 +493,34 @@ void FlushContext(char *timekey,ClusterLocation location)
        }
     }
 
- IncrementCounter(timekey,"aggregate messages",location,TOTALMESSAGES);
+ IncrementCounter(timekey,"aggregate messages",context,TOTALMESSAGES);
  TOTALMESSAGES = 0;
 
  Item *performance_syndrome = NULL, *security_syndrome = NULL, *invariants = NULL, *ip;
  
+  for (ip = APPL_CONTEXT; ip != NULL; ip=ip->next)
+    {
+    printf("CONTEXT: %s (%d)\n", ip->name,ip->counter);
+    }
+
  DiffInvariants(&performance_syndrome,&security_syndrome,&invariants);
 
  for (ip = performance_syndrome; ip != NULL; ip=ip->next)
     {
-    printf("ANOMALOUS EVENT: %s in context <CONTEXT NAME>\n", ip->name);
+    printf(" ANOMALOUS EVENT: %s\n", ip->name);
     }
 
-// <CONTEXT NAME> = slowly varying TIME, LOCATION, background set
+ for (ip = security_syndrome; ip != NULL; ip=ip->next)
+    {
+    printf(" SECURITY EVENT: %s\n", ip->name);
+    }
+
+// <CONTEXT NAME> = slowly varying TIME, CONTEXT, background set
  
   for (ip = invariants; ip != NULL; ip=ip->next)
     {
     // Edge event had background context
-    printf("BACKGROUND CONTEXT: %s was part of <CONTEXT NAME>\n", ip->name);
+    printf(" BACKGROUND CONTEXT: %s\n", ip->name);
     }
 
 // Causal epochs - changes - aggregated by context clusters. So keep a slowly varying context approximation too?
@@ -514,7 +559,7 @@ void DiffInvariants(Item **performance_syndrome,Item **security_syndrome,Item **
        char name[CF_BUFSIZE];
        snprintf(name,CF_BUFSIZE,"+%s",ip1->name);
        
-       if (ip1 && (strstr(ip1->name,"access") == 0))
+       if (ip1 && strstr(ip1->name,"access"))
           {
           PrependItem(security_syndrome,name,NULL);
           }
@@ -530,7 +575,7 @@ void DiffInvariants(Item **performance_syndrome,Item **security_syndrome,Item **
     char name[CF_BUFSIZE];
     snprintf(name,CF_BUFSIZE,"-%s",ip2->name);
 
-    if (ip2 && (strstr(ip2->name,"access") == 0))
+    if (ip2 && strstr(ip2->name,"access"))
        {
        PrependItem(security_syndrome,name,NULL);
        }
@@ -545,7 +590,7 @@ void DiffInvariants(Item **performance_syndrome,Item **security_syndrome,Item **
 
 /*****************************************************************************/
 
-void CheckKeyValue(char *timekey,ClusterLocation location,char *name,double q)
+void CheckKeyValue(char *timekey,ClusterContext context,char *name,double q)
 
 {
  char key[1024];
@@ -553,7 +598,7 @@ void CheckKeyValue(char *timekey,ClusterLocation location,char *name,double q)
  double oldq = 0,oldav = 0,oldvar = 0,newav,newvar,var;
  int anomaly = 0;
 
- snprintf(key,1024,"(%s,%s,%s,%s,%s)",location.namespace,location.pod,location.appsysname,timekey,name);
+ snprintf(key,1024,"(%s,%s,%s,%s,%s)",context.namespace,context.pod,context.appsysname,timekey,name);
 
  RPLY = redisCommand(RC,"GET %s",key);
  Debug("%s: %s\n",key,RPLY->str);
@@ -574,26 +619,34 @@ void CheckKeyValue(char *timekey,ClusterLocation location,char *name,double q)
  newvar = WAverage(oldvar,var);
 
  snprintf(value,1024,"(%.2lf,%.2lf,%.2lf)",q,newav,newvar);
- 
+
+ //printf("%s=%s\n",key,value);
  // Expire data after 30 days without update
+
  RPLY = redisCommand(RC,"SET %s %s ex %d",key,value,3600*24*30);
- Debug("SET: %s\n", RPLY->str);
  freeReplyObject(RPLY);
 
  double bar = 3.0 * sqrt(newvar);
  
  if (q > newav + bar)
     {
-    anomaly = HIGH;
+    anomaly = HIGH;    
+    SetApplicationContext(name,anomaly);
     }
  else if (q < newav - bar)
     {
     anomaly = LOW;
+    SetApplicationContext(name,anomaly);
     }
+ else
+    {
+    //SetApplicationContext(name,0);
+    //printf("normal state for %s - %s = %lf / %lf pm %lf\n",timekey, name,q,newav,bar);
+    }
+
+// Learn lastseen time too ..
  
  // This process is only run over aggregate application/pod
- 
- SetApplicationContext(key,anomaly);
 
 }
 
@@ -612,19 +665,21 @@ void SetApplicationContext(char *key,int anomaly)
         snprintf(anomaly_name,256,"%s_low",key);
         break;
     default:
-        return;
+        snprintf(anomaly_name,256,"%s_normal",key);
+        break;
     }
 
  // Import minimal CFEngine ItemList library..
- 
- PrependItem(&APPL_CONTEXT,anomaly_name,NULL);
+
+ //printf("ANOMALY %s\n",anomaly_name);
+ IdempPrependItem(&APPL_CONTEXT,anomaly_name,NULL);
 }
 
 /*****************************************************************************/
 
-char *MatchIPv4addr(char *buffer,char *addr,char *timekey, ClusterLocation location)
+char *MatchIPv4addr(char *buffer,char *addr, char **start, char **end)
 {
- char *regex4 = "[0-9][0-9]*[0-9]*[.][0-9][0-9]*[0-9]*[.][0-9][0-9]*[0-9]*[.][0-9][0-9]*[0-9]*[:0-9]*";
+ char *regex4 = "[HTTPhttp:/]*[0-9][0-9]*[0-9]*[._][0-9][0-9]*[0-9]*[._][0-9][0-9]*[0-9]*[._][0-9][0-9]*[0-9]*[:0-9]*[/:_][0-9]*";
  regex_t    preg;
  int        rc;
  size_t     nmatch = 2;
@@ -632,6 +687,7 @@ char *MatchIPv4addr(char *buffer,char *addr,char *timekey, ClusterLocation locat
  
  if (strlen(buffer) < 2)
     {
+    *start = *end = NULL;
     return NULL;
     }
  
@@ -639,11 +695,13 @@ char *MatchIPv4addr(char *buffer,char *addr,char *timekey, ClusterLocation locat
     {
     if ((rc = regexec(&preg, buffer, nmatch, pmatch,0)) == 0)
        {
-       strncpy(addr,buffer+pmatch[0].rm_so,pmatch[0].rm_eo - pmatch[0].rm_so);
+       *start = (buffer+pmatch[0].rm_so);
+       *end = (buffer+pmatch[0].rm_eo);
+
+       strncpy(addr,*start,*end - *start);
        regfree(&preg);
        
-       Debug("matched ipv4 (%s)\n",addr);
-       IncrementCounter(timekey,addr,location,1);
+       Debug("matched ipv4 (%s) in %s\n",addr,buffer);
        return addr;       
        }
     }
@@ -651,7 +709,7 @@ char *MatchIPv4addr(char *buffer,char *addr,char *timekey, ClusterLocation locat
 
 /*****************************************************************************/
 
-char *MatchIPv6addr(char *buffer,char *addr,char *timekey, ClusterLocation location)
+char *MatchIPv6addr(char *buffer,char *addr, char **start, char **end)
 {
  char *regex6 = "[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][:][a-fA-F0-9:]*[:][a-fA-F0-9:]*";
  regex_t    preg;
@@ -661,6 +719,7 @@ char *MatchIPv6addr(char *buffer,char *addr,char *timekey, ClusterLocation locat
  
  if (strlen(buffer) < 2)
     {
+    *start = *end = NULL;
     return NULL;
     }
 
@@ -668,13 +727,15 @@ char *MatchIPv6addr(char *buffer,char *addr,char *timekey, ClusterLocation locat
     {
     if ((rc = regexec(&preg, buffer, nmatch, pmatch,0)) == 0)
        {
-       strncpy(addr,buffer+pmatch[0].rm_so,pmatch[0].rm_eo - pmatch[0].rm_so);
+       *start = buffer+pmatch[0].rm_so;
+       *end = buffer+pmatch[0].rm_eo;
+
+       strncpy(addr,*start,*end-*start);
        regfree(&preg);
 
        if (strlen(addr) > 13) // Don't muddle a date string
           {
           Debug("matched ipv6 (%s)\n",addr);
-          IncrementCounter(timekey,addr,location,1);
           return addr;
           }
        }
@@ -685,7 +746,7 @@ char *MatchIPv6addr(char *buffer,char *addr,char *timekey, ClusterLocation locat
 
 /*****************************************************************************/
 
-int MatchJSON(char *buffer, FILE *fp, char *uri,char *timekey, ClusterLocation location)
+int MatchJSON(char *buffer, FILE *fp, char *uri,char *timekey, ClusterContext context)
 {
  char *sp, *c;
  char jsonbuffer[1024*1024];
@@ -821,7 +882,7 @@ int MatchJSON(char *buffer, FILE *fp, char *uri,char *timekey, ClusterLocation l
                 {
                 Debug("CHANGE in embedded JSON (%s) from (%.64s) to (%.64)\n",uri,sp1,sp2);
                 snprintf(newname,256,"json file change in %s",uri);
-                IncrementCounter(timekey,newname,location,1);
+                IncrementCounter(timekey,newname,context,1);
                 fclose(fin);
                 free(jsonfile_old);
                 return false;
@@ -843,7 +904,7 @@ int MatchJSON(char *buffer, FILE *fp, char *uri,char *timekey, ClusterLocation l
 
 /*****************************************************************************/
 
-char *MatchURI(char *buffer,char *URI,char *timekey, ClusterLocation location)
+char *MatchURI(char *buffer,char *URI,char *timekey, ClusterContext context)
 {
  char *sp, *spt, *iterator = buffer;
  char c;
@@ -864,7 +925,7 @@ char *MatchURI(char *buffer,char *URI,char *timekey, ClusterLocation location)
 
     if (sp > iterator)
        {
-       // roll baclk to ws in case doesn't start with /
+       // roll back to ws in case doesn't start with /
        while(*sp == '/' || *sp == '_' || *sp == '-' || *sp == '.' || !isspace(*sp) && !ispunct(*sp))
           {
           sp--;
@@ -877,16 +938,16 @@ char *MatchURI(char *buffer,char *URI,char *timekey, ClusterLocation location)
        {
        *spt++ = *++sp;
        c = *sp;
-       *sp = ' ';
+       //*sp = ' ';
        }
     while(c == '/' || c == '_' || c == '-' || c == '.' || !isspace(c) && !ispunct(c));
     
     *(spt-1) = '\0';
     
-    Debug("URI (%s)\n",URI);
+    printf("URI (%s)\n",URI);
     char uri[CGN_BUFSIZE];
     snprintf(uri,CGN_BUFSIZE,"uri:%s",URI);
-    IncrementCounter(timekey,uri,location,1);
+    IncrementCounter(timekey,uri,context,1);
     }
 
  return sp;
@@ -894,7 +955,7 @@ char *MatchURI(char *buffer,char *URI,char *timekey, ClusterLocation location)
 
 /*****************************************************************************/
 
-void ExtractMessages(char *msg,char *timekey, ClusterLocation location)
+void ExtractMessages(char *msg,char *timekey, ClusterContext context)
 {
  char qstring[1024];
  char stripped[512] = {0};
@@ -929,9 +990,12 @@ void ExtractMessages(char *msg,char *timekey, ClusterLocation location)
 
        *spq = '\0';
 
-       Debug("Extracted string \"%s\"\n",qstring);
-       IncrementCounter(timekey,qstring,location,1);
-
+       if (!StupidString(qstring))
+          {
+          Debug("QSTRING (\"%s\")\n",qstring);
+          IncrementCounter(timekey,qstring,context,1);
+          }
+       
        spq = qstring;
        memset(qstring,0,1024);
        sp++;
@@ -953,7 +1017,7 @@ void ExtractMessages(char *msg,char *timekey, ClusterLocation location)
  *spt = '\0';
  
  Debug("Remaining message: %s\n",stripped);
- IncrementCounter(timekey,stripped,location,1);
+ IncrementCounter(timekey,stripped,context,1);
 }
 
 /************************************************************************************/
@@ -1112,19 +1176,23 @@ char *TimeKey(struct tm tz)
 
 /************************************************************************************/
 
-void IncrementCounter(char *timekey,char *namekey, ClusterLocation location, int value)
+void IncrementCounter(char *timekey,char *namekey, ClusterContext context, int value)
 {
-
  // When we are dealing with aggregate, centralized logging, we may need to retain origin context
  // which shouldn't have been propagated in the first place
 
  // We want quickly to turn the namekey into an easily recognizable canonical invariant,
  // shorter than 256 characters, and document it in the semantic graph
 
- char canon[256];
+ char canon[1024];
  char *sp = namekey,*spt = canon;
  char last = 'x';
 
+ if (strlen(namekey) == 0)
+    {
+    return;
+    }
+ 
  *spt = '\0';
  
  // Strip leading junk
@@ -1161,16 +1229,17 @@ void IncrementCounter(char *timekey,char *namekey, ClusterLocation location, int
 
  // This is a temporary bucket count for current timekey - and aggregate over past few (LDT)
 
- if (strlen(canon) < INSIGNIFICANT)
+ if (strlen(canon) < INSIGNIFICANT || StupidString(canon))
     {
-    Debug("Message \"%s\" too short to count ..\n", canon);
     return;
     }
 
- // The keyname (location/name,timekey, canonized metric name)
- 
+ // The keyname (context/name,timekey, canonized metric name)
+
  unsigned int hash = Hash(canon,HASHTABLESIZE);
 
+ Canonify(canon);
+ 
  // We want to store by timekey and aggregate (timekey->0)
 
  if (METRICS.name[hash] == NULL)
@@ -1182,7 +1251,8 @@ void IncrementCounter(char *timekey,char *namekey, ClusterLocation location, int
     {
     if (strncmp(canon,METRICS.name[hash],4) != 0)
        {
-       printf("COLLISION at slot %d!!!! \n - %s\n - %s\n",hash,canon,METRICS.name[hash]);
+       StupidString(canon);
+       printf("COLLISION at slot %d!!!! \n - %s (%d)\n - %s (%d)\n",hash,canon,strlen(canon),METRICS.name[hash],strlen(METRICS.name[hash]));
        }
     
     METRICS.Q[hash].q += value;
@@ -1190,7 +1260,7 @@ void IncrementCounter(char *timekey,char *namekey, ClusterLocation location, int
 
  TOTALMESSAGES++;
  
- Debug("Increment (%s,<%s,%s,%s>,%s) +=%d\n",timekey,location.namespace,location.pod,location.appsysname,canon,value);    
+ Debug("Increment (%s,<%s,%s,%s>,%s) +=%d\n",timekey,context.namespace,context.pod,context.appsysname,canon,value);    
 }
 
 /************************************************************************************/
@@ -1230,6 +1300,21 @@ double WAverage(double old, double new)
  double forget_rate = 0.55;
 
  return old * forget_rate + (1.0-forget_rate) * new;
+}
+
+/************************************************************************************/
+
+void Erase(char *start, char *end)
+
+{ char *sp;
+
+ if (start != NULL)
+    {
+    for (sp = start; *sp != '\0' && sp <= end; sp++)
+       {
+       *sp = ' ';
+       }
+    }
 }
 
 /*********************************************************************/
@@ -1290,3 +1375,51 @@ Item *LoadInvariants()
  return list;
 }
 
+/*********************************************************************/
+
+int StupidString(char *s)
+{
+ char c,*sp, max=' ', min='z';
+ int len = 0, onlyhex = true; 
+
+ for (sp = s; *sp != '\0'; sp++)
+    {
+    c = toupper(*sp);
+    len++;
+
+    if (!isxdigit(*sp))
+       {
+       onlyhex = false;
+       }
+    
+    if (c == ' ')
+       {
+       continue;
+       }
+    
+    if (c < min)
+       {
+       min = c;
+       }
+    
+    if (c > max)
+       {
+       max = c;
+       }
+    }
+
+ if (onlyhex || (max-min) < ('F'-'A')+('9'-'0'))
+    {
+    //printf("STUPID '%s' - (%c/%d)-(%c/%d)\n",s,min,min,max,max);
+    return true;  // maybe just a hex string
+    }
+ else
+    {
+    if (len > INSIGNIFICANT)
+       {
+       //printf("NSTUPID '%s' - (%c/%d)-(%c/%d) %d <=> %d\n",s,min,min,max,max,max-min,('F'-'A')+('9'-'0'));
+       return false;
+       }
+    return true;
+    }
+}

@@ -1922,21 +1922,12 @@ void ClassifyListChanges(EvalContext *ctx, Item *current_state, char *comment)
 
  // Now separate the lists into (invariant/intesect + delta/NOT-intersect) sets
 
- Item *ip1 = current_state, *ip2 = prev_state, *match;
+ Item *ip1 = current_state, *ip2 = prev_state;
 
  // Learn the current number of each named item, in the usual WAverage way
  
  for (ip1 = current_state; ip1 != NULL; ip1=ip1->next)
-    {
-    if ((match = ReturnItemIn(prev_state,ip1->name)))
-       {   
-       }
-    else
-       {
-       snprintf(name,CF_BUFSIZE,"%s %.64s_appeared",comment,ip1->name);
-       EvalContextClassPutSoft(ctx,name, CONTEXT_SCOPE_NAMESPACE, "process state");
-       }
-    
+    {    
     snprintf(name,CF_BUFSIZE,"%s_%s",comment,ip1->name); 
     UpdateRealQResourceImpact(ctx,name,(double)(ip1->counter));
     DeleteItemLiteral(&prev_state,ip1->name);
@@ -1944,8 +1935,6 @@ void ClassifyListChanges(EvalContext *ctx, Item *current_state, char *comment)
  
  for (ip2 = prev_state; ip2 != NULL; ip2=ip2->next)
     {
-    snprintf(name,CF_BUFSIZE,"%s %.64s_disappeared",comment,ip2->name);
-    EvalContextClassPutSoft(ctx,name, CONTEXT_SCOPE_NAMESPACE, "process state"); 
     snprintf(name,CF_BUFSIZE,"%s_%.64s",comment,ip2->name);
     UpdateRealQResourceImpact(ctx,name,0);
     }
