@@ -95,6 +95,7 @@ char *Domain(char *id);
 char *Hostname(char *id);
 char *IPv4(char *id);
 char *IPv6(char *id);
+char *URIname(char *id);
 char *SUser(char *name);
 #endif
 

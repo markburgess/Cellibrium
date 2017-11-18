@@ -30,7 +30,7 @@
 #define HIGH +1
 #define LOW -1
 #define HASHTABLESIZE 8197
-#define DEBUG 1
+#define DEBUG 0
 #define Debug if (DEBUG) printf
 
 /*****************************************************************************/
@@ -86,6 +86,10 @@ struct timeval TIMEOUT = { 1, 500000 }; // 1.5 seconds
 
 Item *APPL_CONTEXT = NULL;
 
+char *URITABLE[HASHTABLESIZE];
+char *IPTABLE[HASHTABLESIZE];
+char *FRAGMENTTABLE[HASHTABLESIZE];
+
 /*****************************************************************************/
 
 ClusterContext ExtractContext(char *name);
@@ -111,6 +115,10 @@ Item *LoadInvariants(void);
 void DiffInvariants(Item **performance_syndrome,Item **security_syndrome,Item **invariants);
 int StupidString(char *s);
 void Erase(char *start, char *end);
+void GraphIPConcept(char *concept);
+void GraphURIConcept(char *concept);
+void GraphFragmentConcept(char *concept);
+void GraphConcepts(ClusterContext context);
 
 /*****************************************************************************/
 /* BEGIN                                                                     */
@@ -221,17 +229,21 @@ void ScanLog(char *name)
 
     sum_count++;
 
-    MatchIPv4addr(buffer,addr4,&start,&end);
-    Erase(start,end);
+    if (MatchIPv4addr(buffer,addr4,&start,&end))
+       {
+       IncrementCounter(timekey,IPv4(addr4),context,1);
+       GraphIPConcept(IPv4(addr4));
+       Erase(start,end);
+       }
 
-    MatchIPv6addr(buffer,addr6,&start,&end);
-    Erase(start,end);
+    if (MatchIPv6addr(buffer,addr6,&start,&end))
+       {
+       IncrementCounter(timekey,IPv6(addr6),context,1);
+       GraphIPConcept(IPv6(addr6));
+       Erase(start,end);
+       }
     
     MatchURI(buffer,URI,timekey,context);    
-
-    ///deployment depends on, expresses "role ipv4" when/where?
-    IncrementCounter(timekey,addr4,context,1);
-    IncrementCounter(timekey,addr6,context,1);
 
     // Dumped JSON - is it significant?
     
@@ -253,7 +265,8 @@ void ScanLog(char *name)
   // Measure average time jump in logging
 
  IncrementCounter(timekey,"log lines",context,lines);
- 
+
+ GraphConcepts(context);
  printf("\nSUMMARY of %d lines\n\n",lines);
  printf("Average interval between (%d) log bursts = %.2lf seconds\n",sum_count,(double)sum_delta/(double)sum_count);
 
@@ -944,10 +957,12 @@ char *MatchURI(char *buffer,char *URI,char *timekey, ClusterContext context)
     
     *(spt-1) = '\0';
     
-    printf("URI (%s)\n",URI);
+    Debug("URI (%s)\n",URI);
     char uri[CGN_BUFSIZE];
     snprintf(uri,CGN_BUFSIZE,"uri:%s",URI);
+    
     IncrementCounter(timekey,uri,context,1);
+    GraphURIConcept(URIname(URI));
     }
 
  return sp;
@@ -1018,6 +1033,9 @@ void ExtractMessages(char *msg,char *timekey, ClusterContext context)
  
  Debug("Remaining message: %s\n",stripped);
  IncrementCounter(timekey,stripped,context,1);
+ char concept[1024];
+ snprintf(concept,1024,"message fragment %s",stripped);
+ GraphFragmentConcept(concept);
 }
 
 /************************************************************************************/
@@ -1046,6 +1064,105 @@ char *MatchDatePosition(char *buffer)
     }
 
  return NULL;
+}
+
+/************************************************************************************/
+
+void GraphIPConcept(char *concept)
+{
+ unsigned int hash = Hash(concept,HASHTABLESIZE);
+
+ if (IPTABLE[hash] == NULL)
+    {
+    IPTABLE[hash] = strdup(concept);
+    }
+ else
+    {
+    if (strncmp(concept,IPTABLE[hash],4) != 0)
+       {
+       printf("COLLISION in IP\n");
+       }
+    }
+}
+
+/************************************************************************************/
+
+void GraphURIConcept(char *concept)
+{
+ unsigned int hash = Hash(concept,HASHTABLESIZE);
+
+ if (URITABLE[hash] == NULL)
+    {
+    URITABLE[hash] = strdup(concept);
+    }
+ else
+    {
+    if (strncmp(concept,URITABLE[hash],4) != 0)
+       {
+       printf("COLLISION in URI\n");
+       }
+    }
+}
+
+/************************************************************************************/
+
+void GraphFragmentConcept(char *concept)
+{
+ unsigned int hash = Hash(concept,HASHTABLESIZE);
+
+ if (FRAGMENTTABLE[hash] == NULL)
+    {
+    FRAGMENTTABLE[hash] = strdup(concept);
+    }
+ else
+    {
+    if (strncmp(concept,FRAGMENTTABLE[hash],4) != 0)
+       {
+       printf("COLLISION in fragments\n");
+       }
+    }
+}
+
+/************************************************************************************/
+
+void GraphConcepts(ClusterContext context)
+{
+ char ictx[1024];
+ int i;
+
+ if (context.namespace)
+    {
+    snprintf(ictx,1024,"kubernetes deployment %s in namespace",context.pod,context.namespace);
+    }
+ else if (context.pod)
+    {
+    snprintf(ictx,1024,"kubernetes deployment %s",context.pod);
+    }
+ else
+    {
+    snprintf(ictx,1024,"kubernetes deployment");
+    }
+ 
+ for (i = 0; i < HASHTABLESIZE; i++)
+    {
+    if (IPTABLE[i])
+       {
+       RoleGr(stdout,IPTABLE[i],"ipv4 address",IPTABLE[i]+strlen("ipv4 address "),ictx);
+       free(IPTABLE[i]);
+       }
+
+    if (URITABLE[i])
+       {
+       RoleGr(stdout,URITABLE[i],"resource path or URI",URITABLE[i]+strlen("resource path or URI "),ictx);
+       free(URITABLE[i]);
+       }
+
+    if (FRAGMENTTABLE[i])
+       {
+       RoleGr(stdout,FRAGMENTTABLE[i],"message fragment",FRAGMENTTABLE[i]+strlen("message fragment "),ictx);
+       free(FRAGMENTTABLE[i]);
+       } 
+    }
 }
 
 /************************************************************************************/

@@ -833,6 +833,17 @@ char *IPv6(char *id) // specific ID
  return ret;
 }
 
+char *URIname(char *id) // specific ID
+{
+ static char ret[CGN_BUFSIZE];
+ if (id == NULL || strlen(id) > 0)
+    {
+    return "";
+    }
+ snprintf(ret,CGN_BUFSIZE,"resource path or URI %s",id);
+ return ret;
+}
+
 char *Hostname(char *id) // specific ID
 {
  static char ret[CGN_BUFSIZE];
