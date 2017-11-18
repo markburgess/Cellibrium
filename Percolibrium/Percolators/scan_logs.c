@@ -151,7 +151,6 @@ void main(int argc, char** argv)
 
  for (i = 1; argv[i] != NULL; i++)
     {
-    printf("Processing %s\n",argv[i]);
     ScanLog(argv[i]);
     }
 
@@ -231,15 +230,21 @@ void ScanLog(char *name)
 
     if (MatchIPv4addr(buffer,addr4,&start,&end))
        {
-       IncrementCounter(timekey,IPv4(addr4),context,1);
-       GraphIPConcept(IPv4(addr4));
+       if (strlen(addr4) > 8)
+          {
+          IncrementCounter(timekey,IPv4(addr4),context,1);
+          GraphIPConcept(IPv4(addr4));
+          }
        Erase(start,end);
        }
 
     if (MatchIPv6addr(buffer,addr6,&start,&end))
        {
-       IncrementCounter(timekey,IPv6(addr6),context,1);
-       GraphIPConcept(IPv6(addr6));
+       if (strlen(addr6) > 8)
+          {
+          IncrementCounter(timekey,IPv6(addr6),context,1);
+          GraphIPConcept(IPv6(addr6));
+          }
        Erase(start,end);
        }
     
@@ -267,8 +272,8 @@ void ScanLog(char *name)
  IncrementCounter(timekey,"log lines",context,lines);
 
  GraphConcepts(context);
- printf("\nSUMMARY of %d lines\n\n",lines);
- printf("Average interval between (%d) log bursts = %.2lf seconds\n",sum_count,(double)sum_delta/(double)sum_count);
+ printf("\n# SUMMARY of %d lines\n\n",lines);
+ printf("# Average interval between (%d) log bursts = %.2lf seconds\n",sum_count,(double)sum_delta/(double)sum_count);
 
  fclose(fp);
 }
@@ -324,8 +329,6 @@ ClusterContext ExtractContext(char *pathname)
  loc.pod = strdup(pod);
  loc.container = strdup(ctnr);
  loc.appsysname = strdup(app);
-
- printf("name(%s,%s,%s,%s)\n",ns,pod,ctnr,app);
 
  char namespace[1024],deployment[1024];
  snprintf(namespace,1024,"kubernetes namespace %s",ns);
@@ -975,6 +978,7 @@ void ExtractMessages(char *msg,char *timekey, ClusterContext context)
  char qstring[1024];
  char stripped[512] = {0};
  char *sp = msg, *spt = stripped, *spq = qstring;
+ char concept[1024];
 
  if (msg == NULL)
     {
@@ -1009,6 +1013,8 @@ void ExtractMessages(char *msg,char *timekey, ClusterContext context)
           {
           Debug("QSTRING (\"%s\")\n",qstring);
           IncrementCounter(timekey,qstring,context,1);
+          snprintf(concept,1024,"message fragment %s",qstring);
+          GraphFragmentConcept(concept);
           }
        
        spq = qstring;
@@ -1032,10 +1038,24 @@ void ExtractMessages(char *msg,char *timekey, ClusterContext context)
  *spt = '\0';
  
  Debug("Remaining message: %s\n",stripped);
- IncrementCounter(timekey,stripped,context,1);
- char concept[1024];
- snprintf(concept,1024,"message fragment %s",stripped);
- GraphFragmentConcept(concept);
+
+ for (sp = stripped + strlen(stripped); sp > stripped; sp--)
+    {
+    if (isspace(*sp))
+       {
+       *sp = '\0';
+       }
+    }
+ 
+ for (sp = stripped; isspace(*sp) && *sp != '\0'; sp++)
+    {
+    if (!StupidString(sp))
+       {
+       IncrementCounter(timekey,sp,context,1);
+       snprintf(concept,1024,"message fragment %s",sp);
+       GraphFragmentConcept(sp);
+       }
+    }
 }
 
 /************************************************************************************/
@@ -1368,7 +1388,6 @@ void IncrementCounter(char *timekey,char *namekey, ClusterContext context, int v
     {
     if (strncmp(canon,METRICS.name[hash],4) != 0)
        {
-       StupidString(canon);
        printf("COLLISION at slot %d!!!! \n - %s (%d)\n - %s (%d)\n",hash,canon,strlen(canon),METRICS.name[hash],strlen(METRICS.name[hash]));
        }
     
