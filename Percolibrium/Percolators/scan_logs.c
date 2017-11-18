@@ -99,7 +99,7 @@ char *MatchURI(char *buffer,char *URI,char *timekey, ClusterContext context);
 char *MatchIPv4addr(char *buffer,char *addr, char **start, char **end);
 char *MatchIPv6addr(char *buffer,char *addr, char **start, char **end);
 int MatchJSON(char *buffer, FILE *fp, char *uri,char *timekey, ClusterContext context);
-void ExtractMessages(char *msg,char *timekey, ClusterContext context);
+void ExtractMessages(char *msg,char *timekey, ClusterContext context,char *addr4,char *addr6,char *uri);
 void IncrementCounter(char *timekey,char *namekey, ClusterContext context, int value);
 char *TimeKey(struct tm tz);
 char *MatchDatePosition(char *buffer);
@@ -117,7 +117,7 @@ int StupidString(char *s);
 void Erase(char *start, char *end);
 void GraphIPConcept(char *concept);
 void GraphURIConcept(char *concept);
-void GraphFragmentConcept(char *concept);
+int GraphFragmentConcept(char *concept);
 void GraphConcepts(ClusterContext context);
 
 /*****************************************************************************/
@@ -260,7 +260,7 @@ void ScanLog(char *name)
        }
 
     // What remains, however improbable, must be noise
-    ExtractMessages(buffer,timekey,context);
+    ExtractMessages(buffer,timekey,context,addr4,addr6,URI);
     }
 
  // Final flush at exit
@@ -954,7 +954,6 @@ char *MatchURI(char *buffer,char *URI,char *timekey, ClusterContext context)
        {
        *spt++ = *++sp;
        c = *sp;
-       //*sp = ' ';
        }
     while(c == '/' || c == '_' || c == '-' || c == '.' || !isspace(c) && !ispunct(c));
     
@@ -968,17 +967,17 @@ char *MatchURI(char *buffer,char *URI,char *timekey, ClusterContext context)
     GraphURIConcept(URIname(URI));
     }
 
- return sp;
+ return URI;
 }
 
 /*****************************************************************************/
 
-void ExtractMessages(char *msg,char *timekey, ClusterContext context)
+void ExtractMessages(char *msg,char *timekey, ClusterContext context,char *addr4,char *addr6,char *uri)
 {
  char qstring[1024];
  char stripped[512] = {0};
  char *sp = msg, *spt = stripped, *spq = qstring;
- char concept[1024];
+ char concept[2048];
 
  if (msg == NULL)
     {
@@ -1004,11 +1003,18 @@ void ExtractMessages(char *msg,char *timekey, ClusterContext context)
        sp++;
        while ((*sp != '\"') && (*sp != '\0'))
           {
-          *spq++ = *sp++;
+          if ((*sp == ' ') && (*(sp+1) == ' '))
+             {
+             sp++;
+             }
+          else
+             {
+             *spq++ = *sp++;
+             }
           }
-
+       
        *spq = '\0';
-
+       
        if (!StupidString(qstring))
           {
           Debug("QSTRING (\"%s\")\n",qstring);
@@ -1023,9 +1029,12 @@ void ExtractMessages(char *msg,char *timekey, ClusterContext context)
        }
     else
        {
-       if (isalpha(*sp)|| *sp == '.' || *sp == ':') // strip numbers and junk
+       if (*sp != '\0' && isalpha(*sp)|| *sp == '.' || *sp == ':' || *sp == ' ') // strip numbers and junk
           {
-          *spt++ = *sp;
+          if ((*sp == ' ') && (*(sp+1) != ' '))
+             {
+             *spt++ = *sp;          
+             }
           }
        sp++;
        if (spt > stripped + 510)
@@ -1037,8 +1046,6 @@ void ExtractMessages(char *msg,char *timekey, ClusterContext context)
 
  *spt = '\0';
  
- Debug("Remaining message: %s\n",stripped);
-
  for (sp = stripped + strlen(stripped); sp > stripped; sp--)
     {
     if (isspace(*sp))
@@ -1046,14 +1053,71 @@ void ExtractMessages(char *msg,char *timekey, ClusterContext context)
        *sp = '\0';
        }
     }
- 
+
  for (sp = stripped; isspace(*sp) && *sp != '\0'; sp++)
     {
-    if (!StupidString(sp))
+    }
+
+ if (!StupidString(sp))
+    {
+    IncrementCounter(timekey,sp,context,1);
+    snprintf(concept,1024,"message fragment %s",sp);
+    GraphFragmentConcept(sp);
+    
+    // If these are coactivated, significant cluster (take only the last qstring, probably fine but lazy coding..)
+    
+    int l4 = strlen(addr4);
+    int l6 = strlen(addr6);
+    int luri = strlen(uri);
+    int lq = strlen(qstring);
+    int ls = strlen(sp);
+    int tot = l4 + l6 + luri + lq + ls;
+    
+    if ((l4||l6||luri||lq) && (tot > 0) && (tot < 2000))
        {
-       IncrementCounter(timekey,sp,context,1);
-       snprintf(concept,1024,"message fragment %s",sp);
-       GraphFragmentConcept(sp);
+       snprintf(concept,1024,"message event `%s' concerning: ",sp);
+       
+       char *attr = strchr(concept,':') + 1;
+       
+       if (l4)
+          {
+          strcat(concept,addr4);
+          }
+       
+       if (l6)
+          {
+          if (l4)
+             {
+             strcat(concept,",");
+             }
+          strcat(concept,addr6);
+          }
+       
+       if (luri)
+          {
+          if (l4||l6)
+             {
+             strcat(concept,",");
+             }
+          strcat(concept,uri);
+          }
+       
+       if (strlen(qstring) >0)
+          {
+          if (l4||l6||luri)
+             {
+             strcat(concept,",");
+             }
+          strcat(concept,qstring);
+          }
+
+       strcat(concept,",");
+       strcat(concept,sp);
+
+       if (!GraphFragmentConcept(concept))
+          {
+          RoleGr(stdout,concept,"message event",attr,"kubernetes cluster log output");
+          }
        }
     }
 }
@@ -1119,27 +1183,29 @@ void GraphURIConcept(char *concept)
     {
     if (strncmp(concept,URITABLE[hash],4) != 0)
        {
-       printf("COLLISION in URI\n");
+       Debug("COLLISION in URI\n");
        }
     }
 }
 
 /************************************************************************************/
 
-void GraphFragmentConcept(char *concept)
+int GraphFragmentConcept(char *concept)
 {
  unsigned int hash = Hash(concept,HASHTABLESIZE);
 
  if (FRAGMENTTABLE[hash] == NULL)
     {
     FRAGMENTTABLE[hash] = strdup(concept);
+    return false;
     }
  else
     {
     if (strncmp(concept,FRAGMENTTABLE[hash],4) != 0)
        {
-       printf("COLLISION in fragments\n");
+       Debug("COLLISION in fragments\n");
        }
+    return true;
     }
 }
 
