@@ -29,6 +29,7 @@
 #define INSIGNIFICANT 12
 #define HIGH +1
 #define LOW -1
+#define APPEARED 0
 #define HASHTABLESIZE 8197
 #define DEBUG 0
 #define Debug if (DEBUG) printf
@@ -96,7 +97,7 @@ char *FRAGMENTTABLE[HASHTABLESIZE];
 
 ClusterContext ExtractContext(char *name);
 char *MatchDateTime(char *buffer,char *timekey, time_t *stamp, char **start, char **end);
-void CheckKeyValue(char *timekey,ClusterContext context,char *name,double value);
+void CheckKeyValue(char *timekey,time_t stamp, ClusterContext context,char *name,double value);
 char *MatchURI(char *buffer,char *URI,char *timekey, ClusterContext context);
 char *MatchIPv4addr(char *buffer,char *addr, char **start, char **end);
 char *MatchIPv6addr(char *buffer,char *addr, char **start, char **end);
@@ -106,7 +107,7 @@ void IncrementCounter(char *timekey,char *namekey, ClusterContext context, int v
 char *TimeKey(struct tm tz);
 char *MatchDatePosition(char *buffer);
 unsigned int Hash(char* str, unsigned int tablelength);
-void FlushContext(char *timekey,ClusterContext context);
+void FlushContext(char *timekey,time_t stamp,ClusterContext context);
 char *Canonify(char *name);
 void ScanLog(char *name);
 double WAverage(double old, double new);
@@ -219,7 +220,7 @@ void ScanLog(char *name)
     if (TimeKeyChange(timekey))
        {
        strcpy(TIMEKEY,timekey);
-       FlushContext(timekey,context);
+       FlushContext(timekey,stamp,context);
        
        if (last_t > 0 && (stamp > last_t))
           {
@@ -272,7 +273,7 @@ void ScanLog(char *name)
 
  // Final flush at exit
  strcpy(TIMEKEY,timekey);
- FlushContext(timekey,context);
+ FlushContext(timekey,stamp,context);
 
   // Measure average time jump in logging
 
@@ -489,7 +490,7 @@ char *MatchDateTime(char *buffer,char *timekey, time_t *stamp, char **start, cha
 
 /*****************************************************************************/
 
-void FlushContext(char *timekey,ClusterContext context)
+void FlushContext(char *timekey,time_t tstamp,ClusterContext context)
 {
  int i;
 
@@ -504,11 +505,11 @@ void FlushContext(char *timekey,ClusterContext context)
        // Store in REDIS
        // First store the long-term weekly pattern
 
-       CheckKeyValue(TIMEKEY,context,METRICS.name[i],METRICS.Q[i].q);
+       CheckKeyValue(TIMEKEY,tstamp,context,METRICS.name[i],METRICS.Q[i].q);
 
        // Then the recent aggregate
 
-       CheckKeyValue("recent",context,METRICS.name[i],METRICS.Q[i].q);
+       CheckKeyValue("recent",tstamp,context,METRICS.name[i],METRICS.Q[i].q);
        
        free(METRICS.name[i]);
        METRICS.name[i] = NULL;
@@ -613,12 +614,13 @@ void DiffInvariants(Item **performance_syndrome,Item **security_syndrome,Item **
 
 /*****************************************************************************/
 
-void CheckKeyValue(char *timekey,ClusterContext context,char *name,double q)
+void CheckKeyValue(char *timekey,time_t tstamp, ClusterContext context,char *name,double q)
 
 {
  char key[1024];
  char value[1024];
  double oldq = 0,oldav = 0,oldvar = 0,newav,newvar,var;
+ time_t lastseen = 0, avdt = 0, dtvar = 0;
  int anomaly = 0;
 
  snprintf(key,1024,"(%s,%s,%s,%s,%s)",context.namespace,context.pod,context.appsysname,timekey,name);
@@ -628,11 +630,13 @@ void CheckKeyValue(char *timekey,ClusterContext context,char *name,double q)
 
  if (RPLY->str)
     {
-    sscanf(RPLY->str,"(%lf,%lf,%lf)",&oldq,&oldav,&oldvar);
+    sscanf(RPLY->str,"(%lf,%lf,%lf,%ld,%ld,%ld)",&oldq,&oldav,&oldvar,&lastseen,&avdt,&dtvar);
     }
  else
     {
     anomaly = HIGH;
+    oldav = 0;
+    oldvar = 0;
     }
  
  freeReplyObject(RPLY);
@@ -641,32 +645,40 @@ void CheckKeyValue(char *timekey,ClusterContext context,char *name,double q)
  var = (q-newav)*(q-newav);
  newvar = WAverage(oldvar,var);
 
- snprintf(value,1024,"(%.2lf,%.2lf,%.2lf)",q,newav,newvar);
+ time_t dt = tstamp - lastseen;
+ double newavdt = WAverage (avdt,dt), newdtvar = WAverage(dtvar,(newavdt-dt)*(newavdt-dt));
 
- //printf("%s=%s\n",key,value);
- // Expire data after 30 days without update
+ snprintf(value,1024,"(%.2lf,%.2lf,%.2lf,%ld,%.2lf,%.2lf)",q,newav,newvar,tstamp,newavdt,newdtvar);
 
- RPLY = redisCommand(RC,"SET %s %s ex %d",key,value,3600*24*30);
+ // Expire data after 8 days without update, allow weekly updates at most (TBD)
+
+ RPLY = redisCommand(RC,"SET %s %s ex %d",key,value,3600*24*8);
  freeReplyObject(RPLY);
 
  double bar = 3.0 * sqrt(newvar);
 
- // For logs, these criteria are not appropriate, since we don't get enough entropy in the signal
- // to enable consistent separation of average and fluctuation - 
+ // For logs, the usual criteria are not appropriate, since we don't get enough entropy in the signal
+ // to enable consistent separation of average and fluctuation - we're not looking for names that are
+ // anomalous in quantity, but for the signals that are anomalous in NAME (new or very rare) - when
+ // signals are rare they will NOT follow the weekly pattern, so that could be a prerequisite
  
- if (q > oldav + bar)
+ if (q > newav + bar)
     {
+    // Quantity anomaly - verbosity
     anomaly = HIGH;    
     SetApplicationContext(name,anomaly);
     }
- else if (q < oldav - bar)
+ else if (q < newav)
     {
+    // Quantity anomaly - unusually quiet
     anomaly = LOW;
     SetApplicationContext(name,anomaly);
     }
- else
+ else if (dt > 3600) // What is the natural sampling timescale?
     {
-    Print("No anomaly determined %s,%s,%lf ( %lf pm %lf)\n",timekey,name,q,oldav,bar);
+    // Tolerance anomaly - system not immunized against this pathogen
+    Print("New message anomaly determined %s,%s,%lf ( %lf pm %lf)\n",timekey,name,q,oldav,bar);
+    SetApplicationContext(name,APPEARED);
     }
 
 // Learn lastseen time too ..
@@ -684,13 +696,13 @@ void SetApplicationContext(char *key,int anomaly)
  switch (anomaly)
     {
     case HIGH:
-        snprintf(anomaly_name,256,"%s_high",key);
+        snprintf(anomaly_name,256,"high_%s",key);
         break;
     case LOW:
-        snprintf(anomaly_name,256,"%s_low",key);
+        snprintf(anomaly_name,256,"low_%s",key);
         break;
     default:
-        snprintf(anomaly_name,256,"%s_normal",key);
+        snprintf(anomaly_name,256,"rare_%s",key);
         break;
     }
 

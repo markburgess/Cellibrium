@@ -106,6 +106,7 @@ static Item *ARGS = NULL;
 /* Work */
 
 int SLEEPTIME = 60;  
+char TIMEKEY[64];
 
 static long ITER = ITER_RESET;               /* Iteration since start */
 static double AGE = 0.0, WAGE = 0.0;        /* Age and weekly age of database */
@@ -158,14 +159,14 @@ char *MakeAnomalyGrName(FILE *fp,char *title,Item *list);
 char *MakeFlatList(FILE *fp,Item *list);
 char *HereGr(FILE *fp, char *address);
 void ClassifyProcessState(EvalContext *ctx, FILE *fp);
-static void UpdateProcessGroup(char *value,int *process_group_0, int *process_group_1,int *process_group_2,int *process_group_user);
+static void UpdateProcessGroup(char *value,double *process_group_0, double *process_group_1,double *process_group_2,double *process_group_user);
 static void CountDefunctProcesses(FILE *fp,char *command, int *def);
 static void CommandConcepts(FILE *fp,char *user, char *command);
 static void UsernameConcepts(FILE *fp,char *user);
 int LoadSpecialQ(char *name,double *oldq, double *oldvar);
 int SaveSpecialQ(char *name,double oldq, double oldvar);
 void UpdateStrQResourceImpact(EvalContext *ctx, char *name,char *value,char *user,char *args);
-void UpdateRealQResourceImpact(EvalContext *ctx, char *qname,double newq);
+void CheckKeyValue(EvalContext *ctx,char *timekey,time_t tstamp, char *qname,double newq);
 static void SaveStateList(Item *list,char *name);
 static Item *LoadStateList(char *name);
 void ClassifyListChanges(EvalContext *ctx, Item *current_state, char *comment);
@@ -360,7 +361,6 @@ static void SaveHistogram(void)
 
 void MonitorStartServer(EvalContext *ctx, const Policy *policy)
 {
- char timekey[CF_SMALLBUF];
  Averages averages;
  Timescales times;
  Policy *monitor_cfengine_policy = PolicyNew();
@@ -417,8 +417,8 @@ void MonitorStartServer(EvalContext *ctx, const Policy *policy)
     GetInterfaceInformation(ctx);
 
     GetQ(ctx, policy);
-    snprintf(timekey, sizeof(timekey), "%s", GenTimeKey(time(NULL)));
-    EvalAvQ(ctx, timekey, &averages, &times);
+    snprintf(TIMEKEY, sizeof(TIMEKEY), "%s", GenTimeKey(time(NULL)));
+    EvalAvQ(ctx, TIMEKEY, &averages, &times);
     LeapDetection();
     BuildConsciousState(ctx, averages,times);
 
@@ -903,7 +903,7 @@ static void BuildConsciousState(EvalContext *ctx, Averages av, Timescales t)
     ipaddr[0] = '\0';
     sscanf(ip->name,"%[^:]",ipaddr);
     snprintf(buff,CF_BUFSIZE,"port_%s_clients",ip->classes);
-    UpdateRealQResourceImpact(ctx,buff,(double)ip->counter);
+    CheckKeyValue(ctx,TIMEKEY,nowt,buff,(double)ip->counter);
     Log(LOG_LEVEL_VERBOSE, "  [%d] %s = %d", count++, buff, ip->counter);
     EvalContextClassPutSoft(ctx,buff,CONTEXT_SCOPE_NAMESPACE, "process state");
     }
@@ -1019,7 +1019,6 @@ static void UpdateAverages(ARG_UNUSED EvalContext *ctx, char *timekey, Averages 
  WriteDB(dbp, "DATABASE_AGE", &AGE, sizeof(double));
  
  CloseDB(dbp);
- //HistoryUpdate(ctx, newvals);
 }
 
 /*****************************************************************************/
@@ -1816,11 +1815,11 @@ void ClassifyProcessState(EvalContext *ctx, FILE *fp)
     Log(LOG_LEVEL_VERBOSE,"  active user - %20s in %s\n",SUser(ip->name),hub);
     }
 
- UpdateRealQResourceImpact(ctx,"defuncts",(double)defuncts);
- UpdateRealQResourceImpact(ctx,"processgroup0count",process_group_0);
- UpdateRealQResourceImpact(ctx,"processgroup1count",process_group_1);
- UpdateRealQResourceImpact(ctx,"processgroup2count",process_group_2);
- UpdateRealQResourceImpact(ctx,"processgroupUSERcount",process_group_user);
+ CheckKeyValue(ctx,TIMEKEY,pstime,"defuncts",(double)defuncts);
+ CheckKeyValue(ctx,TIMEKEY,pstime,"processgroup0count",process_group_0);
+ CheckKeyValue(ctx,TIMEKEY,pstime,"processgroup1count",process_group_1);
+ CheckKeyValue(ctx,TIMEKEY,pstime,"processgroup2count",process_group_2);
+ CheckKeyValue(ctx,TIMEKEY,pstime,"processgroupUSERcount",process_group_user);
      
  ClassifyListChanges(ctx,ARGS, "JOBcommand");
  ClassifyListChanges(ctx,USERS,"USERprocs");
@@ -1833,7 +1832,7 @@ void ClassifyProcessState(EvalContext *ctx, FILE *fp)
 
 /***********************************************************************************************/
 
-static void UpdateProcessGroup(char *value,int *process_group_0, int *process_group_1,int *process_group_2,int *process_group_user)
+static void UpdateProcessGroup(char *value,double *process_group_0, double *process_group_1,double *process_group_2,double *process_group_user)
 {
  if (strcmp(value,"0") == 0)
     {
@@ -1919,6 +1918,7 @@ void ClassifyListChanges(EvalContext *ctx, Item *current_state, char *comment)
 {
  Item *prev_state = LoadStateList(comment); // Assume pre-sorted, no tampering
  char name[CF_BUFSIZE];
+ time_t now = time(NULL);
 
  // Now separate the lists into (invariant/intesect + delta/NOT-intersect) sets
 
@@ -1929,14 +1929,14 @@ void ClassifyListChanges(EvalContext *ctx, Item *current_state, char *comment)
  for (ip1 = current_state; ip1 != NULL; ip1=ip1->next)
     {    
     snprintf(name,CF_BUFSIZE,"%s_%s",comment,ip1->name); 
-    UpdateRealQResourceImpact(ctx,name,(double)(ip1->counter));
+    CheckKeyValue(ctx,TIMEKEY,now,name,(double)(ip1->counter));
     DeleteItemLiteral(&prev_state,ip1->name);
     }
  
  for (ip2 = prev_state; ip2 != NULL; ip2=ip2->next)
     {
     snprintf(name,CF_BUFSIZE,"%s_%.64s",comment,ip2->name);
-    UpdateRealQResourceImpact(ctx,name,0);
+    CheckKeyValue(ctx,TIMEKEY,now,name,0);
     }
  
  SaveStateList(current_state,comment);
@@ -2264,21 +2264,31 @@ void UpdateStrQResourceImpact(EvalContext *ctx, char *name,char *value,char *use
      }
   
   // The reporting is already coarse grained by ps
-  
+
+  time_t now = time(NULL);
   snprintf(qname,CF_BUFSIZE,"%s_%s_%.64s",user,name,CanonifyName(args));
-  UpdateRealQResourceImpact(ctx,qname,newq);
-      
+  CheckKeyValue(ctx,TIMEKEY,now,qname,newq);
 }
 
 /***********************************************************************************************/
 
-void UpdateRealQResourceImpact(EvalContext *ctx, char *qname,double newq)
+void CheckKeyValue(EvalContext *ctx,char *timekey,time_t tstamp, char *qname,double newq)
 {
- double oldav = 0, oldvar = 0.1;
- char cname[CF_BUFSIZE];
+ double oldq = 0,oldav = 0, oldvar = 0.1;
+ time_t lastseen = 0;
+ char cname[CF_BUFSIZE],value[256];
+ CF_DB *dbp;
+ double nextav, newvar, nextvar, devq, newavdt, newdtvar, dt, avdt = 0, dtvar = 0;
  
- if (LoadSpecialQ(qname,&oldav,&oldvar))
+ if (!OpenDB(&dbp, dbid_measure))
     {
+    return;
+    }
+ 
+ if (ReadDB(dbp, qname, value, sizeof(value)))
+    {
+    sscanf(value,"(%lf,%lf,%lf,%ld,%lf,%lf)",&oldq,&oldav,&oldvar,&lastseen,&avdt,&dtvar);
+
     // Because the coarse resolution is only 0.1
     
     if (oldvar == 0) // desensitize
@@ -2286,10 +2296,13 @@ void UpdateRealQResourceImpact(EvalContext *ctx, char *qname,double newq)
        oldvar = 0.5;
        }
     
-    double nextav = WAverage(newq,oldav,WAGE);
-    double newvar = (newq-oldav)*(newq-oldav);
-    double nextvar = WAverage(newvar,oldvar,WAGE);
-    double devq = sqrt(oldvar);
+    nextav = WAverage(newq,oldav,WAGE);
+    newvar = (newq-oldav)*(newq-oldav);
+    nextvar = WAverage(newvar,oldvar,WAGE);
+    devq = sqrt(oldvar);
+    dt = (double) (tstamp - lastseen);
+    newavdt = WAverage (avdt,dt,WAGE);
+    newdtvar = WAverage(dtvar,(newavdt-dt)*(newavdt-dt),WAGE);
 
     if (devq < 0.1)
        {
@@ -2300,65 +2313,46 @@ void UpdateRealQResourceImpact(EvalContext *ctx, char *qname,double newq)
        {
        snprintf(cname,CF_BUFSIZE,"%s_high_anomaly",qname);
        EvalContextClassPutSoft(ctx, cname, CONTEXT_SCOPE_NAMESPACE, "process state");
-       Log(LOG_LEVEL_VERBOSE," [pr] Process anomaly %s (%lf > %lf)\n",cname,newq,oldav+3*devq);
+       Log(LOG_LEVEL_VERBOSE," [pr] Process value anomaly %s (%lf > %lf)\n",cname,newq,oldav+3*devq);
        }
     else if (newq < oldav - 3*devq)
        {
        snprintf(cname,CF_BUFSIZE,"%s_low_anomaly",qname);
        EvalContextClassPutSoft(ctx, cname, CONTEXT_SCOPE_NAMESPACE, "process state");
-       Log(LOG_LEVEL_VERBOSE," [pr] Process anomaly %s (%lf < %lf)\n",cname,newq,oldav+3*devq);
+       Log(LOG_LEVEL_VERBOSE," [pr] Process value anomaly %s (%lf < %lf)\n",cname,newq,oldav+3*devq);
+       }
+    else if (dt > SLEEPTIME*10) // Not seen in 1/10 checks
+       {
+       snprintf(cname,CF_BUFSIZE,"IRREGULAR_EVENT_%s",qname);
+       EvalContextClassPutSoft(ctx, cname, CONTEXT_SCOPE_NAMESPACE, "process state");
+       Log(LOG_LEVEL_VERBOSE," [pr] Process time anomaly %s (dt %.2lf < %.2lf pm %.2lf)\n",cname,dt,newavdt,sqrt(newdtvar));
        }
 
-    SaveSpecialQ(qname,nextav,nextvar);
+    snprintf(value,1024,"(%.2lf,%.2lf,%.2lf,%ld,%.2lf,%.2lf)",newq,nextav,nextvar,tstamp,newavdt,newdtvar);
+
+    WriteDB(dbp, qname, value, sizeof(value));
     }
  else
     {
-    double nextav = WAverage(newq,0,WAGE);
-    double nextvar = WAverage(newq/2,0,WAGE);
-    
-    SaveSpecialQ(qname,nextav,nextvar);
+    nextav = WAverage(newq,newq,WAGE);
+    nextvar = 0;
+
+    dt = 60;
+    newavdt = (double)60; // init to 1hr
+    newdtvar = 0;
+
+    snprintf(cname,CF_BUFSIZE,"IRREGULAR_EVENT_%s",qname);
+    EvalContextClassPutSoft(ctx, cname, CONTEXT_SCOPE_NAMESPACE, "process state");
+    Log(LOG_LEVEL_VERBOSE," [pr] NEW Process %s (dt %.2lf < %.2lf)\n",cname,dt,avdt);
+
+    snprintf(value,1024,"(%.2lf,%.2lf,%.2lf,%ld,%.2lf,%.2lf)",newq,nextav,nextvar,tstamp,newavdt,newdtvar);
+
+    WriteDB(dbp, qname, value, sizeof(value));
     }
 
  // if more 30% of resource flag this specially
-  
-}
 
-/*********************************************************************/
-
-int LoadSpecialQ(char *name,double *oldq, double *oldvar)
-{
- FILE *fp;
- char file[CF_BUFSIZE];
-
- snprintf(file,CF_BUFSIZE,"%s/state/%s",CFWORKDIR,name);
-
- if ((fp = fopen(file,"r")) == NULL)
-    {
-    return false;
-    }
-
- fscanf(fp,"%lf %lf",oldq,oldvar);
- fclose(fp);
- return true;
-}
-
-/*********************************************************************/
-
-int SaveSpecialQ(char *name,double av,double var)
-{
- FILE *fp;
- char file[CF_BUFSIZE];
-
- snprintf(file,CF_BUFSIZE,"%s/state/%s",CFWORKDIR,name);
-  
- if ((fp = fopen(file,"w")) == NULL)
-    {
-    return false;
-    }
-
- fprintf(fp,"%lf %lf",av,var);
- fclose(fp);
- return true;
+ CloseDB(dbp);
 }
 
 /*********************************************************************/
