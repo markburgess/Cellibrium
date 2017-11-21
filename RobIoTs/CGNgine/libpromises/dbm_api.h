@@ -44,7 +44,7 @@ typedef enum
     dbid_measure,
     dbid_static,
     dbid_scalars,
-    dbid_windows_registry,
+    dbid_processanomalies,
     dbid_cache,
     dbid_license,
     dbid_value,

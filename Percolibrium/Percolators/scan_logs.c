@@ -29,7 +29,8 @@
 #define INSIGNIFICANT 12
 #define HIGH +1
 #define LOW -1
-#define APPEARED 0
+#define APPEARED 2
+#define NONE 0
 #define HASHTABLESIZE 8197
 #define DEBUG 0
 #define Debug if (DEBUG) printf
@@ -157,6 +158,7 @@ void main(int argc, char** argv)
     if (strcmp(argv[i],"graph") == 0)
        {
        GRAPHS = true;
+       continue;
        }
     
     ScanLog(argv[i]);
@@ -494,7 +496,7 @@ void FlushContext(char *timekey,time_t tstamp,ClusterContext context)
 {
  int i;
 
- Print("## %s ###############################################\n",TIMEKEY);
+ Debug("## %s ###############################################\n",TIMEKEY);
 
  for (i = 0; i < HASHTABLESIZE; i++)
     {
@@ -505,7 +507,7 @@ void FlushContext(char *timekey,time_t tstamp,ClusterContext context)
        // Store in REDIS
        // First store the long-term weekly pattern
 
-       CheckKeyValue(TIMEKEY,tstamp,context,METRICS.name[i],METRICS.Q[i].q);
+       //CheckKeyValue(TIMEKEY,tstamp,context,METRICS.name[i],METRICS.Q[i].q);
 
        // Then the recent aggregate
 
@@ -521,14 +523,15 @@ void FlushContext(char *timekey,time_t tstamp,ClusterContext context)
  TOTALMESSAGES = 0;
 
  Item *performance_syndrome = NULL, *security_syndrome = NULL, *invariants = NULL, *ip;
- 
-  for (ip = APPL_CONTEXT; ip != NULL; ip=ip->next)
-    {
-    Print("CONTEXT: %s (%d)\n", ip->name,ip->counter);
-    }
+
+ // for (ip = APPL_CONTEXT; ip != NULL; ip=ip->next)
+ //   {
+ //   Print("CONTEXT: %s (%d)\n", ip->name,ip->counter);
+ //   }
 
  DiffInvariants(&performance_syndrome,&security_syndrome,&invariants);
 
+ 
  for (ip = performance_syndrome; ip != NULL; ip=ip->next)
     {
     Print(" ANOMALOUS EVENT: %s\n", ip->name);
@@ -621,22 +624,25 @@ void CheckKeyValue(char *timekey,time_t tstamp, ClusterContext context,char *nam
  char value[1024];
  double oldq = 0,oldav = 0,oldvar = 0,newav,newvar,var;
  time_t lastseen = 0, avdt = 0, dtvar = 0;
- int anomaly = 0;
+ int anomaly;
 
  snprintf(key,1024,"(%s,%s,%s,%s,%s)",context.namespace,context.pod,context.appsysname,timekey,name);
 
  RPLY = redisCommand(RC,"GET %s",key);
- Debug("%s: %s\n",key,RPLY->str);
 
  if (RPLY->str)
     {
     sscanf(RPLY->str,"(%lf,%lf,%lf,%ld,%ld,%ld)",&oldq,&oldav,&oldvar,&lastseen,&avdt,&dtvar);
+    anomaly = NONE;
     }
  else
     {
-    anomaly = HIGH;
+    anomaly = APPEARED;
     oldav = 0;
     oldvar = 0;
+    lastseen = 0;
+    avdt = 3600*24;         // now the timescale is a logging time not a sampling time? 5mins invariant
+    dtvar = 3600*24;
     }
  
  freeReplyObject(RPLY);
@@ -654,7 +660,7 @@ void CheckKeyValue(char *timekey,time_t tstamp, ClusterContext context,char *nam
 
  RPLY = redisCommand(RC,"SET %s %s ex %d",key,value,3600*24*8);
  freeReplyObject(RPLY);
-
+ 
  double bar = 3.0 * sqrt(newvar);
 
  // For logs, the usual criteria are not appropriate, since we don't get enough entropy in the signal
@@ -662,22 +668,21 @@ void CheckKeyValue(char *timekey,time_t tstamp, ClusterContext context,char *nam
  // anomalous in quantity, but for the signals that are anomalous in NAME (new or very rare) - when
  // signals are rare they will NOT follow the weekly pattern, so that could be a prerequisite
  
- if (q > newav + bar)
+ if (q > (newav + bar))
     {
     // Quantity anomaly - verbosity
     anomaly = HIGH;    
     SetApplicationContext(name,anomaly);
     }
- else if (q < newav)
+ else if (q < (newav - bar))
     {
     // Quantity anomaly - unusually quiet
     anomaly = LOW;
     SetApplicationContext(name,anomaly);
     }
- else if (dt > 3600) // What is the natural sampling timescale?
+ else if ((anomaly==APPEARED) || (dt > 3600*24)) // What is the natural sampling timescale?
     {
     // Tolerance anomaly - system not immunized against this pathogen
-    Print("New message anomaly determined %s,%s,%lf ( %lf pm %lf)\n",timekey,name,q,oldav,bar);
     SetApplicationContext(name,APPEARED);
     }
 
@@ -701,9 +706,11 @@ void SetApplicationContext(char *key,int anomaly)
     case LOW:
         snprintf(anomaly_name,256,"low_%s",key);
         break;
-    default:
+    case APPEARED:
         snprintf(anomaly_name,256,"rare_%s",key);
-        break;
+        break;        
+    default:
+        return;
     }
 
  // Import minimal CFEngine ItemList library..

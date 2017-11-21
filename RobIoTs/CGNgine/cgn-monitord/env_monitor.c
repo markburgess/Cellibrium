@@ -2280,7 +2280,7 @@ void CheckKeyValue(EvalContext *ctx,char *timekey,time_t tstamp, char *qname,dou
  CF_DB *dbp;
  double nextav, newvar, nextvar, devq, newavdt, newdtvar, dt, avdt = 0, dtvar = 0;
  
- if (!OpenDB(&dbp, dbid_measure))
+ if (!OpenDB(&dbp, dbid_processanomalies))
     {
     return;
     }
