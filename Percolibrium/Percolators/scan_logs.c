@@ -32,6 +32,7 @@
 #define HASHTABLESIZE 8197
 #define DEBUG 0
 #define Debug if (DEBUG) printf
+#define Print if (!GRAPHS) printf
 
 /*****************************************************************************/
 /* Add Item list Library from CFEngine */
@@ -74,6 +75,7 @@ typedef struct
 /* Global context                                                            */
 /*****************************************************************************/
 
+int GRAPHS = false;
 int TOTALMESSAGES = 0;
 Averages METRICS;
 char TIMEKEY[64];
@@ -151,6 +153,11 @@ void main(int argc, char** argv)
 
  for (i = 1; argv[i] != NULL; i++)
     {
+    if (strcmp(argv[i],"graph") == 0)
+       {
+       GRAPHS = true;
+       }
+    
     ScanLog(argv[i]);
     }
 
@@ -272,8 +279,8 @@ void ScanLog(char *name)
  IncrementCounter(timekey,"log lines",context,lines);
 
  GraphConcepts(context);
- printf("\n# SUMMARY of %d lines\n\n",lines);
- printf("# Average interval between (%d) log bursts = %.2lf seconds\n",sum_count,(double)sum_delta/(double)sum_count);
+ Print("\n# SUMMARY of %d lines\n\n",lines);
+ Print("# Average interval between (%d) log bursts = %.2lf seconds\n",sum_count,(double)sum_delta/(double)sum_count);
 
  fclose(fp);
 }
@@ -486,7 +493,7 @@ void FlushContext(char *timekey,ClusterContext context)
 {
  int i;
 
- Debug("## %s ###############################################\n",TIMEKEY);
+ Print("## %s ###############################################\n",TIMEKEY);
 
  for (i = 0; i < HASHTABLESIZE; i++)
     {
@@ -516,19 +523,19 @@ void FlushContext(char *timekey,ClusterContext context)
  
   for (ip = APPL_CONTEXT; ip != NULL; ip=ip->next)
     {
-    printf("CONTEXT: %s (%d)\n", ip->name,ip->counter);
+    Print("CONTEXT: %s (%d)\n", ip->name,ip->counter);
     }
 
  DiffInvariants(&performance_syndrome,&security_syndrome,&invariants);
 
  for (ip = performance_syndrome; ip != NULL; ip=ip->next)
     {
-    printf(" ANOMALOUS EVENT: %s\n", ip->name);
+    Print(" ANOMALOUS EVENT: %s\n", ip->name);
     }
 
  for (ip = security_syndrome; ip != NULL; ip=ip->next)
     {
-    printf(" SECURITY EVENT: %s\n", ip->name);
+    Print(" SECURITY EVENT: %s\n", ip->name);
     }
 
 // <CONTEXT NAME> = slowly varying TIME, CONTEXT, background set
@@ -536,7 +543,7 @@ void FlushContext(char *timekey,ClusterContext context)
   for (ip = invariants; ip != NULL; ip=ip->next)
     {
     // Edge event had background context
-    printf(" BACKGROUND CONTEXT: %s\n", ip->name);
+    Print(" BACKGROUND CONTEXT: %s\n", ip->name);
     }
 
 // Causal epochs - changes - aggregated by context clusters. So keep a slowly varying context approximation too?
@@ -643,21 +650,23 @@ void CheckKeyValue(char *timekey,ClusterContext context,char *name,double q)
  freeReplyObject(RPLY);
 
  double bar = 3.0 * sqrt(newvar);
+
+ // For logs, these criteria are not appropriate, since we don't get enough entropy in the signal
+ // to enable consistent separation of average and fluctuation - 
  
- if (q > newav + bar)
+ if (q > oldav + bar)
     {
     anomaly = HIGH;    
     SetApplicationContext(name,anomaly);
     }
- else if (q < newav - bar)
+ else if (q < oldav - bar)
     {
     anomaly = LOW;
     SetApplicationContext(name,anomaly);
     }
  else
     {
-    //SetApplicationContext(name,0);
-    //printf("normal state for %s - %s = %lf / %lf pm %lf\n",timekey, name,q,newav,bar);
+    Print("No anomaly determined %s,%s,%lf ( %lf pm %lf)\n",timekey,name,q,oldav,bar);
     }
 
 // Learn lastseen time too ..
@@ -687,7 +696,7 @@ void SetApplicationContext(char *key,int anomaly)
 
  // Import minimal CFEngine ItemList library..
 
- //printf("ANOMALY %s\n",anomaly_name);
+ Print("ANOMALY %s\n",anomaly_name);
  IdempPrependItem(&APPL_CONTEXT,anomaly_name,NULL);
 }
 
@@ -720,6 +729,8 @@ char *MatchIPv4addr(char *buffer,char *addr, char **start, char **end)
        Debug("matched ipv4 (%s) in %s\n",addr,buffer);
        return addr;       
        }
+
+    regfree(&preg);
     }
 }
 
@@ -755,6 +766,7 @@ char *MatchIPv6addr(char *buffer,char *addr, char **start, char **end)
           return addr;
           }
        }
+    regfree(&preg);
     }
 
  return NULL;
@@ -896,7 +908,7 @@ int MatchJSON(char *buffer, FILE *fp, char *uri,char *timekey, ClusterContext co
              {
              if (*sp1 != *sp2)
                 {
-                Debug("CHANGE in embedded JSON (%s) from (%.64s) to (%.64)\n",uri,sp1,sp2);
+                Print("CHANGE in embedded JSON (%s) from (%.64s) to (%.64)\n",uri,sp1,sp2);
                 snprintf(newname,256,"json file change in %s",uri);
                 IncrementCounter(timekey,newname,context,1);
                 fclose(fin);
@@ -1145,6 +1157,8 @@ char *MatchDatePosition(char *buffer)
 
        return sp+1;
        }
+
+    regfree(&preg);
     }
 
  return NULL;
@@ -1156,6 +1170,11 @@ void GraphIPConcept(char *concept)
 {
  unsigned int hash = Hash(concept,HASHTABLESIZE);
 
+ if (!GRAPHS)
+    {
+    return;
+    }
+ 
  if (IPTABLE[hash] == NULL)
     {
     IPTABLE[hash] = strdup(concept);
@@ -1164,7 +1183,7 @@ void GraphIPConcept(char *concept)
     {
     if (strncmp(concept,IPTABLE[hash],4) != 0)
        {
-       printf("COLLISION in IP\n");
+       Print("COLLISION in IP\n");
        }
     }
 }
@@ -1174,6 +1193,11 @@ void GraphIPConcept(char *concept)
 void GraphURIConcept(char *concept)
 {
  unsigned int hash = Hash(concept,HASHTABLESIZE);
+
+ if (!GRAPHS)
+    {
+    return;
+    }
 
  if (URITABLE[hash] == NULL)
     {
@@ -1194,7 +1218,12 @@ int GraphFragmentConcept(char *concept)
 {
  unsigned int hash = Hash(concept,HASHTABLESIZE);
 
- if (FRAGMENTTABLE[hash] == NULL)
+  if (!GRAPHS)
+    {
+    return;
+    }
+
+  if (FRAGMENTTABLE[hash] == NULL)
     {
     FRAGMENTTABLE[hash] = strdup(concept);
     return false;
@@ -1215,6 +1244,11 @@ void GraphConcepts(ClusterContext context)
 {
  char ictx[1024];
  int i;
+
+  if (!GRAPHS)
+    {
+    return;
+    }
 
  if (context.namespace)
     {
@@ -1454,7 +1488,7 @@ void IncrementCounter(char *timekey,char *namekey, ClusterContext context, int v
     {
     if (strncmp(canon,METRICS.name[hash],4) != 0)
        {
-       printf("COLLISION at slot %d!!!! \n - %s (%d)\n - %s (%d)\n",hash,canon,strlen(canon),METRICS.name[hash],strlen(METRICS.name[hash]));
+       Print("COLLISION at slot %d!!!! \n - %s (%d)\n - %s (%d)\n",hash,canon,strlen(canon),METRICS.name[hash],strlen(METRICS.name[hash]));
        }
     
     METRICS.Q[hash].q += value;
