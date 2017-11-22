@@ -170,6 +170,12 @@ void main(int argc, char** argv)
        continue;
        }
     
+    if (strcmp(argv[i],"print") == 0)
+       {
+       PRINT = true;
+       continue;
+       }
+
     ScanLog(argv[i]);
     }
 
@@ -299,9 +305,9 @@ void ScanLog(char *name)
  double avdt = (double)sum_delta/sum_count;
  double avrate = avdt ? lines/avdt : 0;
 
- double total_per_lines = (double)TOTALMESSAGES/lines;
+ double total_per_lines = ((double)TOTALMESSAGES)/lines;
 
- Summary("\n# %s\n# (lines=%d,buckets=%d,<dt>=%.2lfs,extracted=%d,anom=%d,sec=%d,ctx=%d,line/sec=%.2lf)\n",Trunc(name),lines,sum_count,avdt,TOTALMESSAGES,ANOMALY,SECURITY,CONTEXT,avrate);
+ Summary("\n# %s\n# (lines=%.0lf,buckets=%.0lf,<dt>=%.2lfs,extracted=%d,anom=%d,sec=%d,ctx=%d,line/sec=%.2lf)\n",Trunc(name),lines,sum_count,avdt,TOTALMESSAGES,ANOMALY,SECURITY,CONTEXT,avrate);
  fclose(fp);
 }
 
@@ -1680,12 +1686,12 @@ int StupidString(char *s)
     c = toupper(*sp);
     len++;
 
-    if (!isxdigit(*sp))
+    if (!isxdigit(*sp) && (*sp != '_') && (*sp != ' '))
        {
        onlyhex = false;
        }
     
-    if (c == ' ')
+    if (c == ' ' || c == '_' || c == '-')
        {
        continue;
        }

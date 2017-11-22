@@ -1589,32 +1589,34 @@ static void AnnotateAnomaly(EvalContext *ctx,FILE *consc,time_t now,Item *proces
  // Report
  int dimension = 0;
  int invariant = 0;
+
+ for (ip = invariants; ip != NULL; ip=ip->next)
+    {
+    Log(LOG_LEVEL_VERBOSE,"  background-context : %s\n",ip->name);
+    invariant++;
+    }
  
  for (ip = process_syndrome; ip != NULL; ip=ip->next)
     {
     Log(LOG_LEVEL_VERBOSE,"  PROCSYMPTOMS : %s\n",ip->name);
     dimension++;
     }
+
  for (ip = performance_syndrome; ip != NULL; ip=ip->next)
     {
     Log(LOG_LEVEL_VERBOSE,"  PERFSYMPTOMS : %s\n",ip->name);
     dimension++;
     } 
+
  for (ip = security_syndrome; ip != NULL; ip=ip->next)
     {
     Log(LOG_LEVEL_VERBOSE,"  SECURITY : %s\n",ip->name);
     dimension++;
     }
-
- for (ip = invariants; ip != NULL; ip=ip->next)
-    {
-    //Log(LOG_LEVEL_VERBOSE,"  persistent : %s\n",ip->name);
-    invariant++;
-    }
  
  if (dimension)
     {
-    Log(LOG_LEVEL_VERBOSE,"\n  ANOMALY OF DIMENSION : %d, with %d persistent anomalies\n\n",dimension,invariant);
+    Log(LOG_LEVEL_VERBOSE,"\n  ANOMALY OF DIMENSION : %d, with %d background anomalies\n\n",dimension,invariant);
     }
 
  // End reporting
