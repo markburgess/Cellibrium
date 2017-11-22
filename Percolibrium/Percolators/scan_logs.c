@@ -34,7 +34,8 @@
 #define HASHTABLESIZE 8197
 #define DEBUG 0
 #define Debug if (DEBUG) printf
-#define Print if (!GRAPHS) printf
+#define Print if (PRINT && !GRAPHS) printf
+#define Summary if (!PRINT && !GRAPHS) printf
 
 /*****************************************************************************/
 /* Add Item list Library from CFEngine */
@@ -78,7 +79,12 @@ typedef struct
 /*****************************************************************************/
 
 int GRAPHS = false;
+int PRINT = false;
+int SUMMARY = true;
 int TOTALMESSAGES = 0;
+int ANOMALY = 0;
+int SECURITY = 0;
+int CONTEXT = 0;
 Averages METRICS;
 char TIMEKEY[64];
 
@@ -186,7 +192,9 @@ void ScanLog(char *name)
     }
 
  ClusterContext context = ExtractContext(name);
- 
+
+ TOTALMESSAGES = ANOMALY = SECURITY = CONTEXT = 0;
+
  while (!feof(fp))
     {
     memset(buffer,0,4096);
@@ -229,6 +237,8 @@ void ScanLog(char *name)
           delta_t = stamp - last_t;
           IncrementCounter(timekey,"Message-interval *? log aggrEg+te",context,(int)delta_t);
           sum_delta += delta_t;
+
+          // Max/min bursts
           }
 
        IncrementCounter(timekey,"lines of aggregate log messages per time interval sample",context,sum_count);
@@ -282,9 +292,10 @@ void ScanLog(char *name)
  IncrementCounter(timekey,"log lines",context,lines);
 
  GraphConcepts(context);
- Print("\n# SUMMARY of %d lines\n\n",lines);
- Print("# Average interval between (%d) log bursts = %.2lf seconds\n",sum_count,(double)sum_delta/(double)sum_count);
 
+ double avdt = (double)sum_delta/(double)sum_count;
+ double avrate = avdt ? lines/avdt : 0;
+ Summary("# %s (%d) lines, in %d log buckets (avdt=%.2lfs,tot=%d,A=%d,S=%d,C=%d)- R%.2lf\n",name,lines,sum_count,avdt,TOTALMESSAGES,ANOMALY,SECURITY,CONTEXT,avrate);
  fclose(fp);
 }
 
@@ -343,7 +354,11 @@ ClusterContext ExtractContext(char *pathname)
  char namespace[1024],deployment[1024];
  snprintf(namespace,1024,"kubernetes namespace %s",ns);
  snprintf(deployment,1024,"kubernetes deployment %s",pod);
- Gr(stdout,namespace,a_contains,deployment,context);
+
+ if (GRAPHS)
+    {
+    Gr(stdout,namespace,a_contains,deployment,context);
+    }
  
  return loc;
 }
@@ -439,6 +454,7 @@ char *MatchDateTime(char *buffer,char *timekey, time_t *stamp, char **start, cha
     strptime(timestring,"%m%d %H:%M:%S.", &tm);
     tm.tm_year = 9999-1900;
     Debug("Extracted time format (glog incomplete) : %s\n", TimeKey(tm));
+    *stamp = mktime(&tm);
     strncpy(timekey,TimeKey(tm),64);
     return sp-1;
     }
@@ -520,7 +536,6 @@ void FlushContext(char *timekey,time_t tstamp,ClusterContext context)
     }
 
  IncrementCounter(timekey,"aggregate messages",context,TOTALMESSAGES);
- TOTALMESSAGES = 0;
 
  Item *performance_syndrome = NULL, *security_syndrome = NULL, *invariants = NULL, *ip;
 
@@ -535,19 +550,22 @@ void FlushContext(char *timekey,time_t tstamp,ClusterContext context)
  for (ip = performance_syndrome; ip != NULL; ip=ip->next)
     {
     Print(" ANOMALOUS EVENT: %s\n", ip->name);
+    ANOMALY++;
     }
 
  for (ip = security_syndrome; ip != NULL; ip=ip->next)
     {
     Print(" SECURITY EVENT: %s\n", ip->name);
+    SECURITY++;
     }
 
-// <CONTEXT NAME> = slowly varying TIME, CONTEXT, background set
+  // <CONTEXT NAME> = slowly varying TIME, CONTEXT, background set
  
   for (ip = invariants; ip != NULL; ip=ip->next)
     {
     // Edge event had background context
-    Print(" BACKGROUND CONTEXT: %s\n", ip->name);
+    Debug(" BACKGROUND CONTEXT: %s\n", ip->name);
+    CONTEXT++;
     }
 
 // Causal epochs - changes - aggregated by context clusters. So keep a slowly varying context approximation too?

@@ -1827,8 +1827,7 @@ void ClassifyProcessState(EvalContext *ctx, FILE *fp)
  DeleteItemList(USERS);
  DeleteItemList(ARGS);
  USERS = ARGS = NULL;
- 
-}
+ }
 
 /***********************************************************************************************/
 
@@ -1929,14 +1928,14 @@ void ClassifyListChanges(EvalContext *ctx, Item *current_state, char *comment)
  for (ip1 = current_state; ip1 != NULL; ip1=ip1->next)
     {    
     snprintf(name,CF_BUFSIZE,"%s_%s",comment,ip1->name); 
-    CheckKeyValue(ctx,TIMEKEY,now,name,(double)(ip1->counter));
+    CheckKeyValue(ctx,"notime",now,name,(double)(ip1->counter));
     DeleteItemLiteral(&prev_state,ip1->name);
     }
  
  for (ip2 = prev_state; ip2 != NULL; ip2=ip2->next)
     {
     snprintf(name,CF_BUFSIZE,"%s_%.64s",comment,ip2->name);
-    CheckKeyValue(ctx,TIMEKEY,now,name,0);
+    CheckKeyValue(ctx,"notime",now,name,0);
     }
  
  SaveStateList(current_state,comment);
