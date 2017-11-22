@@ -81,10 +81,12 @@ typedef struct
 int GRAPHS = false;
 int PRINT = false;
 int SUMMARY = true;
+
 int TOTALMESSAGES = 0;
 int ANOMALY = 0;
 int SECURITY = 0;
 int CONTEXT = 0;
+
 Averages METRICS;
 char TIMEKEY[64];
 
@@ -102,6 +104,7 @@ char *FRAGMENTTABLE[HASHTABLESIZE];
 
 /*****************************************************************************/
 
+char *Trunc(char *s);
 ClusterContext ExtractContext(char *name);
 char *MatchDateTime(char *buffer,char *timekey, time_t *stamp, char **start, char **end);
 void CheckKeyValue(char *timekey,time_t stamp, ClusterContext context,char *name,double value);
@@ -183,8 +186,8 @@ void ScanLog(char *name)
  char addr4[4096] = {0},addr6[4096] = {0};
  FILE *fp;
  time_t stamp, last_t = 0, delta_t = 0, sum_delta = 0;
- int sum_count = 1;
- int lines = 0;
+ double sum_count = 1;
+ double lines = 0;
 
  if ((fp = fopen(name,"r")) == NULL)
     {
@@ -293,9 +296,12 @@ void ScanLog(char *name)
 
  GraphConcepts(context);
 
- double avdt = (double)sum_delta/(double)sum_count;
+ double avdt = (double)sum_delta/sum_count;
  double avrate = avdt ? lines/avdt : 0;
- Summary("# %s (%d) lines, in %d log buckets (avdt=%.2lfs,tot=%d,A=%d,S=%d,C=%d)- R%.2lf\n",name,lines,sum_count,avdt,TOTALMESSAGES,ANOMALY,SECURITY,CONTEXT,avrate);
+
+ double total_per_lines = (double)TOTALMESSAGES/lines;
+
+ Summary("\n# %s\n# (lines=%d,buckets=%d,<dt>=%.2lfs,extracted=%d,anom=%d,sec=%d,ctx=%d,line/sec=%.2lf)\n",Trunc(name),lines,sum_count,avdt,TOTALMESSAGES,ANOMALY,SECURITY,CONTEXT,avrate);
  fclose(fp);
 }
 
@@ -1588,6 +1594,20 @@ void Erase(char *start, char *end)
        *sp = ' ';
        }
     }
+}
+
+/*********************************************************************/
+
+char *Trunc(char *s)
+
+{ char *sp = s,*last = NULL;
+ 
+ while (sp = strchr(sp,'/'))
+    {
+    last = ++sp;    
+    }
+ 
+ return last;
 }
 
 /*********************************************************************/
