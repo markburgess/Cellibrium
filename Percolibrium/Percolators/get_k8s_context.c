@@ -91,8 +91,8 @@ void InitialConcepts(void)
  Gr(stdout, "software deployment",a_alias,"microservice deployment",context);
 
  Gr(stdout, "kubernetes namespace",a_contains,"kubernetes deployment",context);
- Gr(stdout, "kubernetes deployment",a_contains,"kubernetes replica sets",context);
- Gr(stdout, "kubernetes deployment",a_contains,"kubernetes daemon sets",context);
+ Gr(stdout, "kubernetes deployment",a_depends,"kubernetes replica sets",context);
+ Gr(stdout, "kubernetes deployment",a_depends,"kubernetes daemon sets",context);
 
  RoleGr(stdout,"kubernetes replica sets","replica sets", "kubernetes",context);
 
@@ -100,10 +100,10 @@ void InitialConcepts(void)
  Gr(stdout, "kubernetes daemon sets",a_depends,"kubernetes pods",context);
  Gr(stdout, "kubernetes replica sets",a_generalizes,"kubernetes replica set",context);
  RoleGr(stdout,"kubernetes pods","pods", "kubernetes",context);
- Gr(stdout, "kubernetes pods",a_contains,"software containers",context);
+ Gr(stdout, "kubernetes pods",a_depends,"software containers",context);
  Gr(stdout, "kubernetes pods",a_generalizes,"kubernetes pod",context);
  Gr(stdout, "software containers",a_related_to,"docker containers",context);
- Gr(stdout, "software containers",a_hasrole,"microservice",context);
+ Gr(stdout, "software containers",a_related_to,"microservice",context);
  Gr(stdout, "software containers",a_generalizes,"software container",context);
 
 }

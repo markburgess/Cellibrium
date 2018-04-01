@@ -35,7 +35,7 @@
 #define DEBUG 0
 #define Debug if (DEBUG) printf
 #define Print if (PRINT && !GRAPHS) printf
-#define Summary if (!PRINT && !GRAPHS) printf
+#define Summary if (!GRAPHS) printf
 
 /*****************************************************************************/
 /* Add Item list Library from CFEngine */
@@ -79,7 +79,7 @@ typedef struct
 /*****************************************************************************/
 
 int GRAPHS = false;
-int PRINT = false;
+int PRINT = true;
 int SUMMARY = true;
 
 int TOTALMESSAGES = 0;
@@ -132,6 +132,8 @@ void GraphIPConcept(char *concept);
 void GraphURIConcept(char *concept);
 int GraphFragmentConcept(char *concept);
 void GraphConcepts(ClusterContext context);
+char *MakeAnomalyGrName(FILE *fp,char *title,Item *list);
+char *MakeFlatList(FILE *fp,Item *list);
 
 /*****************************************************************************/
 /* BEGIN                                                                     */
@@ -190,10 +192,10 @@ void ScanLog(char *name)
 {
  char buffer[4096],prefix[4096],timekey[4096],URI[4096] = {0};
  char addr4[4096] = {0},addr6[4096] = {0};
+ time_t stamp, last_t = 0, delta_t = 0, startt=0,endt=0;;
+ double sum_delta = 0, sum_count = 1;
+ double lines = 1;
  FILE *fp;
- time_t stamp, last_t = 0, delta_t = 0, sum_delta = 0;
- double sum_count = 1;
- double lines = 0;
 
  if ((fp = fopen(name,"r")) == NULL)
     {
@@ -230,6 +232,18 @@ void ScanLog(char *name)
     
     MatchDateTime(buffer,timekey,&stamp,&start,&end);
 
+    if (stamp > 0)
+       {
+       if (startt == 0)
+          {
+          startt = stamp;
+          }
+       else if (stamp > 0)
+          {
+          endt = stamp;
+          }
+       }
+    
     // Erase date stamp from buffer
 
     Erase(start,end);
@@ -243,10 +257,13 @@ void ScanLog(char *name)
        
        if (last_t > 0 && (stamp > last_t))
           {
-          delta_t = stamp - last_t;
-          IncrementCounter(timekey,"Message-interval *? log aggrEg+te",context,(int)delta_t);
-          sum_delta += delta_t;
+          if (stamp < 200000000000) // if no year was supplied, guess last delta
+             {
+             delta_t = stamp - last_t;
+             }
 
+          IncrementCounter(timekey,"Message-interval *? log aggrEg+te",context,(int)delta_t);
+          sum_delta += (double)delta_t;
           // Max/min bursts
           }
 
@@ -292,6 +309,8 @@ void ScanLog(char *name)
     ExtractMessages(buffer,timekey,context,addr4,addr6,URI);
     }
 
+ fclose(fp);
+
  // Final flush at exit
  strcpy(TIMEKEY,timekey);
  FlushContext(timekey,stamp,context);
@@ -302,13 +321,18 @@ void ScanLog(char *name)
 
  GraphConcepts(context);
 
- double avdt = (double)sum_delta/sum_count;
- double avrate = avdt ? lines/avdt : 0;
 
- double total_per_lines = ((double)TOTALMESSAGES)/lines;
+ double duration = (double)(endt-startt)/60.0;
+ double avdt = sum_delta/sum_count;
+ double avrate = (duration > 0) ? (lines/duration) : 1;
 
- Summary("\n# %s\n# (lines=%.0lf,buckets=%.0lf,<dt>=%.2lfs,extracted=%d,anom=%d,sec=%d,ctx=%d,line/sec=%.2lf)\n",Trunc(name),lines,sum_count,avdt,TOTALMESSAGES,ANOMALY,SECURITY,CONTEXT,avrate);
- fclose(fp);
+ // We might argue that we should measure per DURATION, but we can't guarantee getting TIME
+ double messages = (lines > 1) ? TOTALMESSAGES/lines : 1;
+ double anomalies = (lines > 1) ? ANOMALY/lines : 1;
+ double security = (lines > 1) ? SECURITY/lines : 1;
+ double icontext = (lines > 1) ? CONTEXT/lines : 1;
+ 
+ Print("S: (lines=%.0lf,duration=%.2lfmins,buckets=%.0lf,<dt>=%.2lfs,extracted=%.2lf,anom=%.2lf,sec=%.2lf,ctx=%.2lf,line/min=%.2lf)\n",lines,duration,sum_count,avdt,messages,anomalies,security,icontext,avrate);
 }
 
 /*****************************************************************************/
@@ -551,23 +575,40 @@ void FlushContext(char *timekey,time_t tstamp,ClusterContext context)
 
  Item *performance_syndrome = NULL, *security_syndrome = NULL, *invariants = NULL, *ip;
 
- // for (ip = APPL_CONTEXT; ip != NULL; ip=ip->next)
+ //for (ip = APPL_CONTEXT; ip != NULL; ip=ip->next)
  //   {
- //   Print("CONTEXT: %s (%d)\n", ip->name,ip->counter);
+ //   Print("CONTEXT: %s\n", ip->name);
  //   }
 
  DiffInvariants(&performance_syndrome,&security_syndrome,&invariants);
 
+ char *anomnom = NULL;
+ char event[2048];
+ 
+ if (performance_syndrome || security_syndrome)
+    {
+    //char *when = TimeGr(stdout,tstamp);
+    char *where = context.namespace;
+    char *why = context.pod; 
+    anomnom = MakeAnomalyGrName(stdout,"anomaly cluster",performance_syndrome);
+    snprintf(event,2048,"event %s",anomnom);
+    EventClue(stdout,"app",event,tstamp,where,"istio measurements",why,"log anomaly");
+
+    RoleGr(stdout,event,"log anomaly",anomnom,"log analysis");
+    Print("O: ANOMALOUS EVENT: %s @ %s\n",anomnom,timekey);
+    }
  
  for (ip = performance_syndrome; ip != NULL; ip=ip->next)
     {
-    Print(" ANOMALOUS EVENT: %s\n", ip->name);
+    Print("O: ANOMALY: %s @ %s\n", ip->name,timekey);
+    Gr(stdout,anomnom,a_hasattr,ip->name,"log analysis");
     ANOMALY++;
     }
 
  for (ip = security_syndrome; ip != NULL; ip=ip->next)
     {
-    Print(" SECURITY EVENT: %s\n", ip->name);
+    Print("O: SECURITY EVENT: %s @ %s\n", ip->name,timekey);
+    Gr(stdout,anomnom,a_hasattr,ip->name,"log analysis");
     SECURITY++;
     }
 
@@ -576,7 +617,7 @@ void FlushContext(char *timekey,time_t tstamp,ClusterContext context)
   for (ip = invariants; ip != NULL; ip=ip->next)
     {
     // Edge event had background context
-    Debug(" BACKGROUND CONTEXT: %s\n", ip->name);
+    Debug("O: BACKGROUND CONTEXT: %s @ %s\n", ip->name,timekey);
     CONTEXT++;
     }
 
@@ -606,6 +647,9 @@ void DiffInvariants(Item **performance_syndrome,Item **security_syndrome,Item **
  
  for (ip1 = APPL_CONTEXT; ip1 != NULL; ip1=ip1->next)
     {
+    char name[CF_BUFSIZE];
+    snprintf(name,CF_BUFSIZE,"+%s",ip1->name);
+       
     if (IsItemIn(prev_state,ip1->name))
        {
        PrependItem(invariants,ip1->name,NULL);
@@ -613,9 +657,6 @@ void DiffInvariants(Item **performance_syndrome,Item **security_syndrome,Item **
        }
     else
        {
-       char name[CF_BUFSIZE];
-       snprintf(name,CF_BUFSIZE,"+%s",ip1->name);
-       
        if (ip1 && strstr(ip1->name,"access"))
           {
           PrependItem(security_syndrome,name,NULL);
@@ -626,7 +667,8 @@ void DiffInvariants(Item **performance_syndrome,Item **security_syndrome,Item **
           }
        }
     }
- 
+
+ /* This part only applies for real time cogn
  for (ip2 = prev_state; ip2 != NULL; ip2=ip2->next)
     {
     char name[CF_BUFSIZE];
@@ -640,7 +682,8 @@ void DiffInvariants(Item **performance_syndrome,Item **security_syndrome,Item **
        {
        PrependItem(performance_syndrome,name,NULL);
        }
-    }
+       }
+ */
  
  DeleteItemList(prev_state);
 }
@@ -689,6 +732,8 @@ void CheckKeyValue(char *timekey,time_t tstamp, ClusterContext context,char *nam
  // Expire data after 8 days without update, allow weekly updates at most (TBD)
 
  RPLY = redisCommand(RC,"SET %s %s ex %d",key,value,3600*24*8);
+
+ Debug("REDISSET %s %s ex %d",key,value,3600*24*8);
  freeReplyObject(RPLY);
  
  double bar = 3.0 * sqrt(newvar);
@@ -745,7 +790,7 @@ void SetApplicationContext(char *key,int anomaly)
 
  // Import minimal CFEngine ItemList library..
 
- Print("ANOMALY %s\n",anomaly_name);
+ //Print("O: ANOMALY %s\n",anomaly_name);
  IdempPrependItem(&APPL_CONTEXT,anomaly_name,NULL);
 }
 
@@ -957,7 +1002,7 @@ int MatchJSON(char *buffer, FILE *fp, char *uri,char *timekey, ClusterContext co
              {
              if (*sp1 != *sp2)
                 {
-                Print("CHANGE in embedded JSON (%s) from (%.64s) to (%.64)\n",uri,sp1,sp2);
+                Debug("CHANGE in embedded JSON (%s) from (%.64s) to (%.64)\n",uri,sp1,sp2);
                 snprintf(newname,256,"json file change in %s",uri);
                 IncrementCounter(timekey,newname,context,1);
                 fclose(fin);
@@ -1232,7 +1277,7 @@ void GraphIPConcept(char *concept)
     {
     if (strncmp(concept,IPTABLE[hash],4) != 0)
        {
-       Print("COLLISION in IP\n");
+       Debug("COLLISION in IP\n");
        }
     }
 }
@@ -1537,7 +1582,7 @@ void IncrementCounter(char *timekey,char *namekey, ClusterContext context, int v
     {
     if (strncmp(canon,METRICS.name[hash],4) != 0)
        {
-       Print("COLLISION at slot %d!!!! \n - %s (%d)\n - %s (%d)\n",hash,canon,strlen(canon),METRICS.name[hash],strlen(METRICS.name[hash]));
+       Debug("COLLISION at slot %d!!!! \n - %s (%d)\n - %s (%d)\n",hash,canon,strlen(canon),METRICS.name[hash],strlen(METRICS.name[hash]));
        }
     
     METRICS.Q[hash].q += value;
@@ -1722,3 +1767,59 @@ int StupidString(char *s)
     return true;
     }
 }
+
+/*********************************************************************/
+
+char *MakeAnomalyGrName(FILE *fp,char *title,Item *list)
+
+// take 1_2_3, e.g. wwws_in_state - four letters from first, then 1 letter from 2 and 3
+    
+{
+ static char result[CF_BUFSIZE] = {0};
+ char *digest = MakeFlatList(fp,list);
+ snprintf(result, CF_BUFSIZE, "%s %s",title,digest);
+ RoleGr(fp,result,title,digest,"anomaly cluster");
+ return result;
+}
+
+/*********************************************************************/
+
+char *MakeFlatList(FILE *fp,Item *list)
+
+// create a cluster for the list under a short signature heading
+    
+{
+ static char result[64];
+ Item *ip;
+ int i,len = 0;
+ memset(result,0,64);
+
+ // make signature
+ for (i = 0; i < 62; i++)
+    {
+    for (ip = list; ip != NULL; ip=ip->next)
+       {
+       if (ip->name[i] == '_' || (len > 0 && ip->name[i] == result[len-1]))
+          {
+          continue;
+          }
+       
+       result[len++] = ip->name[i];
+
+       if (len >= 63)
+          {
+          goto members;
+          }
+       }
+    }
+
+ members:
+
+ for (ip = list; ip != NULL; ip=ip->next)
+    {
+    Gr(fp,result,a_contains,ip->name,"system monitoring measurement");
+    }
+
+ return result;
+}
+

@@ -46,6 +46,33 @@ Association A[a_ass_dim+1] =
     {0, NULL, NULL},
 };
 
+char *Aname[a_ass_dim+1] =
+{
+    "a_contains",
+    "a_generalizes",
+    "a_origin",
+    "a_providedby",
+    "a_maintainedby",
+    "a_depends",
+    "a_caused_by",
+    "a_uses",
+    "a_name",
+    "a_hasattr",  // avoid this, it says nothing unambiguously
+    "a_promises", 
+    "a_hasinstance",
+    "a_hasvalue",
+    "a_hasarg",
+    "a_hasrole",     // what is its function/object type? e.g. file,process..
+    "a_hasoutcome",
+    "a_hasfunction",
+    "a_hasconstraint",
+    "a_interpreted",
+    "a_concurrent",
+    "a_alias",
+    "a_approx",
+    "a_related_to",
+    "a_ass_dim"
+};
 
 const char *GR_TYPES[6][2] =
 {
@@ -145,10 +172,12 @@ void Gr(FILE *consc,char *from, enum associations assoc, char *to, char *context
  if (context && strlen(context) > 1)
     {
     fprintf(consc,"(%s,%d,%s,%s,%s,%s)\n",sfrom,A[assoc].type,A[assoc].fwd,sto,A[assoc].bwd,scontext);
+    // Simen fprintf(consc,"(%s,%s,%s,%s)\n",Aname[assoc],sfrom,sto,scontext);
     }
  else
     {
     fprintf(consc,"(%s,%d,%s,%s,%s,%s)\n",sfrom,A[assoc].type,A[assoc].fwd,sto,A[assoc].bwd,ALL_CONTEXTS);
+    // Simen fprintf(consc,"(%s,%s,%d,%s,%s)\n",Aname[assoc],sfrom,sto,ALL_CONTEXTS);
     }
 
  free(sfrom);

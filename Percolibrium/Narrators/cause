@@ -1,0 +1,1217 @@
+=======================================================================
+ STORY TOPIC SEARCH ...  "app saw event anomaly cluster +rareagregatemesages on Evening Saturday Day20 November Yr9999 at Hr23 Min35_40 Q3 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr22 GMT_Min35_40 GMT_Q3 location istio-system istio measurements cause istio-initializer-details-v1-abort-50-percent" (7d63e474e8de3b5ca12ee3d3ee38af7b)
+
+ Looking for stories from this concepts
+=======================================================================
+
+
+
+new story) "app saw event anomaly cluster +rareagregatemesages on Evening Saturday Day20 November Yr9999 at Hr23 Min35_40 Q3 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr22 GMT_Min35_40 GMT_Q3 location istio-system istio measurements cause istio-initializer-details-v1-abort-50-percent" may express "event anomaly cluster +rareagregatemesages"
+
+0:hasprop)  "app saw event anomaly cluster +rareagregatemesages on Evening Saturday Day20 November Yr9999 at Hr23 Min35_40 Q3 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr22 GMT_Min35_40 GMT_Q3 location istio-system istio measurements cause istio-initializer-details-v1-abort-50-percent" expresses an attribute "event anomaly cluster +rareagregatemesages" (icontext: any - 83%)
+
+1:hasprop)    "event anomaly cluster +rareagregatemesages" expresses an attribute "anomaly cluster +rareagregatemesages" (icontext: any - 109%)
+
+2:hasprop)      "anomaly cluster +rareagregatemesages" has the role of "anomaly cluster" (icontext: anomaly cluster - 100%)
+
+2:hasprop)      "anomaly cluster +rareagregatemesages" expresses an attribute "+rare_aggregate_messages" (icontext: log analysis - 93%)
+
+3:cntaind)        "+rare_aggregate_messages" belongs to or is part of "+rarelauigrngiersergaoanftgeagmdgerslesegatagete" (icontext: system monitoring measurement - 90%)
+
+4:expr-by)          "+rarelauigrngiersergaoanftgeagmdgerslesegatagete" is an attribute of "logging anomaly +rarelauigrngiersergaoanftgeagmdgerslesegatagete" (icontext: any - 113%)
+
+5:expr-by)            "logging anomaly +rarelauigrngiersergaoanftgeagmdgerslesegatagete" is an attribute of "log anomaly logging anomaly +rarelauigrngiersergaoanftgeagmdgerslesegatagete occurred on Afternoon Monday Day20 November Yr2017 at Hr16 Min50_55 Q4 on GMT_Afternoon GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr15 GMT_Min50_55 GMT_Q4" (icontext: any - 84%)
+
+5:expr-by)            "logging anomaly +rarelauigrngiersergaoanftgeagmdgerslesegatagete" is an attribute of "log anomaly logging anomaly +rarelauigrngiersergaoanftgeagmdgerslesegatagete occurred on Afternoon Monday Day20 November Yr2017 at Hr16 Min55_00 Q4 on GMT_Afternoon GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr15 GMT_Min55_00 GMT_Q4" (icontext: any - 84%)
+
+3:cntaind)        "+rare_aggregate_messages" belongs to or is part of "+rareiulaGuprigErvingTieraAsedpgrdaoarcfteheiseansgmgCgesXrsFes" (icontext: system monitoring measurement - 87%)
+
+4:expr-by)          "+rareiulaGuprigErvingTieraAsedpgrdaoarcfteheiseansgmgCgesXrsFes" is an attribute of "logging anomaly +rareiulaGuprigErvingTieraAsedpgrdaoarcfteheiseansgmgCgesXrsFes" (icontext: any - 113%)
+
+5:expr-by)            "logging anomaly +rareiulaGuprigErvingTieraAsedpgrdaoarcfteheiseansgmgCgesXrsFes" is an attribute of "log anomaly logging anomaly +rareiulaGuprigErvingTieraAsedpgrdaoarcfteheiseansgmgCgesXrsFes occurred on Night Monday Day20 November Yr2017 at Hr01 Min00_05 Q1 on GMT_Night GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr00 GMT_Min00_05 GMT_Q1" (icontext: any - 84%)
+
+5:expr-by)            "logging anomaly +rareiulaGuprigErvingTieraAsedpgrdaoarcfteheiseansgmgCgesXrsFes" is an attribute of "log anomaly logging anomaly +rareiulaGuprigErvingTieraAsedpgrdaoarcfteheiseansgmgCgesXrsFes occurred on Afternoon Saturday Day20 November Yr9999 at Hr16 Min50_55 Q4 on GMT_Afternoon GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr15 GMT_Min50_55 GMT_Q4" (icontext: any - 84%)
+
+3:cntaind)        "+rare_aggregate_messages" belongs to or is part of "+rareuluauijuiujunurirgrpsrnrsrerinigivoigioiwiernrnldtSpbegsdr" (icontext: system monitoring measurement - 87%)
+
+4:expr-by)          "+rareuluauijuiujunurirgrpsrnrsrerinigivoigioiwiernrnldtSpbegsdr" is an attribute of "logging anomaly +rareuluauijuiujunurirgrpsrnrsrerinigivoigioiwiernrnldtSpbegsdr" (icontext: any - 113%)
+
+5:expr-by)            "logging anomaly +rareuluauijuiujunurirgrpsrnrsrerinigivoigioiwiernrnldtSpbegsdr" is an attribute of "log anomaly logging anomaly +rareuluauijuiujunurirgrpsrnrsrerinigivoigioiwiernrnldtSpbegsdr occurred on Evening Saturday Day20 November Yr9999 at Hr18 Min00_05 Q1 on GMT_Afternoon GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr17 GMT_Min00_05 GMT_Q1" (icontext: any - 84%)
+
+3:cntaind)        "+rare_aggregate_messages" belongs to or is part of "+rareuargigrexgtaetrenamlesisoagkes" (icontext: system monitoring measurement - 94%)
+
+4:expr-by)          "+rareuargigrexgtaetrenamlesisoagkes" is an attribute of "anomaly cluster +rareuargigrexgtaetrenamlesisoagkes" (icontext: any - 113%)
+
+5:expr-by)            "anomaly cluster +rareuargigrexgtaetrenamlesisoagkes" is an attribute of "event anomaly cluster +rareuargigrexgtaetrenamlesisoagkes" (icontext: any - 105%)
+
+6:expr-by)              "event anomaly cluster +rareuargigrexgtaetrenamlesisoagkes" is an attribute of "app saw event anomaly cluster +rareuargigrexgtaetrenamlesisoagkes on Evening Saturday Day20 November Yr9999 at Hr20 Min15_20 Q2 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr19 GMT_Min15_20 GMT_Q2 location istio-system istio measurements cause istio-pilot-reviews-v3-abort" (icontext: any - 83%)
+
+6:expr-by)              "event anomaly cluster +rareuargigrexgtaetrenamlesisoagkes" is an attribute of "app saw event anomaly cluster +rareuargigrexgtaetrenamlesisoagkes on Evening Saturday Day20 November Yr9999 at Hr18 Min20_25 Q2 on GMT_Afternoon GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr17 GMT_Min20_25 GMT_Q2 location istio-system istio measurements cause istio-pilot-ratings-v1-delay" (icontext: any - 83%)
+
+6:expr-by)              "event anomaly cluster +rareuargigrexgtaetrenamlesisoagkes" is an attribute of "app saw event anomaly cluster +rareuargigrexgtaetrenamlesisoagkes on Evening Saturday Day20 November Yr9999 at Hr18 Min35_40 Q3 on GMT_Afternoon GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr17 GMT_Min35_40 GMT_Q3 location istio-system istio measurements cause istio-pilot-ratings-reviews-v2-abort" (icontext: any - 83%)
+
+6:expr-by)              "event anomaly cluster +rareuargigrexgtaetrenamlesisoagkes" is an attribute of "app saw event anomaly cluster +rareuargigrexgtaetrenamlesisoagkes on Afternoon Saturday Day20 November Yr9999 at Hr17 Min35_40 Q3 on GMT_Afternoon GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr16 GMT_Min35_40 GMT_Q3 location istio-system istio measurements cause istio-pilot-details-v1-delay-50-percent" (icontext: any - 83%)
+
+6:expr-by)              "event anomaly cluster +rareuargigrexgtaetrenamlesisoagkes" is an attribute of "app saw event anomaly cluster +rareuargigrexgtaetrenamlesisoagkes on Evening Saturday Day20 November Yr9999 at Hr20 Min35_40 Q3 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr19 GMT_Min35_40 GMT_Q3 location istio-system istio measurements cause istio-pilot-reviews-v3-delay" (icontext: any - 83%)
+
+6:expr-by)              "event anomaly cluster +rareuargigrexgtaetrenamlesisoagkes" is an attribute of "app saw event anomaly cluster +rareuargigrexgtaetrenamlesisoagkes on Evening Saturday Day20 November Yr9999 at Hr19 Min30_35 Q3 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr18 GMT_Min30_35 GMT_Q3 location istio-system istio measurements cause istio-pilot-reviews-v1-delay" (icontext: any - 83%)
+
+6:expr-by)              "event anomaly cluster +rareuargigrexgtaetrenamlesisoagkes" is an attribute of "app saw event anomaly cluster +rareuargigrexgtaetrenamlesisoagkes on Evening Saturday Day20 November Yr9999 at Hr23 Min30_35 Q3 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr22 GMT_Min30_35 GMT_Q3 location istio-system istio measurements cause istio-pilot-normal" (icontext: any - 83%)
+
+6:expr-by)              "event anomaly cluster +rareuargigrexgtaetrenamlesisoagkes" is an attribute of "app saw event anomaly cluster +rareuargigrexgtaetrenamlesisoagkes on Afternoon Saturday Day20 November Yr9999 at Hr17 Min50_55 Q4 on GMT_Afternoon GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr16 GMT_Min50_55 GMT_Q4 location istio-system istio measurements cause istio-pilot-details-v1-delay" (icontext: any - 83%)
+
+6:apprxnr)              "event anomaly cluster +rareuargigrexgtaetrenamlesisoagkes" may be related to "istio-pilot-normal" (icontext: log anomaly - 80%)
+
+7:hasprop)                "istio-pilot-normal" has the role of "why" (icontext: log anomaly - 80%)
+
+7:expr-by)                "istio-pilot-normal" is an attribute of "app saw event anomaly cluster +rarelinesofagregatelogmesagespertimeintervalsample on Evening Saturday Day20 November Yr9999 at Hr23 Min30_35 Q3 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr22 GMT_Min30_35 GMT_Q3 location istio-system istio measurements cause istio-pilot-normal" (icontext: any - 85%)
+
+6:apprxnr)              "event anomaly cluster +rareuargigrexgtaetrenamlesisoagkes" may be related to "istio-pilot-reviews-v3-abort" (icontext: log anomaly - 80%)
+
+7:hasprop)                "istio-pilot-reviews-v3-abort" has the role of "why" (icontext: log anomaly - 80%)
+
+6:apprxnr)              "event anomaly cluster +rareuargigrexgtaetrenamlesisoagkes" may be related to "istio-pilot-details-v1-delay-50-percent" (icontext: log anomaly - 80%)
+
+7:hasprop)                "istio-pilot-details-v1-delay-50-percent" has the role of "why" (icontext: log anomaly - 80%)
+
+7:expr-by)                "istio-pilot-details-v1-delay-50-percent" is an attribute of "app saw event anomaly cluster +rarelinesofagregatelogmesagespertimeintervalsample on Afternoon Saturday Day20 November Yr9999 at Hr17 Min35_40 Q3 on GMT_Afternoon GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr16 GMT_Min35_40 GMT_Q3 location istio-system istio measurements cause istio-pilot-details-v1-delay-50-percent" (icontext: any - 84%)
+
+6:apprxnr)              "event anomaly cluster +rareuargigrexgtaetrenamlesisoagkes" may be related to "istio-pilot-reviews-v3-delay" (icontext: log anomaly - 80%)
+
+7:hasprop)                "istio-pilot-reviews-v3-delay" has the role of "why" (icontext: log anomaly - 80%)
+
+7:expr-by)                "istio-pilot-reviews-v3-delay" is an attribute of "app saw event anomaly cluster +rarelinesofagregatelogmesagespertimeintervalsample on Evening Saturday Day20 November Yr9999 at Hr20 Min35_40 Q3 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr19 GMT_Min35_40 GMT_Q3 location istio-system istio measurements cause istio-pilot-reviews-v3-delay" (icontext: any - 84%)
+
+6:apprxnr)              "event anomaly cluster +rareuargigrexgtaetrenamlesisoagkes" may be related to "istio-pilot-details-v1-delay" (icontext: log anomaly - 80%)
+
+7:hasprop)                "istio-pilot-details-v1-delay" has the role of "why" (icontext: log anomaly - 80%)
+
+7:expr-by)                "istio-pilot-details-v1-delay" is an attribute of "app saw event anomaly cluster +rarelinesofagregatelogmesagespertimeintervalsample on Afternoon Saturday Day20 November Yr9999 at Hr17 Min50_55 Q4 on GMT_Afternoon GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr16 GMT_Min50_55 GMT_Q4 location istio-system istio measurements cause istio-pilot-details-v1-delay" (icontext: any - 84%)
+
+6:apprxnr)              "event anomaly cluster +rareuargigrexgtaetrenamlesisoagkes" may be related to "istio-pilot-ratings-reviews-v2-abort" (icontext: log anomaly - 80%)
+
+7:hasprop)                "istio-pilot-ratings-reviews-v2-abort" has the role of "why" (icontext: log anomaly - 80%)
+
+6:apprxnr)              "event anomaly cluster +rareuargigrexgtaetrenamlesisoagkes" may be related to "istio-pilot-reviews-v1-delay" (icontext: log anomaly - 80%)
+
+7:hasprop)                "istio-pilot-reviews-v1-delay" has the role of "why" (icontext: log anomaly - 80%)
+
+7:expr-by)                "istio-pilot-reviews-v1-delay" is an attribute of "app saw event anomaly cluster +rarelinesofagregatelogmesagespertimeintervalsample on Evening Saturday Day20 November Yr9999 at Hr19 Min30_35 Q3 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr18 GMT_Min30_35 GMT_Q3 location istio-system istio measurements cause istio-pilot-reviews-v1-delay" (icontext: any - 84%)
+
+6:apprxnr)              "event anomaly cluster +rareuargigrexgtaetrenamlesisoagkes" may be related to "istio-pilot-ratings-v1-delay" (icontext: log anomaly - 80%)
+
+7:hasprop)                "istio-pilot-ratings-v1-delay" has the role of "why" (icontext: log anomaly - 80%)
+
+3:cntaind)        "+rare_aggregate_messages" belongs to or is part of "+rareujiuluauijuiujunrsprirgrpsrnrsreiovinigivoigioiwnernrnldta" (icontext: system monitoring measurement - 87%)
+
+4:expr-by)          "+rareujiuluauijuiujunrsprirgrpsrnrsreiovinigivoigioiwnernrnldta" is an attribute of "logging anomaly +rareujiuluauijuiujunrsprirgrpsrnrsreiovinigivoigioiwnernrnldta" (icontext: any - 113%)
+
+5:expr-by)            "logging anomaly +rareujiuluauijuiujunrsprirgrpsrnrsreiovinigivoigioiwnernrnldta" is an attribute of "log anomaly logging anomaly +rareujiuluauijuiujunrsprirgrpsrnrsreiovinigivoigioiwnernrnldta occurred on Evening Saturday Day20 November Yr9999 at Hr20 Min30_35 Q3 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr19 GMT_Min30_35 GMT_Q3" (icontext: any - 84%)
+
+5:expr-by)            "logging anomaly +rareujiuluauijuiujunrsprirgrpsrnrsreiovinigivoigioiwnernrnldta" is an attribute of "log anomaly logging anomaly +rareujiuluauijuiujunrsprirgrpsrnrsreiovinigivoigioiwnernrnldta occurred on Evening Saturday Day20 November Yr9999 at Hr19 Min55_00 Q4 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr18 GMT_Min55_00 GMT_Q4" (icontext: any - 84%)
+
+5:expr-by)            "logging anomaly +rareujiuluauijuiujunrsprirgrpsrnrsreiovinigivoigioiwnernrnldta" is an attribute of "log anomaly logging anomaly +rareujiuluauijuiujunrsprirgrpsrnrsreiovinigivoigioiwnernrnldta occurred on Evening Saturday Day20 November Yr9999 at Hr19 Min40_45 Q3 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr18 GMT_Min40_45 GMT_Q3" (icontext: any - 84%)
+
+3:cntaind)        "+rare_aggregate_messages" belongs to or is part of "+rareuluaiueuerirgprtrtinigvicicerseacegdetotadtrtrcfctrctctesc" (icontext: system monitoring measurement - 87%)
+
+4:expr-by)          "+rareuluaiueuerirgprtrtinigvicicerseacegdetotadtrtrcfctrctctesc" is an attribute of "logging anomaly +rareuluaiueuerirgprtrtinigvicicerseacegdetotadtrtrcfctrctctesc" (icontext: any - 113%)
+
+5:expr-by)            "logging anomaly +rareuluaiueuerirgprtrtinigvicicerseacegdetotadtrtrcfctrctctesc" is an attribute of "log anomaly logging anomaly +rareuluaiueuerirgprtrtinigvicicerseacegdetotadtrtrcfctrctctesc occurred on Afternoon Monday Day20 November Yr2017 at Hr16 Min50_55 Q4 on GMT_Afternoon GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr15 GMT_Min50_55 GMT_Q4" (icontext: any - 84%)
+
+3:cntaind)        "+rare_aggregate_messages" belongs to or is part of "+rareulauijuiunrigrpsrnreingivoigiwernrldtpbegseagabeMpnoepdrox" (icontext: system monitoring measurement - 87%)
+
+4:expr-by)          "+rareulauijuiunrigrpsrnreingivoigiwernrldtpbegseagabeMpnoepdrox" is an attribute of "logging anomaly +rareulauijuiunrigrpsrnreingivoigiwernrldtpbegseagabeMpnoepdrox" (icontext: any - 113%)
+
+5:expr-by)            "logging anomaly +rareulauijuiunrigrpsrnreingivoigiwernrldtpbegseagabeMpnoepdrox" is an attribute of "log anomaly logging anomaly +rareulauijuiunrigrpsrnreingivoigiwernrldtpbegseagabeMpnoepdrox occurred on Evening Saturday Day20 November Yr9999 at Hr19 Min05_10 Q1 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr18 GMT_Min05_10 GMT_Q1" (icontext: any - 84%)
+
+5:expr-by)            "logging anomaly +rareulauijuiunrigrpsrnreingivoigiwernrldtpbegseagabeMpnoepdrox" is an attribute of "log anomaly logging anomaly +rareulauijuiunrigrpsrnreingivoigiwernrldtpbegseagabeMpnoepdrox occurred on Evening Saturday Day20 November Yr9999 at Hr19 Min25_30 Q2 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr18 GMT_Min25_30 GMT_Q2" (icontext: any - 84%)
+
+3:cntaind)        "+rare_aggregate_messages" belongs to or is part of "+rareulaurigringiersevgvaoarftrelaligmibgebrsesetgatcagcdtedesm" (icontext: system monitoring measurement - 87%)
+
+4:expr-by)          "+rareulaurigringiersevgvaoarftrelaligmibgebrsesetgatcagcdtedesm" is an attribute of "logging anomaly +rareulaurigringiersevgvaoarftrelaligmibgebrsesetgatcagcdtedesm" (icontext: any - 113%)
+
+5:expr-by)            "logging anomaly +rareulaurigringiersevgvaoarftrelaligmibgebrsesetgatcagcdtedesm" is an attribute of "log anomaly logging anomaly +rareulaurigringiersevgvaoarftrelaligmibgebrsesetgatcagcdtedesm occurred on Evening Monday Day20 November Yr2017 at Hr19 Min00_05 Q1 on GMT_Evening GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr18 GMT_Min00_05 GMT_Q1" (icontext: any - 84%)
+
+3:cntaind)        "+rare_aggregate_messages" belongs to or is part of "+rareuiuluauiuiunurprirgrprnrerivinigivigiwierldtbrSagApbegsmre" (icontext: system monitoring measurement - 87%)
+
+4:expr-by)          "+rareuiuluauiuiunurprirgrprnrerivinigivigiwierldtbrSagApbegsmre" is an attribute of "logging anomaly +rareuiuluauiuiunurprirgrprnrerivinigivigiwierldtbrSagApbegsmre" (icontext: any - 113%)
+
+5:expr-by)            "logging anomaly +rareuiuluauiuiunurprirgrprnrerivinigivigiwierldtbrSagApbegsmre" is an attribute of "log anomaly logging anomaly +rareuiuluauiuiunurprirgrprnrerivinigivigiwierldtbrSagApbegsmre occurred on Afternoon Saturday Day20 November Yr9999 at Hr17 Min30_35 Q3 on GMT_Afternoon GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr16 GMT_Min30_35 GMT_Q3" (icontext: any - 84%)
+
+3:cntaind)        "+rare_aggregate_messages" belongs to or is part of "+rareiaGpupgEyrvgTtirhaeopdgrnyrdaetertvrhveieoiseqnesmwuwesers" (icontext: system monitoring measurement - 87%)
+
+4:expr-by)          "+rareiaGpupgEyrvgTtirhaeopdgrnyrdaetertvrhveieoiseqnesmwuwesers" is an attribute of "anomaly cluster +rareiaGpupgEyrvgTtirhaeopdgrnyrdaetertvrhveieoiseqnesmwuwesers" (icontext: any - 113%)
+
+5:expr-by)            "anomaly cluster +rareiaGpupgEyrvgTtirhaeopdgrnyrdaetertvrhveieoiseqnesmwuwesers" is an attribute of "event anomaly cluster +rareiaGpupgEyrvgTtirhaeopdgrnyrdaetertvrhveieoiseqnesmwuwesers" (icontext: any - 105%)
+
+6:expr-by)              "event anomaly cluster +rareiaGpupgEyrvgTtirhaeopdgrnyrdaetertvrhveieoiseqnesmwuwesers" is an attribute of "app saw event anomaly cluster +rareiaGpupgEyrvgTtirhaeopdgrnyrdaetertvrhveieoiseqnesmwuwesers on Evening Saturday Day20 November Yr9999 at Hr23 Min50_55 Q4 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr22 GMT_Min50_55 GMT_Q4 location book-info istio measurements cause reviews-v1-details-v1-abort" (icontext: any - 83%)
+
+6:apprxnr)              "event anomaly cluster +rareiaGpupgEyrvgTtirhaeopdgrnyrdaetertvrhveieoiseqnesmwuwesers" may be related to "reviews-v1-details-v1-abort" (icontext: log anomaly - 80%)
+
+7:hasprop)                "reviews-v1-details-v1-abort" has the role of "why" (icontext: log anomaly - 80%)
+
+7:expr-by)                "reviews-v1-details-v1-abort" is an attribute of "app saw event anomaly cluster +rareuluaMrirgeinigserseseaxgtotaefetreinanagamtlglersresvngnav on Evening Saturday Day20 November Yr9999 at Hr23 Min55_00 Q4 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr22 GMT_Min55_00 GMT_Q4 location book-info istio measurements cause reviews-v1-details-v1-abort" (icontext: any - 83%)
+
+7:expr-by)                "reviews-v1-details-v1-abort" is an attribute of "app saw event anomaly cluster +rareuluieuerirptrtinivcicesacedetotdrtrcfcrtctescacscegesergrd on Night Monday Day20 November Yr2017 at Hr01 Min00_05 Q1 on GMT_Night GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr00 GMT_Min00_05 GMT_Q1 location book-info istio measurements cause reviews-v1-details-v1-abort" (icontext: any - 83%)
+
+7:expr-by)                "reviews-v1-details-v1-abort" is an attribute of "app saw event anomaly cluster +rareuriexternalenvoysourceserverserverc on Night Monday Day20 November Yr2017 at Hr01 Min00_05 Q1 on GMT_Night GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr00 GMT_Min00_05 GMT_Q1 location book-info istio measurements cause reviews-v1-details-v1-abort" (icontext: any - 83%)
+
+7:expr-by)                "reviews-v1-details-v1-abort" is an attribute of "app saw event anomaly cluster +rareuriexternalmixerclientgitsrcqhueoctkacachec on Evening Monday Day20 November Yr2017 at Hr23 Min55_00 Q4 on GMT_Evening GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr22 GMT_Min55_00 GMT_Q4 location book-info istio measurements cause reviews-v1-details-v1-abort" (icontext: any - 83%)
+
+7:expr-by)                "reviews-v1-details-v1-abort" is an attribute of "app saw event anomaly cluster +rareagregatemesages on Evening Saturday Day20 November Yr9999 at Hr23 Min50_55 Q4 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr22 GMT_Min50_55 GMT_Q4 location book-info istio measurements cause reviews-v1-details-v1-abort" (icontext: any - 83%)
+
+7:expr-by)                "reviews-v1-details-v1-abort" is an attribute of "app saw event anomaly cluster +rareuriexternalenvoysourceserverlistenermanagerimplc on Night Monday Day20 November Yr2017 at Hr01 Min00_05 Q1 on GMT_Night GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr00 GMT_Min00_05 GMT_Q1 location book-info istio measurements cause reviews-v1-details-v1-abort" (icontext: any - 83%)
+
+7:expr-by)                "reviews-v1-details-v1-abort" is an attribute of "app saw event anomaly cluster +rareuMreisaegtecinsteirovaplroxyleongvoaygreEvgjtseo on Evening Monday Day20 November Yr2017 at Hr23 Min50_55 Q4 on GMT_Evening GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr22 GMT_Min50_55 GMT_Q4 location book-info istio measurements cause reviews-v1-details-v1-abort" (icontext: any - 83%)
+
+3:cntaind)        "+rare_aggregate_messages" belongs to or is part of "+rareularigingeresexgtoaeftrenagmlgersesngavagoteyes" (icontext: system monitoring measurement - 89%)
+
+4:expr-by)          "+rareularigingeresexgtoaeftrenagmlgersesngavagoteyes" is an attribute of "anomaly cluster +rareularigingeresexgtoaeftrenagmlgersesngavagoteyes" (icontext: any - 113%)
+
+5:expr-by)            "anomaly cluster +rareularigingeresexgtoaeftrenagmlgersesngavagoteyes" is an attribute of "event anomaly cluster +rareularigingeresexgtoaeftrenagmlgersesngavagoteyes" (icontext: any - 105%)
+
+6:expr-by)              "event anomaly cluster +rareularigingeresexgtoaeftrenagmlgersesngavagoteyes" is an attribute of "app saw event anomaly cluster +rareularigingeresexgtoaeftrenagmlgersesngavagoteyes on Evening Saturday Day20 November Yr9999 at Hr23 Min55_00 Q4 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr22 GMT_Min55_00 GMT_Q4 location book-info istio measurements cause details-details-v1-abort" (icontext: any - 83%)
+
+6:apprxnr)              "event anomaly cluster +rareularigingeresexgtoaeftrenagmlgersesngavagoteyes" may be related to "details-details-v1-abort" (icontext: log anomaly - 80%)
+
+7:hasprop)                "details-details-v1-abort" has the role of "why" (icontext: log anomaly - 80%)
+
+3:cntaind)        "+rare_aggregate_messages" belongs to or is part of "+rareluaGirgenigterseagaopapfitieavgmgnenrasaemsmgeaeasgstpepea" (icontext: system monitoring measurement - 87%)
+
+4:expr-by)          "+rareluaGirgenigterseagaopapfitieavgmgnenrasaemsmgeaeasgstpepea" is an attribute of "logging anomaly +rareluaGirgenigterseagaopapfitieavgmgnenrasaemsmgeaeasgstpepea" (icontext: any - 113%)
+
+5:expr-by)            "logging anomaly +rareluaGirgenigterseagaopapfitieavgmgnenrasaemsmgeaeasgstpepea" is an attribute of "log anomaly logging anomaly +rareluaGirgenigterseagaopapfitieavgmgnenrasaemsmgeaeasgstpepea occurred on Afternoon Saturday Day20 November Yr9999 at Hr16 Min50_55 Q4 on GMT_Afternoon GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr15 GMT_Min50_55 GMT_Q4" (icontext: any - 84%)
+
+5:expr-by)            "logging anomaly +rareluaGirgenigterseagaopapfitieavgmgnenrasaemsmgeaeasgstpepea" is an attribute of "log anomaly logging anomaly +rareluaGirgenigterseagaopapfitieavgmgnenrasaemsmgeaeasgstpepea occurred on Evening Saturday Day20 November Yr9999 at Hr19 Min00_05 Q1 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr18 GMT_Min00_05 GMT_Q1" (icontext: any - 84%)
+
+5:expr-by)            "logging anomaly +rareluaGirgenigterseagaopapfitieavgmgnenrasaemsmgeaeasgstpepea" is an attribute of "log anomaly logging anomaly +rareluaGirgenigterseagaopapfitieavgmgnenrasaemsmgeaeasgstpepea occurred on Evening Saturday Day20 November Yr9999 at Hr18 Min10_15 Q1 on GMT_Afternoon GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr17 GMT_Min10_15 GMT_Q1" (icontext: any - 84%)
+
+                  ++ more similar....
+2:hasprop)      "anomaly cluster +rareagregatemesages" expresses an attribute "+rareagregatemesages" (icontext: any - 138%)
+
+1:hasprop)    "event anomaly cluster +rareagregatemesages" has the role of "log anomaly" (icontext: log analysis - 88%)
+
+1:hasprop)    "event anomaly cluster +rareagregatemesages" has the role of "what" (icontext: log anomaly - 80%)
+
+1:apprxnr)    "event anomaly cluster +rareagregatemesages" may be related to "tiller-deploy-details-v1-abort" (icontext: log anomaly - 80%)
+
+2:hasprop)      "tiller-deploy-details-v1-abort" has the role of "why" (icontext: log anomaly - 80%)
+
+2:expr-by)      "tiller-deploy-details-v1-abort" is an attribute of "app saw event anomaly cluster +rareagregatemesages on Afternoon Monday Day20 November Yr2017 at Hr17 Min05_10 Q1 on GMT_Afternoon GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr16 GMT_Min05_10 GMT_Q1 location kube-system istio measurements cause tiller-deploy-details-v1-abort" (icontext: any - 83%)
+
+1:apprxnr)    "event anomaly cluster +rareagregatemesages" may be related to "calico-node-5-details-v1-delay-abort" (icontext: log anomaly - 80%)
+
+2:hasprop)      "calico-node-5-details-v1-delay-abort" has the role of "why" (icontext: log anomaly - 80%)
+
+2:expr-by)      "calico-node-5-details-v1-delay-abort" is an attribute of "app saw event anomaly cluster +rareMesageintervalogagrEgte on Afternoon Monday Day20 November Yr2017 at Hr17 Min20_25 Q2 on GMT_Afternoon GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr16 GMT_Min20_25 GMT_Q2 location kube-system istio measurements cause calico-node-5-details-v1-delay-abort" (icontext: any - 83%)
+
+2:expr-by)      "calico-node-5-details-v1-delay-abort" is an attribute of "app saw event anomaly cluster +rarelrienfersesohftaigmgere on Afternoon Monday Day20 November Yr2017 at Hr17 Min20_25 Q2 on GMT_Afternoon GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr16 GMT_Min20_25 GMT_Q2 location kube-system istio measurements cause calico-node-5-details-v1-delay-abort" (icontext: any - 83%)
+
+2:expr-by)      "calico-node-5-details-v1-delay-abort" is an attribute of "app saw event anomaly cluster +rareagregatemesages on Afternoon Monday Day20 November Yr2017 at Hr17 Min15_20 Q2 on GMT_Afternoon GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr16 GMT_Min15_20 GMT_Q2 location kube-system istio measurements cause calico-node-5-details-v1-delay-abort" (icontext: any - 83%)
+
+1:apprxnr)    "event anomaly cluster +rareagregatemesages" may be related to "reviews-v2-details-v1-abort" (icontext: log anomaly - 80%)
+
+2:hasprop)      "reviews-v2-details-v1-abort" has the role of "why" (icontext: log anomaly - 80%)
+
+2:expr-by)      "reviews-v2-details-v1-abort" is an attribute of "app saw event anomaly cluster +rareuluaMrirgeinigserseseaxgtotaefetreinanagamtlglersresvngnav on Evening Saturday Day20 November Yr9999 at Hr23 Min55_00 Q4 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr22 GMT_Min55_00 GMT_Q4 location book-info istio measurements cause reviews-v2-details-v1-abort" (icontext: any - 83%)
+
+2:expr-by)      "reviews-v2-details-v1-abort" is an attribute of "app saw event anomaly cluster +rareagregatemesages on Evening Saturday Day20 November Yr9999 at Hr23 Min50_55 Q4 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr22 GMT_Min50_55 GMT_Q4 location book-info istio measurements cause reviews-v2-details-v1-abort" (icontext: any - 83%)
+
+2:expr-by)      "reviews-v2-details-v1-abort" is an attribute of "app saw event anomaly cluster +rareuluieuerirptrtinivcicesacedetotdrtrcfcrtctescacscegesergrd on Night Monday Day20 November Yr2017 at Hr01 Min00_05 Q1 on GMT_Night GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr00 GMT_Min00_05 GMT_Q1 location book-info istio measurements cause reviews-v2-details-v1-abort" (icontext: any - 83%)
+
+2:expr-by)      "reviews-v2-details-v1-abort" is an attribute of "app saw event anomaly cluster +rareuMreisaegtecinsteirovaplroxyleongvoaygreEvgjtseo on Evening Monday Day20 November Yr2017 at Hr23 Min50_55 Q4 on GMT_Evening GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr22 GMT_Min50_55 GMT_Q4 location book-info istio measurements cause reviews-v2-details-v1-abort" (icontext: any - 83%)
+
+2:expr-by)      "reviews-v2-details-v1-abort" is an attribute of "app saw event anomaly cluster +rareuriexternalmixerclientgitsrcquotacachec on Evening Monday Day20 November Yr2017 at Hr23 Min55_00 Q4 on GMT_Evening GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr22 GMT_Min55_00 GMT_Q4 location book-info istio measurements cause reviews-v2-details-v1-abort" (icontext: any - 83%)
+
+2:expr-by)      "reviews-v2-details-v1-abort" is an attribute of "app saw event anomaly cluster +rareuriexternalemnivxoeyrcsloiuernctegsietrvserclsciehsretvcek on Night Monday Day20 November Yr2017 at Hr01 Min00_05 Q1 on GMT_Night GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr00 GMT_Min00_05 GMT_Q1 location book-info istio measurements cause reviews-v2-details-v1-abort" (icontext: any - 83%)
+
+2:expr-by)      "reviews-v2-details-v1-abort" is an attribute of "app saw event anomaly cluster +rareiuaGupuprgEryrvigTitirhaAeopdpgrnyrdaeaterctvtrhveheieoise on Evening Saturday Day20 November Yr9999 at Hr23 Min50_55 Q4 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr22 GMT_Min50_55 GMT_Q4 location book-info istio measurements cause reviews-v2-details-v1-abort" (icontext: any - 83%)
+
+1:apprxnr)    "event anomaly cluster +rareagregatemesages" may be related to "calico-policy-controller-reviews-v1-delay" (icontext: log anomaly - 80%)
+
+2:hasprop)      "calico-policy-controller-reviews-v1-delay" has the role of "why" (icontext: log anomaly - 80%)
+
+2:expr-by)      "calico-policy-controller-reviews-v1-delay" is an attribute of "app saw event anomaly cluster +rareagregatemesages on Evening Monday Day20 November Yr2017 at Hr19 Min30_35 Q3 on GMT_Evening GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr18 GMT_Min30_35 GMT_Q3 location kube-system istio measurements cause calico-policy-controller-reviews-v1-delay" (icontext: any - 83%)
+
+1:apprxnr)    "event anomaly cluster +rareagregatemesages" may be related to "calico-node-5-reviews-v3-delay" (icontext: log anomaly - 80%)
+
+2:hasprop)      "calico-node-5-reviews-v3-delay" has the role of "why" (icontext: log anomaly - 80%)
+
+2:expr-by)      "calico-node-5-reviews-v3-delay" is an attribute of "app saw event anomaly cluster +rarelrienfersesohftaigmgere on Evening Monday Day20 November Yr2017 at Hr20 Min35_40 Q3 on GMT_Evening GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr19 GMT_Min35_40 GMT_Q3 location kube-system istio measurements cause calico-node-5-reviews-v3-delay" (icontext: any - 83%)
+
+2:expr-by)      "calico-node-5-reviews-v3-delay" is an attribute of "app saw event anomaly cluster +rareagregatemesages on Evening Monday Day20 November Yr2017 at Hr20 Min30_35 Q3 on GMT_Evening GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr19 GMT_Min30_35 GMT_Q3 location kube-system istio measurements cause calico-node-5-reviews-v3-delay" (icontext: any - 83%)
+
+2:expr-by)      "calico-node-5-reviews-v3-delay" is an attribute of "app saw event anomaly cluster +rareMesageintervalogagrEgte on Evening Monday Day20 November Yr2017 at Hr20 Min40_45 Q3 on GMT_Evening GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr19 GMT_Min40_45 GMT_Q3 location kube-system istio measurements cause calico-node-5-reviews-v3-delay" (icontext: any - 83%)
+
+1:apprxnr)    "event anomaly cluster +rareagregatemesages" may be related to "kube-controller-reviews-v3-abort" (icontext: log anomaly - 80%)
+
+2:hasprop)      "kube-controller-reviews-v3-abort" has the role of "why" (icontext: log anomaly - 80%)
+
+2:expr-by)      "kube-controller-reviews-v3-abort" is an attribute of "app saw event anomaly cluster +rareulrineksoifoakgugbrergnaeteslopgkgmecsosnatgreoslpergtairm on Evening Saturday Day20 November Yr9999 at Hr20 Min20_25 Q2 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr19 GMT_Min20_25 GMT_Q2 location kube-system istio measurements cause kube-controller-reviews-v3-abort" (icontext: any - 83%)
+
+2:expr-by)      "kube-controller-reviews-v3-abort" is an attribute of "app saw event anomaly cluster +rareMuersisakgseiontkeurbvearlneteslopgkgagcgornEtgrotlel on Evening Saturday Day20 November Yr9999 at Hr20 Min20_25 Q2 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr19 GMT_Min20_25 GMT_Q2 location kube-system istio measurements cause kube-controller-reviews-v3-abort" (icontext: any - 83%)
+
+2:expr-by)      "kube-controller-reviews-v3-abort" is an attribute of "app saw event anomaly cluster +rareagregatemesages on Evening Saturday Day20 November Yr9999 at Hr20 Min15_20 Q2 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr19 GMT_Min15_20 GMT_Q2 location kube-system istio measurements cause kube-controller-reviews-v3-abort" (icontext: any - 83%)
+
+1:apprxnr)    "event anomaly cluster +rareagregatemesages" may be related to "calico-node-4-reviews-v1-abort" (icontext: log anomaly - 80%)
+
+2:hasprop)      "calico-node-4-reviews-v1-abort" has the role of "why" (icontext: log anomaly - 80%)
+
+2:expr-by)      "calico-node-4-reviews-v1-abort" is an attribute of "app saw event anomaly cluster +rarelrienfersesohftaigmgere on Evening Monday Day20 November Yr2017 at Hr19 Min15_20 Q2 on GMT_Evening GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr18 GMT_Min15_20 GMT_Q2 location kube-system istio measurements cause calico-node-4-reviews-v1-abort" (icontext: any - 83%)
+
+2:expr-by)      "calico-node-4-reviews-v1-abort" is an attribute of "app saw event anomaly cluster +rareMesageintervalogagrEgte on Evening Monday Day20 November Yr2017 at Hr19 Min20_25 Q2 on GMT_Evening GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr18 GMT_Min20_25 GMT_Q2 location kube-system istio measurements cause calico-node-4-reviews-v1-abort" (icontext: any - 83%)
+
+2:expr-by)      "calico-node-4-reviews-v1-abort" is an attribute of "app saw event anomaly cluster +rareagregatemesages on Evening Monday Day20 November Yr2017 at Hr19 Min10_15 Q1 on GMT_Evening GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr18 GMT_Min10_15 GMT_Q1 location kube-system istio measurements cause calico-node-4-reviews-v1-abort" (icontext: any - 83%)
+
+1:apprxnr)    "event anomaly cluster +rareagregatemesages" may be related to "servicegraph-normal" (icontext: log anomaly - 80%)
+
+2:hasprop)      "servicegraph-normal" has the role of "why" (icontext: log anomaly - 80%)
+
+2:expr-by)      "servicegraph-normal" is an attribute of "app saw event anomaly cluster +rareagregatemesages on Night Monday Day20 November Yr2017 at Hr01 Min00_05 Q1 on GMT_Night GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr00 GMT_Min00_05 GMT_Q1 location istio-system istio measurements cause servicegraph-normal" (icontext: any - 83%)
+
+1:apprxnr)    "event anomaly cluster +rareagregatemesages" may be related to "kubedns-details-v1-delay" (icontext: log anomaly - 80%)
+
+2:hasprop)      "kubedns-details-v1-delay" has the role of "why" (icontext: log anomaly - 80%)
+
+2:expr-by)      "kubedns-details-v1-delay" is an attribute of "app saw event anomaly cluster +rareagregatemesages on Afternoon Saturday Day20 November Yr9999 at Hr17 Min50_55 Q4 on GMT_Afternoon GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr16 GMT_Min50_55 GMT_Q4 location kube-system istio measurements cause kubedns-details-v1-delay" (icontext: any - 83%)
+
+1:apprxnr)    "event anomaly cluster +rareagregatemesages" may be related to "productpage-details-v1-abort-50-percent" (icontext: log anomaly - 80%)
+
+2:hasprop)      "productpage-details-v1-abort-50-percent" has the role of "why" (icontext: log anomaly - 80%)
+
+2:expr-by)      "productpage-details-v1-abort-50-percent" is an attribute of "app saw event anomaly cluster +rareMesageintervalogagrEgte on Night Monday Day20 November Yr2017 at Hr01 Min00_05 Q1 on GMT_Night GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr00 GMT_Min00_05 GMT_Q1 location book-info istio measurements cause productpage-details-v1-abort-50-percent" (icontext: any - 83%)
+
+2:expr-by)      "productpage-details-v1-abort-50-percent" is an attribute of "app saw event anomaly cluster +rareulrinesrcofenavgogyremgiaxterlmoigxemrescsoangtersolpecrc on Night Monday Day20 November Yr2017 at Hr01 Min00_05 Q1 on GMT_Night GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr00 GMT_Min00_05 GMT_Q1 location book-info istio measurements cause productpage-details-v1-abort-50-percent" (icontext: any - 83%)
+
+2:expr-by)      "productpage-details-v1-abort-50-percent" is an attribute of "app saw event anomaly cluster +rareagregatemesages on Evening Monday Day20 November Yr2017 at Hr23 Min35_40 Q3 on GMT_Evening GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr22 GMT_Min35_40 GMT_Q3 location book-info istio measurements cause productpage-details-v1-abort-50-percent" (icontext: any - 83%)
+
+2:expr-by)      "productpage-details-v1-abort-50-percent" is an attribute of "app saw event anomaly cluster +rareiuMGupuproEryrvizTitihalMopdpdlpdronyrdrearezterototvirhve on Evening Monday Day20 November Yr2017 at Hr23 Min35_40 Q3 on GMT_Evening GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr22 GMT_Min35_40 GMT_Q3 location book-info istio measurements cause productpage-details-v1-abort-50-percent" (icontext: any - 83%)
+
+1:apprxnr)    "event anomaly cluster +rareagregatemesages" may be related to "istio-pilot-ratings-v1-abort" (icontext: log anomaly - 80%)
+
+2:hasprop)      "istio-pilot-ratings-v1-abort" has the role of "why" (icontext: log anomaly - 80%)
+
+2:expr-by)      "istio-pilot-ratings-v1-abort" is an attribute of "app saw event anomaly cluster +rareulrinesxtoefrnaglgrieogaktsecloigenmtesgsoagteosolpsercatc on Evening Saturday Day20 November Yr9999 at Hr18 Min05_10 Q1 on GMT_Afternoon GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr17 GMT_Min05_10 GMT_Q1 location istio-system istio measurements cause istio-pilot-ratings-v1-abort" (icontext: any - 84%)
+
+2:expr-by)      "istio-pilot-ratings-v1-abort" is an attribute of "app saw event anomaly cluster +rareagregatemesages on Evening Saturday Day20 November Yr9999 at Hr18 Min05_10 Q1 on GMT_Afternoon GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr17 GMT_Min05_10 GMT_Q1 location istio-system istio measurements cause istio-pilot-ratings-v1-abort" (icontext: any - 84%)
+
+1:apprxnr)    "event anomaly cluster +rareagregatemesages" may be related to "calico-node-5-reviews-v3-abort" (icontext: log anomaly - 80%)
+
+2:hasprop)      "calico-node-5-reviews-v3-abort" has the role of "why" (icontext: log anomaly - 80%)
+
+2:expr-by)      "calico-node-5-reviews-v3-abort" is an attribute of "app saw event anomaly cluster +rarelrienfersesohftaigmgere on Evening Monday Day20 November Yr2017 at Hr20 Min20_25 Q2 on GMT_Evening GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr19 GMT_Min20_25 GMT_Q2 location kube-system istio measurements cause calico-node-5-reviews-v3-abort" (icontext: any - 83%)
+
+2:expr-by)      "calico-node-5-reviews-v3-abort" is an attribute of "app saw event anomaly cluster +rareMesageintervalogagrEgte on Evening Monday Day20 November Yr2017 at Hr20 Min20_25 Q2 on GMT_Evening GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr19 GMT_Min20_25 GMT_Q2 location kube-system istio measurements cause calico-node-5-reviews-v3-abort" (icontext: any - 83%)
+
+2:expr-by)      "calico-node-5-reviews-v3-abort" is an attribute of "app saw event anomaly cluster +rareagregatemesages on Evening Monday Day20 November Yr2017 at Hr20 Min15_20 Q2 on GMT_Evening GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr19 GMT_Min15_20 GMT_Q2 location kube-system istio measurements cause calico-node-5-reviews-v3-abort" (icontext: any - 83%)
+
+              ++ more similar....
+           [0]---------------------------------------------------------------------------------
+
+new story) "app saw event anomaly cluster +rareagregatemesages on Evening Saturday Day20 November Yr9999 at Hr23 Min35_40 Q3 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr22 GMT_Min35_40 GMT_Q3 location istio-system istio measurements cause istio-initializer-details-v1-abort-50-percent" may express "event"
+
+0:hasprop)  "app saw event anomaly cluster +rareagregatemesages on Evening Saturday Day20 November Yr9999 at Hr23 Min35_40 Q3 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr22 GMT_Min35_40 GMT_Q3 location istio-system istio measurements cause istio-initializer-details-v1-abort-50-percent" has the role of "event" (icontext: log anomaly - 81%)
+
+           [0]---------------------------------------------------------------------------------
+
+new story) "app saw event anomaly cluster +rareagregatemesages on Evening Saturday Day20 November Yr9999 at Hr23 Min35_40 Q3 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr22 GMT_Min35_40 GMT_Q3 location istio-system istio measurements cause istio-initializer-details-v1-abort-50-percent" may express "on Evening Saturday Day20 November Yr9999 at Hr23 Min35_40 Q3"
+
+0:hasprop)  "app saw event anomaly cluster +rareagregatemesages on Evening Saturday Day20 November Yr9999 at Hr23 Min35_40 Q3 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr22 GMT_Min35_40 GMT_Q3 location istio-system istio measurements cause istio-initializer-details-v1-abort-50-percent" expresses an attribute "on Evening Saturday Day20 November Yr9999 at Hr23 Min35_40 Q3" (icontext: any - 81%)
+
+1:hasprop)    "on Evening Saturday Day20 November Yr9999 at Hr23 Min35_40 Q3" expresses an attribute "Hr23" (icontext: any - 87%)
+
+2:hasprop)      "Hr23" has the role of "hour" (icontext: clock time - 80%)
+
+1:hasprop)    "on Evening Saturday Day20 November Yr9999 at Hr23 Min35_40 Q3" expresses an attribute "Evening" (icontext: any - 93%)
+
+2:hasprop)      "Evening" expresses an attribute "work shift" (icontext: any - 80%)
+
+2:hasprop)      "Evening" has the role of "time of day" (icontext: time - 80%)
+
+1:hasprop)    "on Evening Saturday Day20 November Yr9999 at Hr23 Min35_40 Q3" expresses an attribute "Min35_40" (icontext: any - 95%)
+
+1:hasprop)    "on Evening Saturday Day20 November Yr9999 at Hr23 Min35_40 Q3" has the role of "when" (icontext: local clock time - 80%)
+
+1:hasprop)    "on Evening Saturday Day20 November Yr9999 at Hr23 Min35_40 Q3" expresses an attribute "Q3" (icontext: any - 80%)
+
+1:hasprop)    "on Evening Saturday Day20 November Yr9999 at Hr23 Min35_40 Q3" expresses an attribute "Day20" (icontext: any - 89%)
+
+2:hasprop)      "Day20" has the role of "day of month" (icontext: clock time - 80%)
+
+1:hasprop)    "on Evening Saturday Day20 November Yr9999 at Hr23 Min35_40 Q3" expresses an attribute "November" (icontext: any - 95%)
+
+2:hasprop)      "November" has the role of "minutes past the hour" (icontext: clock time - 80%)
+
+2:hasprop)      "November" has the role of "month" (icontext: clock time - 80%)
+
+2:hasprop)      "November" expresses an attribute "minutes" (icontext: any - 80%)
+
+1:hasprop)    "on Evening Saturday Day20 November Yr9999 at Hr23 Min35_40 Q3" expresses an attribute "Yr9999" (icontext: any - 91%)
+
+2:hasprop)      "Yr9999" has the role of "year" (icontext: clock time - 80%)
+
+1:hasprop)    "on Evening Saturday Day20 November Yr9999 at Hr23 Min35_40 Q3" expresses an attribute "Saturday" (icontext: any - 95%)
+
+2:hasprop)      "Saturday" has the role of "weekday" (icontext: clock time - 80%)
+
+           [0]---------------------------------------------------------------------------------
+
+new story) "app saw event anomaly cluster +rareagregatemesages on Evening Saturday Day20 November Yr9999 at Hr23 Min35_40 Q3 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr22 GMT_Min35_40 GMT_Q3 location istio-system istio measurements cause istio-initializer-details-v1-abort-50-percent" may express "on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr22 GMT_Min35_40 GMT_Q3"
+
+0:hasprop)  "app saw event anomaly cluster +rareagregatemesages on Evening Saturday Day20 November Yr9999 at Hr23 Min35_40 Q3 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr22 GMT_Min35_40 GMT_Q3 location istio-system istio measurements cause istio-initializer-details-v1-abort-50-percent" expresses an attribute "on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr22 GMT_Min35_40 GMT_Q3" (icontext: any - 91%)
+
+1:hasprop)    "on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr22 GMT_Min35_40 GMT_Q3" expresses an attribute "GMT_Hr22" (icontext: any - 132%)
+
+2:hasprop)      "GMT_Hr22" has the role of "hour" (icontext: clock time - 80%)
+
+1:hasprop)    "on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr22 GMT_Min35_40 GMT_Q3" expresses an attribute "GMT_Yr9999" (icontext: any - 125%)
+
+2:hasprop)      "GMT_Yr9999" has the role of "year" (icontext: clock time - 80%)
+
+1:hasprop)    "on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr22 GMT_Min35_40 GMT_Q3" expresses an attribute "GMT_Saturday" (icontext: any - 120%)
+
+2:hasprop)      "GMT_Saturday" has the role of "weekday" (icontext: clock time - 80%)
+
+1:hasprop)    "on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr22 GMT_Min35_40 GMT_Q3" has the role of "when GMT" (icontext: GMT clock time - 80%)
+
+1:hasprop)    "on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr22 GMT_Min35_40 GMT_Q3" expresses an attribute "GMT_Evening" (icontext: any - 122%)
+
+2:hasprop)      "GMT_Evening" expresses an attribute "work shift" (icontext: any - 80%)
+
+2:hasprop)      "GMT_Evening" has the role of "time of day" (icontext: time - 80%)
+
+1:hasprop)    "on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr22 GMT_Min35_40 GMT_Q3" expresses an attribute "GMT_Min35_40" (icontext: any - 120%)
+
+1:hasprop)    "on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr22 GMT_Min35_40 GMT_Q3" expresses an attribute "GMT_Q3" (icontext: any - 145%)
+
+1:hasprop)    "on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr22 GMT_Min35_40 GMT_Q3" expresses an attribute "GMT_November" (icontext: any - 120%)
+
+2:hasprop)      "GMT_November" has the role of "minutes past the hour" (icontext: clock time - 80%)
+
+2:hasprop)      "GMT_November" has the role of "month" (icontext: clock time - 80%)
+
+2:hasprop)      "GMT_November" expresses an attribute "minutes" (icontext: any - 80%)
+
+1:hasprop)    "on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr22 GMT_Min35_40 GMT_Q3" expresses an attribute "GMT_Day20" (icontext: any - 128%)
+
+2:hasprop)      "GMT_Day20" has the role of "day of month" (icontext: clock time - 80%)
+
+           [0]---------------------------------------------------------------------------------
+
+new story) "app saw event anomaly cluster +rareagregatemesages on Evening Saturday Day20 November Yr9999 at Hr23 Min35_40 Q3 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr22 GMT_Min35_40 GMT_Q3 location istio-system istio measurements cause istio-initializer-details-v1-abort-50-percent" may express "app"
+
+0:hasprop)  "app saw event anomaly cluster +rareagregatemesages on Evening Saturday Day20 November Yr9999 at Hr23 Min35_40 Q3 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr22 GMT_Min35_40 GMT_Q3 location istio-system istio measurements cause istio-initializer-details-v1-abort-50-percent" expresses an attribute "app" (icontext: any - 80%)
+
+1:hasprop)    "app" has the role of "who" (icontext: log anomaly - 80%)
+
+           [0]---------------------------------------------------------------------------------
+
+new story) "app saw event anomaly cluster +rareagregatemesages on Evening Saturday Day20 November Yr9999 at Hr23 Min35_40 Q3 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr22 GMT_Min35_40 GMT_Q3 location istio-system istio measurements cause istio-initializer-details-v1-abort-50-percent" may express "istio-initializer-details-v1-abort-50-percent"
+
+0:hasprop)  "app saw event anomaly cluster +rareagregatemesages on Evening Saturday Day20 November Yr9999 at Hr23 Min35_40 Q3 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr22 GMT_Min35_40 GMT_Q3 location istio-system istio measurements cause istio-initializer-details-v1-abort-50-percent" expresses an attribute "istio-initializer-details-v1-abort-50-percent" (icontext: any - 96%)
+
+1:hasprop)    "istio-initializer-details-v1-abort-50-percent" has the role of "why" (icontext: log anomaly - 80%)
+
+1:apprxnr)    "istio-initializer-details-v1-abort-50-percent" may be related to "event anomaly cluster +rareulrinesxtoefrnaglgrieogaktsecloigenmtesgsoagteosolpsercatc" (icontext: log anomaly - 80%)
+
+2:hasprop)      "event anomaly cluster +rareulrinesxtoefrnaglgrieogaktsecloigenmtesgsoagteosolpsercatc" expresses an attribute "anomaly cluster +rareulrinesxtoefrnaglgrieogaktsecloigenmtesgsoagteosolpsercatc" (icontext: any - 111%)
+
+3:hasprop)        "anomaly cluster +rareulrinesxtoefrnaglgrieogaktsecloigenmtesgsoagteosolpsercatc" expresses an attribute "+rare_uri_external_io_ks_client_go_tools_cache_reflector_go" (icontext: log analysis - 86%)
+
+4:cntaind)          "+rare_uri_external_io_ks_client_go_tools_cache_reflector_go" belongs to or is part of "+rareujuiuluauijuiunursrprirgrpsrnrerioivinigivoigiwinernrltbrS" (icontext: system monitoring measurement - 87%)
+
+5:expr-by)            "+rareujuiuluauijuiunursrprirgrpsrnrerioivinigivoigiwinernrltbrS" is an attribute of "logging anomaly +rareujuiuluauijuiunursrprirgrpsrnrerioivinigivoigiwinernrltbrS" (icontext: any - 113%)
+
+6:expr-by)              "logging anomaly +rareujuiuluauijuiunursrprirgrpsrnrerioivinigivoigiwinernrltbrS" is an attribute of "log anomaly logging anomaly +rareujuiuluauijuiunursrprirgrpsrnrerioivinigivoigiwinernrltbrS occurred on Afternoon Saturday Day20 November Yr9999 at Hr16 Min40_45 Q3 on GMT_Afternoon GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr15 GMT_Min40_45 GMT_Q3" (icontext: any - 84%)
+
+4:cntaind)          "+rare_uri_external_io_ks_client_go_tools_cache_reflector_go" belongs to or is part of "+rareujuluauijuiunrsrirgrpsrnreioinigivoigiwnernrldtpbegsmeagab" (icontext: system monitoring measurement - 87%)
+
+5:expr-by)            "+rareujuluauijuiunrsrirgrpsrnreioinigivoigiwnernrldtpbegsmeagab" is an attribute of "logging anomaly +rareujuluauijuiunrsrirgrpsrnreioinigivoigiwnernrldtpbegsmeagab" (icontext: any - 113%)
+
+6:expr-by)              "logging anomaly +rareujuluauijuiunrsrirgrpsrnreioinigivoigiwnernrldtpbegsmeagab" is an attribute of "log anomaly logging anomaly +rareujuluauijuiunrsrirgrpsrnreioinigivoigiwnernrldtpbegsmeagab occurred on Evening Saturday Day20 November Yr9999 at Hr20 Min15_20 Q2 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr19 GMT_Min15_20 GMT_Q2" (icontext: any - 84%)
+
+4:cntaind)          "+rare_uri_external_io_ks_client_go_tools_cache_reflector_go" belongs to or is part of "+rareulrinesxtoefrnaglgrieogaktsecloigenmtesgsoagteosolpsercatc" (icontext: system monitoring measurement - 87%)
+
+4:cntaind)          "+rare_uri_external_io_ks_client_go_tools_cache_reflector_go" belongs to or is part of "+rareujuiuluauijuiujunursrprirgrpsrnrsrerioivinigivoigioiwinern" (icontext: system monitoring measurement - 87%)
+
+5:expr-by)            "+rareujuiuluauijuiujunursrprirgrpsrnrsrerioivinigivoigioiwinern" is an attribute of "logging anomaly +rareujuiuluauijuiujunursrprirgrpsrnrsrerioivinigivoigioiwinern" (icontext: any - 113%)
+
+6:expr-by)              "logging anomaly +rareujuiuluauijuiujunursrprirgrpsrnrsrerioivinigivoigioiwinern" is an attribute of "log anomaly logging anomaly +rareujuiuluauijuiujunursrprirgrpsrnrsrerioivinigivoigioiwinern occurred on Evening Saturday Day20 November Yr9999 at Hr18 Min20_25 Q2 on GMT_Afternoon GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr17 GMT_Min20_25 GMT_Q2" (icontext: any - 84%)
+
+6:expr-by)              "logging anomaly +rareujuiuluauijuiujunursrprirgrpsrnrsrerioivinigivoigioiwinern" is an attribute of "log anomaly logging anomaly +rareujuiuluauijuiujunursrprirgrpsrnrsrerioivinigivoigioiwinern occurred on Evening Saturday Day20 November Yr9999 at Hr18 Min35_40 Q3 on GMT_Afternoon GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr17 GMT_Min35_40 GMT_Q3" (icontext: any - 84%)
+
+4:cntaind)          "+rare_uri_external_io_ks_client_go_tools_cache_reflector_go" belongs to or is part of "+rarejiuluajusprirgsrovinigoinernaesmenfdaxogfeidptonaiwlriefgt" (icontext: system monitoring measurement - 87%)
+
+5:expr-by)            "+rarejiuluajusprirgsrovinigoinernaesmenfdaxogfeidptonaiwlriefgt" is an attribute of "logging anomaly +rarejiuluajusprirgsrovinigoinernaesmenfdaxogfeidptonaiwlriefgt" (icontext: any - 113%)
+
+6:expr-by)              "logging anomaly +rarejiuluajusprirgsrovinigoinernaesmenfdaxogfeidptonaiwlriefgt" is an attribute of "log anomaly logging anomaly +rarejiuluajusprirgsrovinigoinernaesmenfdaxogfeidptonaiwlriefgt occurred on Afternoon Saturday Day20 November Yr9999 at Hr16 Min20_25 Q2 on GMT_Afternoon GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr15 GMT_Min20_25 GMT_Q2" (icontext: any - 84%)
+
+4:cntaind)          "+rare_uri_external_io_ks_client_go_tools_cache_reflector_go" belongs to or is part of "+rareujuiuluauijuiunursrprirgrpsrnrerioivinigivoigiwinernrldtbr" (icontext: system monitoring measurement - 87%)
+
+5:expr-by)            "+rareujuiuluauijuiunursrprirgrpsrnrerioivinigivoigiwinernrldtbr" is an attribute of "logging anomaly +rareujuiuluauijuiunursrprirgrpsrnrerioivinigivoigiwinernrldtbr" (icontext: any - 113%)
+
+6:expr-by)              "logging anomaly +rareujuiuluauijuiunursrprirgrpsrnrerioivinigivoigiwinernrldtbr" is an attribute of "log anomaly logging anomaly +rareujuiuluauijuiunursrprirgrpsrnrerioivinigivoigiwinernrldtbr occurred on Evening Saturday Day20 November Yr9999 at Hr18 Min50_55 Q4 on GMT_Afternoon GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr17 GMT_Min50_55 GMT_Q4" (icontext: any - 84%)
+
+4:cntaind)          "+rare_uri_external_io_ks_client_go_tools_cache_reflector_go" belongs to or is part of "+rareularigingeresexgtoaeftrenagmlgersiesogagkteses" (icontext: system monitoring measurement - 89%)
+
+5:expr-by)            "+rareularigingeresexgtoaeftrenagmlgersiesogagkteses" is an attribute of "logging anomaly +rareularigingeresexgtoaeftrenagmlgersiesogagkteses" (icontext: any - 113%)
+
+6:expr-by)              "logging anomaly +rareularigingeresexgtoaeftrenagmlgersiesogagkteses" is an attribute of "log anomaly logging anomaly +rareularigingeresexgtoaeftrenagmlgersiesogagkteses occurred on Afternoon Saturday Day20 November Yr9999 at Hr17 Min30_35 Q3 on GMT_Afternoon GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr16 GMT_Min30_35 GMT_Q3" (icontext: any - 84%)
+
+6:expr-by)              "logging anomaly +rareularigingeresexgtoaeftrenagmlgersiesogagkteses" is an attribute of "log anomaly logging anomaly +rareularigingeresexgtoaeftrenagmlgersiesogagkteses occurred on Evening Saturday Day20 November Yr9999 at Hr19 Min55_00 Q4 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr18 GMT_Min55_00 GMT_Q4" (icontext: any - 84%)
+
+6:expr-by)              "logging anomaly +rareularigingeresexgtoaeftrenagmlgersiesogagkteses" is an attribute of "log anomaly logging anomaly +rareularigingeresexgtoaeftrenagmlgersiesogagkteses occurred on Afternoon Saturday Day20 November Yr9999 at Hr17 Min35_40 Q3 on GMT_Afternoon GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr16 GMT_Min35_40 GMT_Q3" (icontext: any - 84%)
+
+6:expr-by)              "logging anomaly +rareularigingeresexgtoaeftrenagmlgersiesogagkteses" is an attribute of "log anomaly logging anomaly +rareularigingeresexgtoaeftrenagmlgersiesogagkteses occurred on Afternoon Saturday Day20 November Yr9999 at Hr16 Min50_55 Q4 on GMT_Afternoon GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr15 GMT_Min50_55 GMT_Q4" (icontext: any - 84%)
+
+6:expr-by)              "logging anomaly +rareularigingeresexgtoaeftrenagmlgersiesogagkteses" is an attribute of "log anomaly logging anomaly +rareularigingeresexgtoaeftrenagmlgersiesogagkteses occurred on Evening Saturday Day20 November Yr9999 at Hr19 Min30_35 Q3 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr18 GMT_Min30_35 GMT_Q3" (icontext: any - 84%)
+
+6:expr-by)              "logging anomaly +rareularigingeresexgtoaeftrenagmlgersiesogagkteses" is an attribute of "log anomaly logging anomaly +rareularigingeresexgtoaeftrenagmlgersiesogagkteses occurred on Evening Saturday Day20 November Yr9999 at Hr19 Min45_50 Q4 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr18 GMT_Min45_50 GMT_Q4" (icontext: any - 84%)
+
+6:expr-by)              "logging anomaly +rareularigingeresexgtoaeftrenagmlgersiesogagkteses" is an attribute of "log anomaly logging anomaly +rareularigingeresexgtoaeftrenagmlgersiesogagkteses occurred on Evening Saturday Day20 November Yr9999 at Hr20 Min10_15 Q1 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr19 GMT_Min10_15 GMT_Q1" (icontext: any - 84%)
+
+6:expr-by)              "logging anomaly +rareularigingeresexgtoaeftrenagmlgersiesogagkteses" is an attribute of "log anomaly logging anomaly +rareularigingeresexgtoaeftrenagmlgersiesogagkteses occurred on Evening Saturday Day20 November Yr9999 at Hr19 Min05_10 Q1 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr18 GMT_Min05_10 GMT_Q1" (icontext: any - 84%)
+
+6:expr-by)              "logging anomaly +rareularigingeresexgtoaeftrenagmlgersiesogagkteses" is an attribute of "log anomaly logging anomaly +rareularigingeresexgtoaeftrenagmlgersiesogagkteses occurred on Afternoon Saturday Day20 November Yr9999 at Hr17 Min50_55 Q4 on GMT_Afternoon GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr16 GMT_Min50_55 GMT_Q4" (icontext: any - 84%)
+
+6:expr-by)              "logging anomaly +rareularigingeresexgtoaeftrenagmlgersiesogagkteses" is an attribute of "log anomaly logging anomaly +rareularigingeresexgtoaeftrenagmlgersiesogagkteses occurred on Evening Saturday Day20 November Yr9999 at Hr18 Min15_20 Q2 on GMT_Afternoon GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr17 GMT_Min15_20 GMT_Q2" (icontext: any - 84%)
+
+6:expr-by)              "logging anomaly +rareularigingeresexgtoaeftrenagmlgersiesogagkteses" is an attribute of "log anomaly logging anomaly +rareularigingeresexgtoaeftrenagmlgersiesogagkteses occurred on Afternoon Saturday Day20 November Yr9999 at Hr17 Min20_25 Q2 on GMT_Afternoon GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr16 GMT_Min20_25 GMT_Q2" (icontext: any - 84%)
+
+                        ++ more similar....
+                    ++ more similar....
+3:hasprop)        "anomaly cluster +rareulrinesxtoefrnaglgrieogaktsecloigenmtesgsoagteosolpsercatc" expresses an attribute "+rareulrinesxtoefrnaglgrieogaktsecloigenmtesgsoagteosolpsercatc" (icontext: any - 161%)
+
+4:cntains)          "+rareulrinesxtoefrnaglgrieogaktsecloigenmtesgsoagteosolpsercatc" contains "+rare_lines_of_aggregate_log_messages_per_time_interval_sample" (icontext: system monitoring measurement - 88%)
+
+5:expr-by)            "+rare_lines_of_aggregate_log_messages_per_time_interval_sample" is an attribute of "anomaly cluster +rareuGuGluGuGuGuGrereirererereititnititititesapopifivavgngnara" (icontext: log analysis - 82%)
+
+6:expr-by)              "anomaly cluster +rareuGuGluGuGuGuGrereirererereititnititititesapopifivavgngnara" is an attribute of "event anomaly cluster +rareuGuGluGuGuGuGrereirererereititnititititesapopifivavgngnara" (icontext: any - 105%)
+
+7:expr-by)                "event anomaly cluster +rareuGuGluGuGuGuGrereirererereititnititititesapopifivavgngnara" is an attribute of "app saw event anomaly cluster +rareuGuGluGuGuGuGrereirererereititnititititesapopifivavgngnara on Evening Saturday Day20 November Yr9999 at Hr23 Min30_35 Q3 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr22 GMT_Min30_35 GMT_Q3 location kube-system istio measurements cause kube-apiserver-normal" (icontext: any - 83%)
+
+7:apprxnr)                "event anomaly cluster +rareuGuGluGuGuGuGrereirererereititnititititesapopifivavgngnara" may be related to "kube-apiserver-normal" (icontext: log anomaly - 80%)
+
+8:expr-by)                  "kube-apiserver-normal" is an attribute of "app saw event anomaly cluster +rareuGuMuGrerereitisitsagapepivnvtnenaramvmeaeslspaceslsokigki on Evening Saturday Day20 November Yr9999 at Hr23 Min35_40 Q3 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr22 GMT_Min35_40 GMT_Q3 location kube-system istio measurements cause kube-apiserver-normal" (icontext: any - 83%)
+
+8:expr-by)                  "kube-apiserver-normal" is an attribute of "app saw event anomaly cluster +rareGuGuerertitiapivnamespaceskubesystempodscalicopnpnoldldiei repeated event location kube-system istio measurements cause kube-apiserver-normal" (icontext: any - 89%)
+
+5:expr-by)            "+rare_lines_of_aggregate_log_messages_per_time_interval_sample" is an attribute of "anomaly cluster +rareDlCpoihenerecskicpshotefiecnkatcpgieognirgneotgian" (icontext: log analysis - 82%)
+
+6:expr-by)              "anomaly cluster +rareDlCpoihenerecskicpshotefiecnkatcpgieognirgneotgian" is an attribute of "event anomaly cluster +rareDlCpoihenerecskicpshotefiecnkatcpgieognirgneotgian" (icontext: any - 105%)
+
+7:expr-by)                "event anomaly cluster +rareDlCpoihenerecskicpshotefiecnkatcpgieognirgneotgian" is an attribute of "app saw event anomaly cluster +rareDlCpoihenerecskicpshotefiecnkatcpgieognirgneotgian on Night Monday Day20 November Yr2017 at Hr01 Min00_05 Q1 on GMT_Night GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr00 GMT_Min00_05 GMT_Q1 location istio-system istio measurements cause prometheus-reviews-v3-delay" (icontext: any - 83%)
+
+7:expr-by)                "event anomaly cluster +rareDlCpoihenerecskicpshotefiecnkatcpgieognirgneotgian" is an attribute of "app saw event anomaly cluster +rareDlCpoihenerecskicpshotefiecnkatcpgieognirgneotgian on Night Monday Day20 November Yr2017 at Hr01 Min00_05 Q1 on GMT_Night GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr00 GMT_Min00_05 GMT_Q1 location istio-system istio measurements cause prometheus-reviews-v1-abort" (icontext: any - 83%)
+
+7:expr-by)                "event anomaly cluster +rareDlCpoihenerecskicpshotefiecnkatcpgieognirgneotgian" is an attribute of "app saw event anomaly cluster +rareDlCpoihenerecskicpshotefiecnkatcpgieognirgneotgian on Night Monday Day20 November Yr2017 at Hr01 Min00_05 Q1 on GMT_Night GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr00 GMT_Min00_05 GMT_Q1 location istio-system istio measurements cause prometheus-ratings-v1-abort" (icontext: any - 83%)
+
+7:expr-by)                "event anomaly cluster +rareDlCpoihenerecskicpshotefiecnkatcpgieognirgneotgian" is an attribute of "app saw event anomaly cluster +rareDlCpoihenerecskicpshotefiecnkatcpgieognirgneotgian on Night Monday Day20 November Yr2017 at Hr01 Min00_05 Q1 on GMT_Night GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr00 GMT_Min00_05 GMT_Q1 location istio-system istio measurements cause prometheus-reviews-v2-abort" (icontext: any - 83%)
+
+7:expr-by)                "event anomaly cluster +rareDlCpoihenerecskicpshotefiecnkatcpgieognirgneotgian" is an attribute of "app saw event anomaly cluster +rareDlCpoihenerecskicpshotefiecnkatcpgieognirgneotgian on Night Monday Day20 November Yr2017 at Hr01 Min00_05 Q1 on GMT_Night GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr00 GMT_Min00_05 GMT_Q1 location istio-system istio measurements cause prometheus-ratings-reviews-v2-abort" (icontext: any - 83%)
+
+7:expr-by)                "event anomaly cluster +rareDlCpoihenerecskicpshotefiecnkatcpgieognirgneotgian" is an attribute of "app saw event anomaly cluster +rareDlCpoihenerecskicpshotefiecnkatcpgieognirgneotgian on Night Monday Day20 November Yr2017 at Hr01 Min00_05 Q1 on GMT_Night GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr00 GMT_Min00_05 GMT_Q1 location istio-system istio measurements cause prometheus-reviews-v3-abort" (icontext: any - 83%)
+
+7:expr-by)                "event anomaly cluster +rareDlCpoihenerecskicpshotefiecnkatcpgieognirgneotgian" is an attribute of "app saw event anomaly cluster +rareDlCpoihenerecskicpshotefiecnkatcpgieognirgneotgian on Night Monday Day20 November Yr2017 at Hr01 Min00_05 Q1 on GMT_Night GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr00 GMT_Min00_05 GMT_Q1 location istio-system istio measurements cause prometheus-details-v1-abort" (icontext: any - 83%)
+
+7:expr-by)                "event anomaly cluster +rareDlCpoihenerecskicpshotefiecnkatcpgieognirgneotgian" is an attribute of "app saw event anomaly cluster +rareDlCpoihenerecskicpshotefiecnkatcpgieognirgneotgian on Night Monday Day20 November Yr2017 at Hr01 Min00_05 Q1 on GMT_Night GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr00 GMT_Min00_05 GMT_Q1 location istio-system istio measurements cause prometheus-details-v1-abort-50-percent" (icontext: any - 83%)
+
+7:expr-by)                "event anomaly cluster +rareDlCpoihenerecskicpshotefiecnkatcpgieognirgneotgian" is an attribute of "app saw event anomaly cluster +rareDlCpoihenerecskicpshotefiecnkatcpgieognirgneotgian on Night Monday Day20 November Yr2017 at Hr01 Min00_05 Q1 on GMT_Night GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr00 GMT_Min00_05 GMT_Q1 location istio-system istio measurements cause prometheus-details-v1-delay-50-percent" (icontext: any - 83%)
+
+7:expr-by)                "event anomaly cluster +rareDlCpoihenerecskicpshotefiecnkatcpgieognirgneotgian" is an attribute of "app saw event anomaly cluster +rareDlCpoihenerecskicpshotefiecnkatcpgieognirgneotgian on Night Monday Day20 November Yr2017 at Hr01 Min00_05 Q1 on GMT_Night GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr00 GMT_Min00_05 GMT_Q1 location istio-system istio measurements cause prometheus-reviews-v1-delay" (icontext: any - 83%)
+
+7:expr-by)                "event anomaly cluster +rareDlCpoihenerecskicpshotefiecnkatcpgieognirgneotgian" is an attribute of "app saw event anomaly cluster +rareDlCpoihenerecskicpshotefiecnkatcpgieognirgneotgian on Night Monday Day20 November Yr2017 at Hr01 Min00_05 Q1 on GMT_Night GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr00 GMT_Min00_05 GMT_Q1 location istio-system istio measurements cause prometheus-details-v1-delay-abort" (icontext: any - 83%)
+
+7:expr-by)                "event anomaly cluster +rareDlCpoihenerecskicpshotefiecnkatcpgieognirgneotgian" is an attribute of "app saw event anomaly cluster +rareDlCpoihenerecskicpshotefiecnkatcpgieognirgneotgian on Night Monday Day20 November Yr2017 at Hr01 Min00_05 Q1 on GMT_Night GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr00 GMT_Min00_05 GMT_Q1 location istio-system istio measurements cause prometheus-reviews-v2-delay" (icontext: any - 83%)
+
+                          ++ more similar....
+7:apprxnr)                "event anomaly cluster +rareDlCpoihenerecskicpshotefiecnkatcpgieognirgneotgian" may be related to "prometheus-reviews-v2-delay" (icontext: log anomaly - 80%)
+
+8:expr-by)                  "prometheus-reviews-v2-delay" is an attribute of "app saw event anomaly cluster +rareagregatemesages on Night Monday Day20 November Yr2017 at Hr01 Min00_05 Q1 on GMT_Night GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr00 GMT_Min00_05 GMT_Q1 location istio-system istio measurements cause prometheus-reviews-v2-delay" (icontext: any - 83%)
+
+7:apprxnr)                "event anomaly cluster +rareDlCpoihenerecskicpshotefiecnkatcpgieognirgneotgian" may be related to "prometheus-reviews-v2-abort" (icontext: log anomaly - 80%)
+
+8:expr-by)                  "prometheus-reviews-v2-abort" is an attribute of "app saw event anomaly cluster +rareagregatemesages on Night Monday Day20 November Yr2017 at Hr01 Min00_05 Q1 on GMT_Night GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr00 GMT_Min00_05 GMT_Q1 location istio-system istio measurements cause prometheus-reviews-v2-abort" (icontext: any - 83%)
+
+7:apprxnr)                "event anomaly cluster +rareDlCpoihenerecskicpshotefiecnkatcpgieognirgneotgian" may be related to "prometheus-ratings-v1-delay" (icontext: log anomaly - 80%)
+
+8:expr-by)                  "prometheus-ratings-v1-delay" is an attribute of "app saw event anomaly cluster +rareDlCpoihenerecskicpshotefiecnkatcpgieognirgneotgian on Night Monday Day20 November Yr2017 at Hr01 Min00_05 Q1 on GMT_Night GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr00 GMT_Min00_05 GMT_Q1 location istio-system istio measurements cause prometheus-ratings-v1-delay" (icontext: any - 83%)
+
+7:apprxnr)                "event anomaly cluster +rareDlCpoihenerecskicpshotefiecnkatcpgieognirgneotgian" may be related to "prometheus-details-v1-delay-50-percent" (icontext: log anomaly - 80%)
+
+8:expr-by)                  "prometheus-details-v1-delay-50-percent" is an attribute of "app saw event anomaly cluster +rareagregatemesages on Night Monday Day20 November Yr2017 at Hr01 Min00_05 Q1 on GMT_Night GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr00 GMT_Min00_05 GMT_Q1 location istio-system istio measurements cause prometheus-details-v1-delay-50-percent" (icontext: any - 83%)
+
+7:apprxnr)                "event anomaly cluster +rareDlCpoihenerecskicpshotefiecnkatcpgieognirgneotgian" may be related to "prometheus-reviews-v1-abort" (icontext: log anomaly - 80%)
+
+8:expr-by)                  "prometheus-reviews-v1-abort" is an attribute of "app saw event anomaly cluster +rareagregatemesages on Night Monday Day20 November Yr2017 at Hr01 Min00_05 Q1 on GMT_Night GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr00 GMT_Min00_05 GMT_Q1 location istio-system istio measurements cause prometheus-reviews-v1-abort" (icontext: any - 83%)
+
+7:apprxnr)                "event anomaly cluster +rareDlCpoihenerecskicpshotefiecnkatcpgieognirgneotgian" may be related to "prometheus-reviews-v1-delay" (icontext: log anomaly - 80%)
+
+8:expr-by)                  "prometheus-reviews-v1-delay" is an attribute of "app saw event anomaly cluster +rareagregatemesages on Night Monday Day20 November Yr2017 at Hr01 Min00_05 Q1 on GMT_Night GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr00 GMT_Min00_05 GMT_Q1 location istio-system istio measurements cause prometheus-reviews-v1-delay" (icontext: any - 83%)
+
+7:apprxnr)                "event anomaly cluster +rareDlCpoihenerecskicpshotefiecnkatcpgieognirgneotgian" may be related to "prometheus-details-v1-delay-abort" (icontext: log anomaly - 80%)
+
+8:expr-by)                  "prometheus-details-v1-delay-abort" is an attribute of "app saw event anomaly cluster +rareagregatemesages on Night Monday Day20 November Yr2017 at Hr01 Min00_05 Q1 on GMT_Night GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr00 GMT_Min00_05 GMT_Q1 location istio-system istio measurements cause prometheus-details-v1-delay-abort" (icontext: any - 83%)
+
+7:apprxnr)                "event anomaly cluster +rareDlCpoihenerecskicpshotefiecnkatcpgieognirgneotgian" may be related to "prometheus-normal" (icontext: log anomaly - 80%)
+
+8:expr-by)                  "prometheus-normal" is an attribute of "app saw event anomaly cluster +rareagregatemesages on Night Monday Day20 November Yr2017 at Hr01 Min00_05 Q1 on GMT_Night GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr00 GMT_Min00_05 GMT_Q1 location istio-system istio measurements cause prometheus-normal" (icontext: any - 83%)
+
+8:expr-by)                  "prometheus-normal" is an attribute of "app saw event anomaly cluster +rareDlCpoihenerecskicpshotefiecnkatcpgieognirgneotgian on Night Monday Day20 November Yr2017 at Hr01 Min00_05 Q1 on GMT_Night GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr00 GMT_Min00_05 GMT_Q1 location istio-system istio measurements cause prometheus-normal" (icontext: any - 83%)
+
+7:apprxnr)                "event anomaly cluster +rareDlCpoihenerecskicpshotefiecnkatcpgieognirgneotgian" may be related to "prometheus-details-v1-abort-50-percent" (icontext: log anomaly - 80%)
+
+8:expr-by)                  "prometheus-details-v1-abort-50-percent" is an attribute of "app saw event anomaly cluster +rareagregatemesages on Night Monday Day20 November Yr2017 at Hr01 Min00_05 Q1 on GMT_Night GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr00 GMT_Min00_05 GMT_Q1 location istio-system istio measurements cause prometheus-details-v1-abort-50-percent" (icontext: any - 83%)
+
+7:apprxnr)                "event anomaly cluster +rareDlCpoihenerecskicpshotefiecnkatcpgieognirgneotgian" may be related to "prometheus-reviews-v3-abort" (icontext: log anomaly - 80%)
+
+7:apprxnr)                "event anomaly cluster +rareDlCpoihenerecskicpshotefiecnkatcpgieognirgneotgian" may be related to "prometheus-ratings-v1-abort" (icontext: log anomaly - 80%)
+
+8:expr-by)                  "prometheus-ratings-v1-abort" is an attribute of "app saw event anomaly cluster +rareagregatemesages on Night Monday Day20 November Yr2017 at Hr01 Min00_05 Q1 on GMT_Night GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr00 GMT_Min00_05 GMT_Q1 location istio-system istio measurements cause prometheus-ratings-v1-abort" (icontext: any - 83%)
+
+7:apprxnr)                "event anomaly cluster +rareDlCpoihenerecskicpshotefiecnkatcpgieognirgneotgian" may be related to "prometheus-reviews-v3-delay" (icontext: log anomaly - 80%)
+
+8:expr-by)                  "prometheus-reviews-v3-delay" is an attribute of "app saw event anomaly cluster +rareagregatemesages on Night Monday Day20 November Yr2017 at Hr01 Min00_05 Q1 on GMT_Night GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr00 GMT_Min00_05 GMT_Q1 location istio-system istio measurements cause prometheus-reviews-v3-delay" (icontext: any - 83%)
+
+                          ++ more similar....
+5:expr-by)            "+rare_lines_of_aggregate_log_messages_per_time_interval_sample" is an attribute of "anomaly cluster +rareilGpupiEyrvnTtiehasopdrnyrdoeterfvrhveieoisaeqnesgwuwgsers" (icontext: log analysis - 82%)
+
+6:expr-by)              "anomaly cluster +rareilGpupiEyrvnTtiehasopdrnyrdoeterfvrhveieoisaeqnesgwuwgsers" is an attribute of "event anomaly cluster +rareilGpupiEyrvnTtiehasopdrnyrdoeterfvrhveieoisaeqnesgwuwgsers" (icontext: any - 105%)
+
+7:expr-by)                "event anomaly cluster +rareilGpupiEyrvnTtiehasopdrnyrdoeterfvrhveieoisaeqnesgwuwgsers" is an attribute of "app saw event anomaly cluster +rareilGpupiEyrvnTtiehasopdrnyrdoeterfvrhveieoisaeqnesgwuwgsers on Night Monday Day20 November Yr2017 at Hr01 Min00_05 Q1 on GMT_Night GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr00 GMT_Min00_05 GMT_Q1 location book-info istio measurements cause reviews-v3-reviews-v3-delay" (icontext: any - 83%)
+
+7:apprxnr)                "event anomaly cluster +rareilGpupiEyrvnTtiehasopdrnyrdoeterfvrhveieoisaeqnesgwuwgsers" may be related to "reviews-v3-reviews-v3-delay" (icontext: log anomaly - 80%)
+
+5:expr-by)            "+rare_lines_of_aggregate_log_messages_per_time_interval_sample" is an attribute of "logging anomaly +rareiulaGupuprigEryrvingTitierhaseopdgdxnydeoaetrtfterheaeareo" (icontext: log analysis - 82%)
+
+6:expr-by)              "logging anomaly +rareiulaGupuprigEryrvingTitierhaseopdgdxnydeoaetrtfterheaeareo" is an attribute of "log anomaly logging anomaly +rareiulaGupuprigEryrvingTitierhaseopdgdxnydeoaetrtfterheaeareo occurred on Night Monday Day20 November Yr2017 at Hr01 Min00_05 Q1 on GMT_Night GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr00 GMT_Min00_05 GMT_Q1" (icontext: any - 84%)
+
+5:expr-by)            "+rare_lines_of_aggregate_log_messages_per_time_interval_sample" is an attribute of "anomaly cluster +rareCDlCpoihemnerpecslskiecpsthotefiedcnkatcmpgieaognirgneotgi" (icontext: log analysis - 82%)
+
+6:expr-by)              "anomaly cluster +rareCDlCpoihemnerpecslskiecpsthotefiedcnkatcmpgieaognirgneotgi" is an attribute of "event anomaly cluster +rareCDlCpoihemnerpecslskiecpsthotefiedcnkatcmpgieaognirgneotgi" (icontext: any - 105%)
+
+7:expr-by)                "event anomaly cluster +rareCDlCpoihemnerpecslskiecpsthotefiedcnkatcmpgieaognirgneotgi" is an attribute of "app saw event anomaly cluster +rareCDlCpoihemnerpecslskiecpsthotefiedcnkatcmpgieaognirgneotgi on Night Monday Day20 November Yr2017 at Hr01 Min00_05 Q1 on GMT_Night GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr00 GMT_Min00_05 GMT_Q1 location istio-system istio measurements cause prometheus-details-v1-delay" (icontext: any - 83%)
+
+7:apprxnr)                "event anomaly cluster +rareCDlCpoihemnerpecslskiecpsthotefiedcnkatcmpgieaognirgneotgi" may be related to "prometheus-details-v1-delay" (icontext: log anomaly - 80%)
+
+8:expr-by)                  "prometheus-details-v1-delay" is an attribute of "app saw event anomaly cluster +rareagregatemesages on Night Monday Day20 November Yr2017 at Hr01 Min00_05 Q1 on GMT_Night GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr00 GMT_Min00_05 GMT_Q1 location istio-system istio measurements cause prometheus-details-v1-delay" (icontext: any - 83%)
+
+5:expr-by)            "+rare_lines_of_aggregate_log_messages_per_time_interval_sample" is an attribute of "anomaly cluster +rareuluririniesvaoarfrlaligibgbretgtcacdtdemelemombgbermrewswa" (icontext: log analysis - 82%)
+
+6:expr-by)              "anomaly cluster +rareuluririniesvaoarfrlaligibgbretgtcacdtdemelemombgbermrewswa" is an attribute of "event anomaly cluster +rareuluririniesvaoarfrlaligibgbretgtcacdtdemelemombgbermrewswa" (icontext: any - 105%)
+
+7:expr-by)                "event anomaly cluster +rareuluririniesvaoarfrlaligibgbretgtcacdtdemelemombgbermrewswa" is an attribute of "app saw event anomaly cluster +rareuluririniesvaoarfrlaligibgbretgtcacdtdemelemombgbermrewswa on Evening Monday Day20 November Yr2017 at Hr19 Min00_05 Q1 on GMT_Evening GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr18 GMT_Min00_05 GMT_Q1 location kube-system istio measurements cause etcd-ratio-ratings-reviews-v2-delay" (icontext: any - 83%)
+
+5:expr-by)            "+rare_lines_of_aggregate_log_messages_per_time_interval_sample" is an attribute of "logging anomaly +rareulaMrigeingserseargcoaefteinanvgmtogeyrsresvmgaiaglxtesr" (icontext: log analysis - 82%)
+
+6:expr-by)              "logging anomaly +rareulaMrigeingserseargcoaefteinanvgmtogeyrsresvmgaiaglxtesr" is an attribute of "log anomaly logging anomaly +rareulaMrigeingserseargcoaefteinanvgmtogeyrsresvmgaiaglxtesr occurred on Afternoon Saturday Day20 November Yr9999 at Hr16 Min50_55 Q4 on GMT_Afternoon GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr15 GMT_Min50_55 GMT_Q4" (icontext: any - 84%)
+
+6:expr-by)              "logging anomaly +rareulaMrigeingserseargcoaefteinanvgmtogeyrsresvmgaiaglxtesr" is an attribute of "log anomaly logging anomaly +rareulaMrigeingserseargcoaefteinanvgmtogeyrsresvmgaiaglxtesr occurred on Evening Saturday Day20 November Yr9999 at Hr19 Min00_05 Q1 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr18 GMT_Min00_05 GMT_Q1" (icontext: any - 84%)
+
+5:expr-by)            "+rare_lines_of_aggregate_log_messages_per_time_interval_sample" is an attribute of "logging anomaly +rarelauigrngiersegvoaftrealgmigebrsesegatagctedes" (icontext: log analysis - 82%)
+
+6:expr-by)              "logging anomaly +rarelauigrngiersegvoaftrealgmigebrsesegatagctedes" is an attribute of "log anomaly logging anomaly +rarelauigrngiersegvoaftrealgmigebrsesegatagctedes occurred on Evening Monday Day20 November Yr2017 at Hr20 Min05_10 Q1 on GMT_Evening GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr19 GMT_Min05_10 GMT_Q1" (icontext: any - 84%)
+
+5:expr-by)            "+rare_lines_of_aggregate_log_messages_per_time_interval_sample" is an attribute of "logging anomaly +rarelaigngersegoafteagmgersesgagtes" (icontext: log analysis - 83%)
+
+6:expr-by)              "logging anomaly +rarelaigngersegoafteagmgersesgagtes" is an attribute of "log anomaly logging anomaly +rarelaigngersegoafteagmgersesgagtes occurred on Evening Monday Day20 November Yr2017 at Hr20 Min35_40 Q3 on GMT_Evening GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr19 GMT_Min35_40 GMT_Q3" (icontext: any - 84%)
+
+6:expr-by)              "logging anomaly +rarelaigngersegoafteagmgersesgagtes" is an attribute of "log anomaly logging anomaly +rarelaigngersegoafteagmgersesgagtes occurred on Afternoon Saturday Day20 November Yr9999 at Hr16 Min30_35 Q3 on GMT_Afternoon GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr15 GMT_Min30_35 GMT_Q3" (icontext: any - 84%)
+
+6:expr-by)              "logging anomaly +rarelaigngersegoafteagmgersesgagtes" is an attribute of "log anomaly logging anomaly +rarelaigngersegoafteagmgersesgagtes occurred on Evening Monday Day20 November Yr2017 at Hr19 Min15_20 Q2 on GMT_Evening GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr18 GMT_Min15_20 GMT_Q2" (icontext: any - 84%)
+
+6:expr-by)              "logging anomaly +rarelaigngersegoafteagmgersesgagtes" is an attribute of "log anomaly logging anomaly +rarelaigngersegoafteagmgersesgagtes occurred on Evening Monday Day20 November Yr2017 at Hr18 Min10_15 Q1 on GMT_Afternoon GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr17 GMT_Min10_15 GMT_Q1" (icontext: any - 84%)
+
+6:expr-by)              "logging anomaly +rarelaigngersegoafteagmgersesgagtes" is an attribute of "log anomaly logging anomaly +rarelaigngersegoafteagmgersesgagtes occurred on Evening Monday Day20 November Yr2017 at Hr20 Min20_25 Q2 on GMT_Evening GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr19 GMT_Min20_25 GMT_Q2" (icontext: any - 84%)
+
+6:expr-by)              "logging anomaly +rarelaigngersegoafteagmgersesgagtes" is an attribute of "log anomaly logging anomaly +rarelaigngersegoafteagmgersesgagtes occurred on Afternoon Monday Day20 November Yr2017 at Hr17 Min35_40 Q3 on GMT_Afternoon GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr16 GMT_Min35_40 GMT_Q3" (icontext: any - 84%)
+
+6:expr-by)              "logging anomaly +rarelaigngersegoafteagmgersesgagtes" is an attribute of "log anomaly logging anomaly +rarelaigngersegoafteagmgersesgagtes occurred on Evening Monday Day20 November Yr2017 at Hr18 Min55_00 Q4 on GMT_Afternoon GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr17 GMT_Min55_00 GMT_Q4" (icontext: any - 84%)
+
+6:expr-by)              "logging anomaly +rarelaigngersegoafteagmgersesgagtes" is an attribute of "log anomaly logging anomaly +rarelaigngersegoafteagmgersesgagtes occurred on Afternoon Monday Day20 November Yr2017 at Hr17 Min50_55 Q4 on GMT_Afternoon GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr16 GMT_Min50_55 GMT_Q4" (icontext: any - 84%)
+
+6:expr-by)              "logging anomaly +rarelaigngersegoafteagmgersesgagtes" is an attribute of "log anomaly logging anomaly +rarelaigngersegoafteagmgersesgagtes occurred on Evening Monday Day20 November Yr2017 at Hr18 Min25_30 Q2 on GMT_Afternoon GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr17 GMT_Min25_30 GMT_Q2" (icontext: any - 84%)
+
+6:expr-by)              "logging anomaly +rarelaigngersegoafteagmgersesgagtes" is an attribute of "log anomaly logging anomaly +rarelaigngersegoafteagmgersesgagtes occurred on Evening Monday Day20 November Yr2017 at Hr19 Min45_50 Q4 on GMT_Evening GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr18 GMT_Min45_50 GMT_Q4" (icontext: any - 84%)
+
+                        ++ more similar....
+5:expr-by)            "+rare_lines_of_aggregate_log_messages_per_time_interval_sample" is an attribute of "anomaly cluster +rareiulGpupriEyrvinTtiehasopdnydeoetrtftrheaeosiaiqnslglusgser" (icontext: log analysis - 82%)
+
+6:expr-by)              "anomaly cluster +rareiulGpupriEyrvinTtiehasopdnydeoetrtftrheaeosiaiqnslglusgser" is an attribute of "event anomaly cluster +rareiulGpupriEyrvinTtiehasopdnydeoetrtftrheaeosiaiqnslglusgser" (icontext: any - 105%)
+
+7:expr-by)                "event anomaly cluster +rareiulGpupriEyrvinTtiehasopdnydeoetrtftrheaeosiaiqnslglusgser" is an attribute of "app saw event anomaly cluster +rareiulGpupriEyrvinTtiehasopdnydeoetrtftrheaeosiaiqnslglusgser on Night Monday Day20 November Yr2017 at Hr01 Min00_05 Q1 on GMT_Night GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr00 GMT_Min00_05 GMT_Q1 location book-info istio measurements cause details-reviews-v3-abort" (icontext: any - 83%)
+
+7:expr-by)                "event anomaly cluster +rareiulGpupriEyrvinTtiehasopdnydeoetrtftrheaeosiaiqnslglusgser" is an attribute of "app saw event anomaly cluster +rareiulGpupriEyrvinTtiehasopdnydeoetrtftrheaeosiaiqnslglusgser on Night Monday Day20 November Yr2017 at Hr01 Min00_05 Q1 on GMT_Night GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr00 GMT_Min00_05 GMT_Q1 location book-info istio measurements cause details-reviews-v2-abort" (icontext: any - 83%)
+
+7:expr-by)                "event anomaly cluster +rareiulGpupriEyrvinTtiehasopdnydeoetrtftrheaeosiaiqnslglusgser" is an attribute of "app saw event anomaly cluster +rareiulGpupriEyrvinTtiehasopdnydeoetrtftrheaeosiaiqnslglusgser on Night Monday Day20 November Yr2017 at Hr01 Min00_05 Q1 on GMT_Night GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr00 GMT_Min00_05 GMT_Q1 location book-info istio measurements cause details-ratings-v1-delay" (icontext: any - 83%)
+
+7:expr-by)                "event anomaly cluster +rareiulGpupriEyrvinTtiehasopdnydeoetrtftrheaeosiaiqnslglusgser" is an attribute of "app saw event anomaly cluster +rareiulGpupriEyrvinTtiehasopdnydeoetrtftrheaeosiaiqnslglusgser on Night Monday Day20 November Yr2017 at Hr01 Min00_05 Q1 on GMT_Night GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr00 GMT_Min00_05 GMT_Q1 location book-info istio measurements cause details-reviews-v3-delay" (icontext: any - 83%)
+
+7:expr-by)                "event anomaly cluster +rareiulGpupriEyrvinTtiehasopdnydeoetrtftrheaeosiaiqnslglusgser" is an attribute of "app saw event anomaly cluster +rareiulGpupriEyrvinTtiehasopdnydeoetrtftrheaeosiaiqnslglusgser on Night Monday Day20 November Yr2017 at Hr01 Min00_05 Q1 on GMT_Night GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr00 GMT_Min00_05 GMT_Q1 location book-info istio measurements cause details-details-v1-delay-50-percent" (icontext: any - 83%)
+
+7:expr-by)                "event anomaly cluster +rareiulGpupriEyrvinTtiehasopdnydeoetrtftrheaeosiaiqnslglusgser" is an attribute of "app saw event anomaly cluster +rareiulGpupriEyrvinTtiehasopdnydeoetrtftrheaeosiaiqnslglusgser on Night Monday Day20 November Yr2017 at Hr01 Min00_05 Q1 on GMT_Night GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr00 GMT_Min00_05 GMT_Q1 location book-info istio measurements cause details-reviews-v1-delay" (icontext: any - 83%)
+
+7:expr-by)                "event anomaly cluster +rareiulGpupriEyrvinTtiehasopdnydeoetrtftrheaeosiaiqnslglusgser" is an attribute of "app saw event anomaly cluster +rareiulGpupriEyrvinTtiehasopdnydeoetrtftrheaeosiaiqnslglusgser on Night Monday Day20 November Yr2017 at Hr01 Min00_05 Q1 on GMT_Night GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr00 GMT_Min00_05 GMT_Q1 location book-info istio measurements cause details-ratings-reviews-v2-abort" (icontext: any - 83%)
+
+7:apprxnr)                "event anomaly cluster +rareiulGpupriEyrvinTtiehasopdnydeoetrtftrheaeosiaiqnslglusgser" may be related to "details-details-v1-delay-50-percent" (icontext: log anomaly - 80%)
+
+7:apprxnr)                "event anomaly cluster +rareiulGpupriEyrvinTtiehasopdnydeoetrtftrheaeosiaiqnslglusgser" may be related to "details-reviews-v1-delay" (icontext: log anomaly - 80%)
+
+7:apprxnr)                "event anomaly cluster +rareiulGpupriEyrvinTtiehasopdnydeoetrtftrheaeosiaiqnslglusgser" may be related to "details-reviews-v3-delay" (icontext: log anomaly - 80%)
+
+7:apprxnr)                "event anomaly cluster +rareiulGpupriEyrvinTtiehasopdnydeoetrtftrheaeosiaiqnslglusgser" may be related to "details-reviews-v2-abort" (icontext: log anomaly - 80%)
+
+7:apprxnr)                "event anomaly cluster +rareiulGpupriEyrvinTtiehasopdnydeoetrtftrheaeosiaiqnslglusgser" may be related to "details-ratings-v1-delay" (icontext: log anomaly - 80%)
+
+7:apprxnr)                "event anomaly cluster +rareiulGpupriEyrvinTtiehasopdnydeoetrtftrheaeosiaiqnslglusgser" may be related to "details-ratings-reviews-v2-abort" (icontext: log anomaly - 80%)
+
+7:apprxnr)                "event anomaly cluster +rareiulGpupriEyrvinTtiehasopdnydeoetrtftrheaeosiaiqnslglusgser" may be related to "details-ratings-reviews-v2-delay" (icontext: log anomaly - 80%)
+
+7:apprxnr)                "event anomaly cluster +rareiulGpupriEyrvinTtiehasopdnydeoetrtftrheaeosiaiqnslglusgser" may be related to "details-reviews-v3-abort" (icontext: log anomaly - 80%)
+
+5:expr-by)            "+rare_lines_of_aggregate_log_messages_per_time_interval_sample" is an attribute of "logging anomaly +rareCDlaCpoighemngerpercslsekiecgpsthoaoteftiedcenkatcmpgmieao" (icontext: log analysis - 82%)
+
+6:expr-by)              "logging anomaly +rareCDlaCpoighemngerpercslsekiecgpsthoaoteftiedcenkatcmpgmieao" is an attribute of "log anomaly logging anomaly +rareCDlaCpoighemngerpercslsekiecgpsthoaoteftiedcenkatcmpgmieao occurred on Night Monday Day20 November Yr2017 at Hr01 Min00_05 Q1 on GMT_Night GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr00 GMT_Min00_05 GMT_Q1" (icontext: any - 84%)
+
+                      ++ more similar....
+3:hasprop)        "anomaly cluster +rareulrinesxtoefrnaglgrieogaktsecloigenmtesgsoagteosolpsercatc" expresses an attribute "+rare_lines_of_aggregate_log_messages_per_time_interval_sample" (icontext: log analysis - 86%)
+
+4:cntaind)          "+rare_lines_of_aggregate_log_messages_per_time_interval_sample" belongs to or is part of "+rarelinesofagregatelogmesagespertimeintervalsample" (icontext: system monitoring measurement - 89%)
+
+5:expr-by)            "+rarelinesofagregatelogmesagespertimeintervalsample" is an attribute of "anomaly cluster +rarelinesofagregatelogmesagespertimeintervalsample" (icontext: any - 113%)
+
+6:expr-by)              "anomaly cluster +rarelinesofagregatelogmesagespertimeintervalsample" is an attribute of "event anomaly cluster +rarelinesofagregatelogmesagespertimeintervalsample" (icontext: any - 105%)
+
+7:expr-by)                "event anomaly cluster +rarelinesofagregatelogmesagespertimeintervalsample" is an attribute of "app saw event anomaly cluster +rarelinesofagregatelogmesagespertimeintervalsample on Evening Monday Day20 November Yr2017 at Hr19 Min45_50 Q4 on GMT_Evening GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr18 GMT_Min45_50 GMT_Q4 location kube-system istio measurements cause etcd-ratio-reviews-v2-abort" (icontext: any - 83%)
+
+7:expr-by)                "event anomaly cluster +rarelinesofagregatelogmesagespertimeintervalsample" is an attribute of "app saw event anomaly cluster +rarelinesofagregatelogmesagespertimeintervalsample on Evening Monday Day20 November Yr2017 at Hr18 Min55_00 Q4 on GMT_Afternoon GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr17 GMT_Min55_00 GMT_Q4 location kube-system istio measurements cause calico-node-1-ratings-reviews-v2-delay" (icontext: any - 83%)
+
+7:expr-by)                "event anomaly cluster +rarelinesofagregatelogmesagespertimeintervalsample" is an attribute of "app saw event anomaly cluster +rarelinesofagregatelogmesagespertimeintervalsample on Evening Monday Day20 November Yr2017 at Hr20 Min15_20 Q2 on GMT_Evening GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr19 GMT_Min15_20 GMT_Q2 location kube-system istio measurements cause calico-node-1-reviews-v3-abort" (icontext: any - 83%)
+
+7:expr-by)                "event anomaly cluster +rarelinesofagregatelogmesagespertimeintervalsample" is an attribute of "app saw event anomaly cluster +rarelinesofagregatelogmesagespertimeintervalsample on Afternoon Saturday Day20 November Yr9999 at Hr17 Min50_55 Q4 on GMT_Afternoon GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr16 GMT_Min50_55 GMT_Q4 location istio-system istio measurements cause istio-pilot-details-v1-delay" (icontext: any - 83%)
+
+7:expr-by)                "event anomaly cluster +rarelinesofagregatelogmesagespertimeintervalsample" is an attribute of "app saw event anomaly cluster +rarelinesofagregatelogmesagespertimeintervalsample on Evening Monday Day20 November Yr2017 at Hr19 Min00_05 Q1 on GMT_Evening GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr18 GMT_Min00_05 GMT_Q1 location kube-system istio measurements cause calico-node-2-ratings-reviews-v2-delay" (icontext: any - 83%)
+
+7:expr-by)                "event anomaly cluster +rarelinesofagregatelogmesagespertimeintervalsample" is an attribute of "app saw event anomaly cluster +rarelinesofagregatelogmesagespertimeintervalsample on Evening Saturday Day20 November Yr9999 at Hr19 Min30_35 Q3 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr18 GMT_Min30_35 GMT_Q3 location istio-system istio measurements cause istio-pilot-reviews-v1-delay" (icontext: any - 83%)
+
+7:expr-by)                "event anomaly cluster +rarelinesofagregatelogmesagespertimeintervalsample" is an attribute of "app saw event anomaly cluster +rarelinesofagregatelogmesagespertimeintervalsample on Afternoon Monday Day20 November Yr2017 at Hr17 Min15_20 Q2 on GMT_Afternoon GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr16 GMT_Min15_20 GMT_Q2 location kube-system istio measurements cause calico-node-1-details-v1-delay-abort" (icontext: any - 83%)
+
+7:expr-by)                "event anomaly cluster +rarelinesofagregatelogmesagespertimeintervalsample" is an attribute of "app saw event anomaly cluster +rarelinesofagregatelogmesagespertimeintervalsample on Evening Saturday Day20 November Yr9999 at Hr20 Min35_40 Q3 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr19 GMT_Min35_40 GMT_Q3 location istio-system istio measurements cause istio-pilot-reviews-v3-delay" (icontext: any - 83%)
+
+7:expr-by)                "event anomaly cluster +rarelinesofagregatelogmesagespertimeintervalsample" is an attribute of "app saw event anomaly cluster +rarelinesofagregatelogmesagespertimeintervalsample on Afternoon Monday Day20 November Yr2017 at Hr17 Min50_55 Q4 on GMT_Afternoon GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr16 GMT_Min50_55 GMT_Q4 location kube-system istio measurements cause etcd-ratio-details-v1-delay" (icontext: any - 83%)
+
+7:expr-by)                "event anomaly cluster +rarelinesofagregatelogmesagespertimeintervalsample" is an attribute of "app saw event anomaly cluster +rarelinesofagregatelogmesagespertimeintervalsample on Evening Monday Day20 November Yr2017 at Hr19 Min50_55 Q4 on GMT_Evening GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr18 GMT_Min50_55 GMT_Q4 location kube-system istio measurements cause calico-node-4-reviews-v2-abort" (icontext: any - 83%)
+
+7:expr-by)                "event anomaly cluster +rarelinesofagregatelogmesagespertimeintervalsample" is an attribute of "app saw event anomaly cluster +rarelinesofagregatelogmesagespertimeintervalsample on Afternoon Saturday Day20 November Yr9999 at Hr17 Min35_40 Q3 on GMT_Afternoon GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr16 GMT_Min35_40 GMT_Q3 location istio-system istio measurements cause istio-pilot-details-v1-delay-50-percent" (icontext: any - 83%)
+
+                          ++ more similar....
+7:apprxnr)                "event anomaly cluster +rarelinesofagregatelogmesagespertimeintervalsample" may be related to "etcd-ratio-reviews-v1-abort" (icontext: log anomaly - 80%)
+
+7:apprxnr)                "event anomaly cluster +rarelinesofagregatelogmesagespertimeintervalsample" may be related to "calico-node-1-ratings-reviews-v2-delay" (icontext: log anomaly - 80%)
+
+8:expr-by)                  "calico-node-1-ratings-reviews-v2-delay" is an attribute of "app saw event anomaly cluster +rareMresfsraegsehitnitmerv on Evening Monday Day20 November Yr2017 at Hr18 Min55_00 Q4 on GMT_Afternoon GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr17 GMT_Min55_00 GMT_Q4 location kube-system istio measurements cause calico-node-1-ratings-reviews-v2-delay" (icontext: any - 83%)
+
+7:apprxnr)                "event anomaly cluster +rarelinesofagregatelogmesagespertimeintervalsample" may be related to "etcd-ratio-reviews-v3-delay" (icontext: log anomaly - 80%)
+
+8:expr-by)                  "etcd-ratio-reviews-v3-delay" is an attribute of "app saw event anomaly cluster +rarelinesofagregatelogmesagespertimeintervalsample on Evening Monday Day20 November Yr2017 at Hr20 Min35_40 Q3 on GMT_Evening GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr19 GMT_Min35_40 GMT_Q3 location kube-system istio measurements cause etcd-ratio-reviews-v3-delay" (icontext: any - 83%)
+
+7:apprxnr)                "event anomaly cluster +rarelinesofagregatelogmesagespertimeintervalsample" may be related to "etcd-ratio-reviews-v2-abort" (icontext: log anomaly - 80%)
+
+7:apprxnr)                "event anomaly cluster +rarelinesofagregatelogmesagespertimeintervalsample" may be related to "calico-node-1-details-v1-delay-abort" (icontext: log anomaly - 80%)
+
+8:expr-by)                  "calico-node-1-details-v1-delay-abort" is an attribute of "app saw event anomaly cluster +rareMesageintervalogagrEgte on Afternoon Monday Day20 November Yr2017 at Hr17 Min20_25 Q2 on GMT_Afternoon GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr16 GMT_Min20_25 GMT_Q2 location kube-system istio measurements cause calico-node-1-details-v1-delay-abort" (icontext: any - 83%)
+
+7:apprxnr)                "event anomaly cluster +rarelinesofagregatelogmesagespertimeintervalsample" may be related to "calico-node-2-ratings-reviews-v2-delay" (icontext: log anomaly - 80%)
+
+8:expr-by)                  "calico-node-2-ratings-reviews-v2-delay" is an attribute of "app saw event anomaly cluster +rareagregatemesages on Evening Monday Day20 November Yr2017 at Hr19 Min00_05 Q1 on GMT_Evening GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr18 GMT_Min00_05 GMT_Q1 location kube-system istio measurements cause calico-node-2-ratings-reviews-v2-delay" (icontext: any - 83%)
+
+7:apprxnr)                "event anomaly cluster +rarelinesofagregatelogmesagespertimeintervalsample" may be related to "calico-node-4-reviews-v2-abort" (icontext: log anomaly - 80%)
+
+8:expr-by)                  "calico-node-4-reviews-v2-abort" is an attribute of "app saw event anomaly cluster +rareargegfregsahtetimesrs on Evening Monday Day20 November Yr2017 at Hr19 Min50_55 Q4 on GMT_Evening GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr18 GMT_Min50_55 GMT_Q4 location kube-system istio measurements cause calico-node-4-reviews-v2-abort" (icontext: any - 83%)
+
+7:apprxnr)                "event anomaly cluster +rarelinesofagregatelogmesagespertimeintervalsample" may be related to "etcd-ratio-normal" (icontext: log anomaly - 80%)
+
+8:expr-by)                  "etcd-ratio-normal" is an attribute of "app saw event anomaly cluster +rareMesageintervalogagrEgte on Evening Monday Day20 November Yr2017 at Hr23 Min30_35 Q3 on GMT_Evening GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr22 GMT_Min30_35 GMT_Q3 location kube-system istio measurements cause etcd-ratio-normal" (icontext: any - 83%)
+
+8:expr-by)                  "etcd-ratio-normal" is an attribute of "app saw event anomaly cluster +rarelinesofagregatelogmesagespertimeintervalsample on Evening Monday Day20 November Yr2017 at Hr23 Min30_35 Q3 on GMT_Evening GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr22 GMT_Min30_35 GMT_Q3 location kube-system istio measurements cause etcd-ratio-normal" (icontext: any - 83%)
+
+                          ++ more similar....
+4:cntaind)          "+rare_lines_of_aggregate_log_messages_per_time_interval_sample" belongs to or is part of "+rareluirniesvoafralgigbregtactdemleomgbemresnagpesfpedratsinma" (icontext: system monitoring measurement - 87%)
+
+5:expr-by)            "+rareluirniesvoafralgigbregtactdemleomgbemresnagpesfpedratsinma" is an attribute of "anomaly cluster +rareluirniesvoafralgigbregtactdemleomgbemresnagpesfpedratsinma" (icontext: any - 113%)
+
+6:expr-by)              "anomaly cluster +rareluirniesvoafralgigbregtactdemleomgbemresnagpesfpedratsinma" is an attribute of "event anomaly cluster +rareluirniesvoafralgigbregtactdemleomgbemresnagpesfpedratsinma" (icontext: any - 105%)
+
+7:expr-by)                "event anomaly cluster +rareluirniesvoafralgigbregtactdemleomgbemresnagpesfpedratsinma" is an attribute of "app saw event anomaly cluster +rareluirniesvoafralgigbregtactdemleomgbemresnagpesfpedratsinma on Evening Monday Day20 November Yr2017 at Hr20 Min05_10 Q1 on GMT_Evening GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr19 GMT_Min05_10 GMT_Q1 location kube-system istio measurements cause etcd-ratio-reviews-v2-delay" (icontext: any - 83%)
+
+7:apprxnr)                "event anomaly cluster +rareluirniesvoafralgigbregtactdemleomgbemresnagpesfpedratsinma" may be related to "etcd-ratio-reviews-v2-delay" (icontext: log anomaly - 80%)
+
+8:expr-by)                  "etcd-ratio-reviews-v2-delay" is an attribute of "app saw event anomaly cluster +rareMesageintervalogagrEgte on Evening Monday Day20 November Yr2017 at Hr20 Min05_10 Q1 on GMT_Evening GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr19 GMT_Min05_10 GMT_Q1 location kube-system istio measurements cause etcd-ratio-reviews-v2-delay" (icontext: any - 83%)
+
+4:cntaind)          "+rare_lines_of_aggregate_log_messages_per_time_interval_sample" belongs to or is part of "+rareuluririniesvaoarfrlaligibgbretgtcacdtdemelemombgbermrewswa" (icontext: system monitoring measurement - 87%)
+
+5:expr-by)            "+rareuluririniesvaoarfrlaligibgbretgtcacdtdemelemombgbermrewswa" is an attribute of "anomaly cluster +rareuluririniesvaoarfrlaligibgbretgtcacdtdemelemombgbermrewswa" (icontext: any - 113%)
+
+6:expr-by)              "anomaly cluster +rareuluririniesvaoarfrlaligibgbretgtcacdtdemelemombgbermrewswa" is an attribute of "event anomaly cluster +rareuluririniesvaoarfrlaligibgbretgtcacdtdemelemombgbermrewswa" (icontext: any - 105%)
+
+7:expr-by)                "event anomaly cluster +rareuluririniesvaoarfrlaligibgbretgtcacdtdemelemombgbermrewswa" is an attribute of "app saw event anomaly cluster +rareuluririniesvaoarfrlaligibgbretgtcacdtdemelemombgbermrewswa on Evening Monday Day20 November Yr2017 at Hr19 Min00_05 Q1 on GMT_Evening GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr18 GMT_Min00_05 GMT_Q1 location kube-system istio measurements cause etcd-ratio-ratings-reviews-v2-delay" (icontext: any - 83%)
+
+4:cntaind)          "+rare_lines_of_aggregate_log_messages_per_time_interval_sample" belongs to or is part of "+rareuGuGluGuGuGuGrereirererereititnititititesapopifivavgngnara" (icontext: system monitoring measurement - 87%)
+
+5:expr-by)            "+rareuGuGluGuGuGuGrereirererereititnititititesapopifivavgngnara" is an attribute of "anomaly cluster +rareuGuGluGuGuGuGrereirererereititnititititesapopifivavgngnara" (icontext: any - 113%)
+
+6:expr-by)              "anomaly cluster +rareuGuGluGuGuGuGrereirererereititnititititesapopifivavgngnara" is an attribute of "event anomaly cluster +rareuGuGluGuGuGuGrereirererereititnititititesapopifivavgngnara" (icontext: any - 105%)
+
+7:expr-by)                "event anomaly cluster +rareuGuGluGuGuGuGrereirererereititnititititesapopifivavgngnara" is an attribute of "app saw event anomaly cluster +rareuGuGluGuGuGuGrereirererereititnititititesapopifivavgngnara on Evening Saturday Day20 November Yr9999 at Hr23 Min30_35 Q3 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr22 GMT_Min30_35 GMT_Q3 location kube-system istio measurements cause kube-apiserver-normal" (icontext: any - 83%)
+
+7:apprxnr)                "event anomaly cluster +rareuGuGluGuGuGuGrereirererereititnititititesapopifivavgngnara" may be related to "kube-apiserver-normal" (icontext: log anomaly - 80%)
+
+8:expr-by)                  "kube-apiserver-normal" is an attribute of "app saw event anomaly cluster +rareuGuMuGrerereitisitsagapepivnvtnenaramvmeaeslspaceslsokigki on Evening Saturday Day20 November Yr9999 at Hr23 Min35_40 Q3 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr22 GMT_Min35_40 GMT_Q3 location kube-system istio measurements cause kube-apiserver-normal" (icontext: any - 83%)
+
+8:expr-by)                  "kube-apiserver-normal" is an attribute of "app saw event anomaly cluster +rareGuGuerertitiapivnamespaceskubesystempodscalicopnpnoldldiei repeated event location kube-system istio measurements cause kube-apiserver-normal" (icontext: any - 89%)
+
+4:cntaind)          "+rare_lines_of_aggregate_log_messages_per_time_interval_sample" belongs to or is part of "+rareulrineksoifoakgugbrergnaeteslopgkgmecsosnatgreoslpergtairm" (icontext: system monitoring measurement - 87%)
+
+5:expr-by)            "+rareulrineksoifoakgugbrergnaeteslopgkgmecsosnatgreoslpergtairm" is an attribute of "anomaly cluster +rareulrineksoifoakgugbrergnaeteslopgkgmecsosnatgreoslpergtairm" (icontext: any - 113%)
+
+6:expr-by)              "anomaly cluster +rareulrineksoifoakgugbrergnaeteslopgkgmecsosnatgreoslpergtairm" is an attribute of "event anomaly cluster +rareulrineksoifoakgugbrergnaeteslopgkgmecsosnatgreoslpergtairm" (icontext: any - 105%)
+
+7:expr-by)                "event anomaly cluster +rareulrineksoifoakgugbrergnaeteslopgkgmecsosnatgreoslpergtairm" is an attribute of "app saw event anomaly cluster +rareulrineksoifoakgugbrergnaeteslopgkgmecsosnatgreoslpergtairm on Evening Saturday Day20 November Yr9999 at Hr23 Min50_55 Q4 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr22 GMT_Min50_55 GMT_Q4 location kube-system istio measurements cause kube-controller-details-v1-abort-50-percent" (icontext: any - 83%)
+
+7:expr-by)                "event anomaly cluster +rareulrineksoifoakgugbrergnaeteslopgkgmecsosnatgreoslpergtairm" is an attribute of "app saw event anomaly cluster +rareulrineksoifoakgugbrergnaeteslopgkgmecsosnatgreoslpergtairm on Evening Saturday Day20 November Yr9999 at Hr20 Min05_10 Q1 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr19 GMT_Min05_10 GMT_Q1 location kube-system istio measurements cause kube-controller-reviews-v2-delay" (icontext: any - 83%)
+
+7:expr-by)                "event anomaly cluster +rareulrineksoifoakgugbrergnaeteslopgkgmecsosnatgreoslpergtairm" is an attribute of "app saw event anomaly cluster +rareulrineksoifoakgugbrergnaeteslopgkgmecsosnatgreoslpergtairm on Evening Saturday Day20 November Yr9999 at Hr18 Min25_30 Q2 on GMT_Afternoon GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr17 GMT_Min25_30 GMT_Q2 location kube-system istio measurements cause kube-controller-ratings-v1-delay" (icontext: any - 83%)
+
+7:expr-by)                "event anomaly cluster +rareulrineksoifoakgugbrergnaeteslopgkgmecsosnatgreoslpergtairm" is an attribute of "app saw event anomaly cluster +rareulrineksoifoakgugbrergnaeteslopgkgmecsosnatgreoslpergtairm on Evening Saturday Day20 November Yr9999 at Hr19 Min00_05 Q1 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr18 GMT_Min00_05 GMT_Q1 location kube-system istio measurements cause kube-controller-ratings-reviews-v2-delay" (icontext: any - 83%)
+
+7:expr-by)                "event anomaly cluster +rareulrineksoifoakgugbrergnaeteslopgkgmecsosnatgreoslpergtairm" is an attribute of "app saw event anomaly cluster +rareulrineksoifoakgugbrergnaeteslopgkgmecsosnatgreoslpergtairm on Evening Saturday Day20 November Yr9999 at Hr20 Min40_45 Q3 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr19 GMT_Min40_45 GMT_Q3 location kube-system istio measurements cause kube-controller-reviews-v3-delay" (icontext: any - 83%)
+
+7:expr-by)                "event anomaly cluster +rareulrineksoifoakgugbrergnaeteslopgkgmecsosnatgreoslpergtairm" is an attribute of "app saw event anomaly cluster +rareulrineksoifoakgugbrergnaeteslopgkgmecsosnatgreoslpergtairm on Afternoon Saturday Day20 November Yr9999 at Hr17 Min50_55 Q4 on GMT_Afternoon GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr16 GMT_Min50_55 GMT_Q4 location kube-system istio measurements cause kube-controller-details-v1-delay" (icontext: any - 83%)
+
+7:expr-by)                "event anomaly cluster +rareulrineksoifoakgugbrergnaeteslopgkgmecsosnatgreoslpergtairm" is an attribute of "app saw event anomaly cluster +rareulrineksoifoakgugbrergnaeteslopgkgmecsosnatgreoslpergtairm on Evening Saturday Day20 November Yr9999 at Hr18 Min40_45 Q3 on GMT_Afternoon GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr17 GMT_Min40_45 GMT_Q3 location kube-system istio measurements cause kube-controller-ratings-reviews-v2-abort" (icontext: any - 83%)
+
+7:expr-by)                "event anomaly cluster +rareulrineksoifoakgugbrergnaeteslopgkgmecsosnatgreoslpergtairm" is an attribute of "app saw event anomaly cluster +rareulrineksoifoakgugbrergnaeteslopgkgmecsosnatgreoslpergtairm on Afternoon Saturday Day20 November Yr9999 at Hr17 Min35_40 Q3 on GMT_Afternoon GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr16 GMT_Min35_40 GMT_Q3 location kube-system istio measurements cause kube-controller-details-v1-delay-50-percent" (icontext: any - 83%)
+
+7:expr-by)                "event anomaly cluster +rareulrineksoifoakgugbrergnaeteslopgkgmecsosnatgreoslpergtairm" is an attribute of "app saw event anomaly cluster +rareulrineksoifoakgugbrergnaeteslopgkgmecsosnatgreoslpergtairm on Evening Saturday Day20 November Yr9999 at Hr19 Min30_35 Q3 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr18 GMT_Min30_35 GMT_Q3 location kube-system istio measurements cause kube-controller-reviews-v1-delay" (icontext: any - 83%)
+
+7:expr-by)                "event anomaly cluster +rareulrineksoifoakgugbrergnaeteslopgkgmecsosnatgreoslpergtairm" is an attribute of "app saw event anomaly cluster +rareulrineksoifoakgugbrergnaeteslopgkgmecsosnatgreoslpergtairm on Afternoon Saturday Day20 November Yr9999 at Hr17 Min20_25 Q2 on GMT_Afternoon GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr16 GMT_Min20_25 GMT_Q2 location kube-system istio measurements cause kube-controller-details-v1-delay-abort" (icontext: any - 83%)
+
+7:expr-by)                "event anomaly cluster +rareulrineksoifoakgugbrergnaeteslopgkgmecsosnatgreoslpergtairm" is an attribute of "app saw event anomaly cluster +rareulrineksoifoakgugbrergnaeteslopgkgmecsosnatgreoslpergtairm on Evening Saturday Day20 November Yr9999 at Hr23 Min50_55 Q4 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr22 GMT_Min50_55 GMT_Q4 location kube-system istio measurements cause kube-controller-details-v1-abort" (icontext: any - 83%)
+
+                          ++ more similar....
+7:apprxnr)                "event anomaly cluster +rareulrineksoifoakgugbrergnaeteslopgkgmecsosnatgreoslpergtairm" may be related to "kube-controller-reviews-v2-delay" (icontext: log anomaly - 80%)
+
+8:expr-by)                  "kube-controller-reviews-v2-delay" is an attribute of "app saw event anomaly cluster +rareMesageintervalogagrEgte on Evening Saturday Day20 November Yr9999 at Hr20 Min05_10 Q1 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr19 GMT_Min05_10 GMT_Q1 location kube-system istio measurements cause kube-controller-reviews-v2-delay" (icontext: any - 83%)
+
+8:expr-by)                  "kube-controller-reviews-v2-delay" is an attribute of "app saw event anomaly cluster +rareagregatemesages on Evening Saturday Day20 November Yr9999 at Hr20 Min00_05 Q1 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr19 GMT_Min00_05 GMT_Q1 location kube-system istio measurements cause kube-controller-reviews-v2-delay" (icontext: any - 83%)
+
+7:apprxnr)                "event anomaly cluster +rareulrineksoifoakgugbrergnaeteslopgkgmecsosnatgreoslpergtairm" may be related to "kube-controller-details-v1-delay-50-percent" (icontext: log anomaly - 80%)
+
+8:expr-by)                  "kube-controller-details-v1-delay-50-percent" is an attribute of "app saw event anomaly cluster +rareagregatemesages on Afternoon Saturday Day20 November Yr9999 at Hr17 Min35_40 Q3 on GMT_Afternoon GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr16 GMT_Min35_40 GMT_Q3 location kube-system istio measurements cause kube-controller-details-v1-delay-50-percent" (icontext: any - 83%)
+
+7:apprxnr)                "event anomaly cluster +rareulrineksoifoakgugbrergnaeteslopgkgmecsosnatgreoslpergtairm" may be related to "kube-controller-details-v1-abort-50-percent" (icontext: log anomaly - 80%)
+
+8:expr-by)                  "kube-controller-details-v1-abort-50-percent" is an attribute of "app saw event anomaly cluster +rareagregatemesages on Evening Saturday Day20 November Yr9999 at Hr23 Min45_50 Q4 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr22 GMT_Min45_50 GMT_Q4 location kube-system istio measurements cause kube-controller-details-v1-abort-50-percent" (icontext: any - 83%)
+
+8:expr-by)                  "kube-controller-details-v1-abort-50-percent" is an attribute of "app saw event anomaly cluster +rareMuersisakgseiontkeurbvearlneteslopgkgagcgornEtgrotlel on Evening Saturday Day20 November Yr9999 at Hr23 Min50_55 Q4 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr22 GMT_Min50_55 GMT_Q4 location kube-system istio measurements cause kube-controller-details-v1-abort-50-percent" (icontext: any - 83%)
+
+7:apprxnr)                "event anomaly cluster +rareulrineksoifoakgugbrergnaeteslopgkgmecsosnatgreoslpergtairm" may be related to "kube-controller-ratings-reviews-v2-abort" (icontext: log anomaly - 80%)
+
+8:expr-by)                  "kube-controller-ratings-reviews-v2-abort" is an attribute of "app saw event anomaly cluster +rareagregatemesages on Evening Saturday Day20 November Yr9999 at Hr18 Min35_40 Q3 on GMT_Afternoon GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr17 GMT_Min35_40 GMT_Q3 location kube-system istio measurements cause kube-controller-ratings-reviews-v2-abort" (icontext: any - 83%)
+
+8:expr-by)                  "kube-controller-ratings-reviews-v2-abort" is an attribute of "app saw event anomaly cluster +rareMesageintervalogagrEgte on Evening Saturday Day20 November Yr9999 at Hr18 Min40_45 Q3 on GMT_Afternoon GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr17 GMT_Min40_45 GMT_Q3 location kube-system istio measurements cause kube-controller-ratings-reviews-v2-abort" (icontext: any - 83%)
+
+7:apprxnr)                "event anomaly cluster +rareulrineksoifoakgugbrergnaeteslopgkgmecsosnatgreoslpergtairm" may be related to "kube-controller-reviews-v3-delay" (icontext: log anomaly - 80%)
+
+8:expr-by)                  "kube-controller-reviews-v3-delay" is an attribute of "app saw event anomaly cluster +rareMesageintervalogagrEgte on Evening Saturday Day20 November Yr9999 at Hr20 Min40_45 Q3 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr19 GMT_Min40_45 GMT_Q3 location kube-system istio measurements cause kube-controller-reviews-v3-delay" (icontext: any - 83%)
+
+8:expr-by)                  "kube-controller-reviews-v3-delay" is an attribute of "app saw event anomaly cluster +rareagregatemesages on Evening Saturday Day20 November Yr9999 at Hr20 Min35_40 Q3 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr19 GMT_Min35_40 GMT_Q3 location kube-system istio measurements cause kube-controller-reviews-v3-delay" (icontext: any - 83%)
+
+7:apprxnr)                "event anomaly cluster +rareulrineksoifoakgugbrergnaeteslopgkgmecsosnatgreoslpergtairm" may be related to "kube-controller-ratings-v1-delay" (icontext: log anomaly - 80%)
+
+8:expr-by)                  "kube-controller-ratings-v1-delay" is an attribute of "app saw event anomaly cluster +rareMesageintervalogagrEgte on Evening Saturday Day20 November Yr9999 at Hr18 Min25_30 Q2 on GMT_Afternoon GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr17 GMT_Min25_30 GMT_Q2 location kube-system istio measurements cause kube-controller-ratings-v1-delay" (icontext: any - 83%)
+
+8:expr-by)                  "kube-controller-ratings-v1-delay" is an attribute of "app saw event anomaly cluster +rareagregatemesages on Evening Saturday Day20 November Yr9999 at Hr18 Min20_25 Q2 on GMT_Afternoon GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr17 GMT_Min20_25 GMT_Q2 location kube-system istio measurements cause kube-controller-ratings-v1-delay" (icontext: any - 83%)
+
+7:apprxnr)                "event anomaly cluster +rareulrineksoifoakgugbrergnaeteslopgkgmecsosnatgreoslpergtairm" may be related to "kube-controller-reviews-v1-abort" (icontext: log anomaly - 80%)
+
+8:expr-by)                  "kube-controller-reviews-v1-abort" is an attribute of "app saw event anomaly cluster +rareMesageintervalogagrEgte on Evening Saturday Day20 November Yr9999 at Hr19 Min20_25 Q2 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr18 GMT_Min20_25 GMT_Q2 location kube-system istio measurements cause kube-controller-reviews-v1-abort" (icontext: any - 83%)
+
+8:expr-by)                  "kube-controller-reviews-v1-abort" is an attribute of "app saw event anomaly cluster +rareuriksiokubernetespkgcontrolerbotstrapbotstraps on Evening Saturday Day20 November Yr9999 at Hr19 Min15_20 Q2 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr18 GMT_Min15_20 GMT_Q2 location kube-system istio measurements cause kube-controller-reviews-v1-abort" (icontext: any - 83%)
+
+8:expr-by)                  "kube-controller-reviews-v1-abort" is an attribute of "app saw event anomaly cluster +rareulrineksoifoakgugbrergnaeteslopgkgmecsosnatgreoslpergtairm on Evening Saturday Day20 November Yr9999 at Hr19 Min15_20 Q2 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr18 GMT_Min15_20 GMT_Q2 location kube-system istio measurements cause kube-controller-reviews-v1-abort" (icontext: any - 83%)
+
+8:expr-by)                  "kube-controller-reviews-v1-abort" is an attribute of "app saw event anomaly cluster +rareagregatemesages on Evening Saturday Day20 November Yr9999 at Hr19 Min10_15 Q1 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr18 GMT_Min10_15 GMT_Q1 location kube-system istio measurements cause kube-controller-reviews-v1-abort" (icontext: any - 83%)
+
+7:apprxnr)                "event anomaly cluster +rareulrineksoifoakgugbrergnaeteslopgkgmecsosnatgreoslpergtairm" may be related to "kube-controller-reviews-v1-delay" (icontext: log anomaly - 80%)
+
+8:expr-by)                  "kube-controller-reviews-v1-delay" is an attribute of "app saw event anomaly cluster +rareMuersisakgseiontkeurbvearlneteslopgkgagcgornEtgrotlel on Evening Saturday Day20 November Yr9999 at Hr19 Min30_35 Q3 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr18 GMT_Min30_35 GMT_Q3 location kube-system istio measurements cause kube-controller-reviews-v1-delay" (icontext: any - 83%)
+
+8:expr-by)                  "kube-controller-reviews-v1-delay" is an attribute of "app saw event anomaly cluster +rareulrineksoifoakgugbrergnaeteslopgkgmecsosnatgreoslpergtairm on Evening Saturday Day20 November Yr9999 at Hr19 Min30_35 Q3 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr18 GMT_Min30_35 GMT_Q3 location kube-system istio measurements cause kube-controller-reviews-v1-delay" (icontext: any - 83%)
+
+7:apprxnr)                "event anomaly cluster +rareulrineksoifoakgugbrergnaeteslopgkgmecsosnatgreoslpergtairm" may be related to "kube-controller-ratings-v1-abort" (icontext: log anomaly - 80%)
+
+8:expr-by)                  "kube-controller-ratings-v1-abort" is an attribute of "app saw event anomaly cluster +rareagregatemesages on Evening Saturday Day20 November Yr9999 at Hr18 Min05_10 Q1 on GMT_Afternoon GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr17 GMT_Min05_10 GMT_Q1 location kube-system istio measurements cause kube-controller-ratings-v1-abort" (icontext: any - 83%)
+
+8:expr-by)                  "kube-controller-ratings-v1-abort" is an attribute of "app saw event anomaly cluster +rareMesageintervalogagrEgte on Evening Saturday Day20 November Yr9999 at Hr18 Min10_15 Q1 on GMT_Afternoon GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr17 GMT_Min10_15 GMT_Q1 location kube-system istio measurements cause kube-controller-ratings-v1-abort" (icontext: any - 83%)
+
+7:apprxnr)                "event anomaly cluster +rareulrineksoifoakgugbrergnaeteslopgkgmecsosnatgreoslpergtairm" may be related to "kube-controller-ratings-reviews-v2-delay" (icontext: log anomaly - 80%)
+
+8:expr-by)                  "kube-controller-ratings-reviews-v2-delay" is an attribute of "app saw event anomaly cluster +rareagregatemesages on Evening Saturday Day20 November Yr9999 at Hr18 Min55_00 Q4 on GMT_Afternoon GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr17 GMT_Min55_00 GMT_Q4 location kube-system istio measurements cause kube-controller-ratings-reviews-v2-delay" (icontext: any - 83%)
+
+8:expr-by)                  "kube-controller-ratings-reviews-v2-delay" is an attribute of "app saw event anomaly cluster +rareMesageintervalogagrEgte on Evening Saturday Day20 November Yr9999 at Hr19 Min00_05 Q1 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr18 GMT_Min00_05 GMT_Q1 location kube-system istio measurements cause kube-controller-ratings-reviews-v2-delay" (icontext: any - 83%)
+
+7:apprxnr)                "event anomaly cluster +rareulrineksoifoakgugbrergnaeteslopgkgmecsosnatgreoslpergtairm" may be related to "kube-controller-details-v1-abort" (icontext: log anomaly - 80%)
+
+8:expr-by)                  "kube-controller-details-v1-abort" is an attribute of "app saw event anomaly cluster +rareMuersisakgseiontkeurbvearlneteslopgkgagcgornEtgrotlel on Evening Saturday Day20 November Yr9999 at Hr23 Min55_00 Q4 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr22 GMT_Min55_00 GMT_Q4 location kube-system istio measurements cause kube-controller-details-v1-abort" (icontext: any - 83%)
+
+8:expr-by)                  "kube-controller-details-v1-abort" is an attribute of "app saw event anomaly cluster +rareagregatemesages on Evening Saturday Day20 November Yr9999 at Hr23 Min45_50 Q4 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr22 GMT_Min45_50 GMT_Q4 location kube-system istio measurements cause kube-controller-details-v1-abort" (icontext: any - 83%)
+
+                          ++ more similar....
+4:cntaind)          "+rare_lines_of_aggregate_log_messages_per_time_interval_sample" belongs to or is part of "+rareDlCpoihenerecskicpshotefiecnkatcpgieognirgneotgian" (icontext: system monitoring measurement - 89%)
+
+5:expr-by)            "+rareDlCpoihenerecskicpshotefiecnkatcpgieognirgneotgian" is an attribute of "anomaly cluster +rareDlCpoihenerecskicpshotefiecnkatcpgieognirgneotgian" (icontext: any - 113%)
+
+6:expr-by)              "anomaly cluster +rareDlCpoihenerecskicpshotefiecnkatcpgieognirgneotgian" is an attribute of "event anomaly cluster +rareDlCpoihenerecskicpshotefiecnkatcpgieognirgneotgian" (icontext: any - 105%)
+
+7:expr-by)                "event anomaly cluster +rareDlCpoihenerecskicpshotefiecnkatcpgieognirgneotgian" is an attribute of "app saw event anomaly cluster +rareDlCpoihenerecskicpshotefiecnkatcpgieognirgneotgian on Night Monday Day20 November Yr2017 at Hr01 Min00_05 Q1 on GMT_Night GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr00 GMT_Min00_05 GMT_Q1 location istio-system istio measurements cause prometheus-reviews-v3-delay" (icontext: any - 83%)
+
+7:expr-by)                "event anomaly cluster +rareDlCpoihenerecskicpshotefiecnkatcpgieognirgneotgian" is an attribute of "app saw event anomaly cluster +rareDlCpoihenerecskicpshotefiecnkatcpgieognirgneotgian on Night Monday Day20 November Yr2017 at Hr01 Min00_05 Q1 on GMT_Night GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr00 GMT_Min00_05 GMT_Q1 location istio-system istio measurements cause prometheus-reviews-v1-abort" (icontext: any - 83%)
+
+7:expr-by)                "event anomaly cluster +rareDlCpoihenerecskicpshotefiecnkatcpgieognirgneotgian" is an attribute of "app saw event anomaly cluster +rareDlCpoihenerecskicpshotefiecnkatcpgieognirgneotgian on Night Monday Day20 November Yr2017 at Hr01 Min00_05 Q1 on GMT_Night GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr00 GMT_Min00_05 GMT_Q1 location istio-system istio measurements cause prometheus-ratings-v1-abort" (icontext: any - 83%)
+
+7:expr-by)                "event anomaly cluster +rareDlCpoihenerecskicpshotefiecnkatcpgieognirgneotgian" is an attribute of "app saw event anomaly cluster +rareDlCpoihenerecskicpshotefiecnkatcpgieognirgneotgian on Night Monday Day20 November Yr2017 at Hr01 Min00_05 Q1 on GMT_Night GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr00 GMT_Min00_05 GMT_Q1 location istio-system istio measurements cause prometheus-reviews-v2-abort" (icontext: any - 83%)
+
+7:expr-by)                "event anomaly cluster +rareDlCpoihenerecskicpshotefiecnkatcpgieognirgneotgian" is an attribute of "app saw event anomaly cluster +rareDlCpoihenerecskicpshotefiecnkatcpgieognirgneotgian on Night Monday Day20 November Yr2017 at Hr01 Min00_05 Q1 on GMT_Night GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr00 GMT_Min00_05 GMT_Q1 location istio-system istio measurements cause prometheus-ratings-reviews-v2-abort" (icontext: any - 83%)
+
+7:expr-by)                "event anomaly cluster +rareDlCpoihenerecskicpshotefiecnkatcpgieognirgneotgian" is an attribute of "app saw event anomaly cluster +rareDlCpoihenerecskicpshotefiecnkatcpgieognirgneotgian on Night Monday Day20 November Yr2017 at Hr01 Min00_05 Q1 on GMT_Night GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr00 GMT_Min00_05 GMT_Q1 location istio-system istio measurements cause prometheus-reviews-v3-abort" (icontext: any - 83%)
+
+7:expr-by)                "event anomaly cluster +rareDlCpoihenerecskicpshotefiecnkatcpgieognirgneotgian" is an attribute of "app saw event anomaly cluster +rareDlCpoihenerecskicpshotefiecnkatcpgieognirgneotgian on Night Monday Day20 November Yr2017 at Hr01 Min00_05 Q1 on GMT_Night GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr00 GMT_Min00_05 GMT_Q1 location istio-system istio measurements cause prometheus-details-v1-abort" (icontext: any - 83%)
+
+7:expr-by)                "event anomaly cluster +rareDlCpoihenerecskicpshotefiecnkatcpgieognirgneotgian" is an attribute of "app saw event anomaly cluster +rareDlCpoihenerecskicpshotefiecnkatcpgieognirgneotgian on Night Monday Day20 November Yr2017 at Hr01 Min00_05 Q1 on GMT_Night GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr00 GMT_Min00_05 GMT_Q1 location istio-system istio measurements cause prometheus-details-v1-abort-50-percent" (icontext: any - 83%)
+
+7:expr-by)                "event anomaly cluster +rareDlCpoihenerecskicpshotefiecnkatcpgieognirgneotgian" is an attribute of "app saw event anomaly cluster +rareDlCpoihenerecskicpshotefiecnkatcpgieognirgneotgian on Night Monday Day20 November Yr2017 at Hr01 Min00_05 Q1 on GMT_Night GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr00 GMT_Min00_05 GMT_Q1 location istio-system istio measurements cause prometheus-details-v1-delay-50-percent" (icontext: any - 83%)
+
+7:expr-by)                "event anomaly cluster +rareDlCpoihenerecskicpshotefiecnkatcpgieognirgneotgian" is an attribute of "app saw event anomaly cluster +rareDlCpoihenerecskicpshotefiecnkatcpgieognirgneotgian on Night Monday Day20 November Yr2017 at Hr01 Min00_05 Q1 on GMT_Night GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr00 GMT_Min00_05 GMT_Q1 location istio-system istio measurements cause prometheus-reviews-v1-delay" (icontext: any - 83%)
+
+7:expr-by)                "event anomaly cluster +rareDlCpoihenerecskicpshotefiecnkatcpgieognirgneotgian" is an attribute of "app saw event anomaly cluster +rareDlCpoihenerecskicpshotefiecnkatcpgieognirgneotgian on Night Monday Day20 November Yr2017 at Hr01 Min00_05 Q1 on GMT_Night GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr00 GMT_Min00_05 GMT_Q1 location istio-system istio measurements cause prometheus-details-v1-delay-abort" (icontext: any - 83%)
+
+7:expr-by)                "event anomaly cluster +rareDlCpoihenerecskicpshotefiecnkatcpgieognirgneotgian" is an attribute of "app saw event anomaly cluster +rareDlCpoihenerecskicpshotefiecnkatcpgieognirgneotgian on Night Monday Day20 November Yr2017 at Hr01 Min00_05 Q1 on GMT_Night GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr00 GMT_Min00_05 GMT_Q1 location istio-system istio measurements cause prometheus-reviews-v2-delay" (icontext: any - 83%)
+
+                          ++ more similar....
+7:apprxnr)                "event anomaly cluster +rareDlCpoihenerecskicpshotefiecnkatcpgieognirgneotgian" may be related to "prometheus-reviews-v2-delay" (icontext: log anomaly - 80%)
+
+8:expr-by)                  "prometheus-reviews-v2-delay" is an attribute of "app saw event anomaly cluster +rareagregatemesages on Night Monday Day20 November Yr2017 at Hr01 Min00_05 Q1 on GMT_Night GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr00 GMT_Min00_05 GMT_Q1 location istio-system istio measurements cause prometheus-reviews-v2-delay" (icontext: any - 83%)
+
+7:apprxnr)                "event anomaly cluster +rareDlCpoihenerecskicpshotefiecnkatcpgieognirgneotgian" may be related to "prometheus-reviews-v2-abort" (icontext: log anomaly - 80%)
+
+8:expr-by)                  "prometheus-reviews-v2-abort" is an attribute of "app saw event anomaly cluster +rareagregatemesages on Night Monday Day20 November Yr2017 at Hr01 Min00_05 Q1 on GMT_Night GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr00 GMT_Min00_05 GMT_Q1 location istio-system istio measurements cause prometheus-reviews-v2-abort" (icontext: any - 83%)
+
+7:apprxnr)                "event anomaly cluster +rareDlCpoihenerecskicpshotefiecnkatcpgieognirgneotgian" may be related to "prometheus-ratings-v1-delay" (icontext: log anomaly - 80%)
+
+8:expr-by)                  "prometheus-ratings-v1-delay" is an attribute of "app saw event anomaly cluster +rareDlCpoihenerecskicpshotefiecnkatcpgieognirgneotgian on Night Monday Day20 November Yr2017 at Hr01 Min00_05 Q1 on GMT_Night GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr00 GMT_Min00_05 GMT_Q1 location istio-system istio measurements cause prometheus-ratings-v1-delay" (icontext: any - 83%)
+
+7:apprxnr)                "event anomaly cluster +rareDlCpoihenerecskicpshotefiecnkatcpgieognirgneotgian" may be related to "prometheus-details-v1-delay-50-percent" (icontext: log anomaly - 80%)
+
+8:expr-by)                  "prometheus-details-v1-delay-50-percent" is an attribute of "app saw event anomaly cluster +rareagregatemesages on Night Monday Day20 November Yr2017 at Hr01 Min00_05 Q1 on GMT_Night GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr00 GMT_Min00_05 GMT_Q1 location istio-system istio measurements cause prometheus-details-v1-delay-50-percent" (icontext: any - 83%)
+
+7:apprxnr)                "event anomaly cluster +rareDlCpoihenerecskicpshotefiecnkatcpgieognirgneotgian" may be related to "prometheus-reviews-v1-abort" (icontext: log anomaly - 80%)
+
+8:expr-by)                  "prometheus-reviews-v1-abort" is an attribute of "app saw event anomaly cluster +rareagregatemesages on Night Monday Day20 November Yr2017 at Hr01 Min00_05 Q1 on GMT_Night GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr00 GMT_Min00_05 GMT_Q1 location istio-system istio measurements cause prometheus-reviews-v1-abort" (icontext: any - 83%)
+
+7:apprxnr)                "event anomaly cluster +rareDlCpoihenerecskicpshotefiecnkatcpgieognirgneotgian" may be related to "prometheus-reviews-v1-delay" (icontext: log anomaly - 80%)
+
+8:expr-by)                  "prometheus-reviews-v1-delay" is an attribute of "app saw event anomaly cluster +rareagregatemesages on Night Monday Day20 November Yr2017 at Hr01 Min00_05 Q1 on GMT_Night GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr00 GMT_Min00_05 GMT_Q1 location istio-system istio measurements cause prometheus-reviews-v1-delay" (icontext: any - 83%)
+
+7:apprxnr)                "event anomaly cluster +rareDlCpoihenerecskicpshotefiecnkatcpgieognirgneotgian" may be related to "prometheus-details-v1-delay-abort" (icontext: log anomaly - 80%)
+
+8:expr-by)                  "prometheus-details-v1-delay-abort" is an attribute of "app saw event anomaly cluster +rareagregatemesages on Night Monday Day20 November Yr2017 at Hr01 Min00_05 Q1 on GMT_Night GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr00 GMT_Min00_05 GMT_Q1 location istio-system istio measurements cause prometheus-details-v1-delay-abort" (icontext: any - 83%)
+
+7:apprxnr)                "event anomaly cluster +rareDlCpoihenerecskicpshotefiecnkatcpgieognirgneotgian" may be related to "prometheus-normal" (icontext: log anomaly - 80%)
+
+8:expr-by)                  "prometheus-normal" is an attribute of "app saw event anomaly cluster +rareagregatemesages on Night Monday Day20 November Yr2017 at Hr01 Min00_05 Q1 on GMT_Night GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr00 GMT_Min00_05 GMT_Q1 location istio-system istio measurements cause prometheus-normal" (icontext: any - 83%)
+
+8:expr-by)                  "prometheus-normal" is an attribute of "app saw event anomaly cluster +rareDlCpoihenerecskicpshotefiecnkatcpgieognirgneotgian on Night Monday Day20 November Yr2017 at Hr01 Min00_05 Q1 on GMT_Night GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr00 GMT_Min00_05 GMT_Q1 location istio-system istio measurements cause prometheus-normal" (icontext: any - 83%)
+
+7:apprxnr)                "event anomaly cluster +rareDlCpoihenerecskicpshotefiecnkatcpgieognirgneotgian" may be related to "prometheus-details-v1-abort-50-percent" (icontext: log anomaly - 80%)
+
+8:expr-by)                  "prometheus-details-v1-abort-50-percent" is an attribute of "app saw event anomaly cluster +rareagregatemesages on Night Monday Day20 November Yr2017 at Hr01 Min00_05 Q1 on GMT_Night GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr00 GMT_Min00_05 GMT_Q1 location istio-system istio measurements cause prometheus-details-v1-abort-50-percent" (icontext: any - 83%)
+
+7:apprxnr)                "event anomaly cluster +rareDlCpoihenerecskicpshotefiecnkatcpgieognirgneotgian" may be related to "prometheus-reviews-v3-abort" (icontext: log anomaly - 80%)
+
+7:apprxnr)                "event anomaly cluster +rareDlCpoihenerecskicpshotefiecnkatcpgieognirgneotgian" may be related to "prometheus-ratings-v1-abort" (icontext: log anomaly - 80%)
+
+8:expr-by)                  "prometheus-ratings-v1-abort" is an attribute of "app saw event anomaly cluster +rareagregatemesages on Night Monday Day20 November Yr2017 at Hr01 Min00_05 Q1 on GMT_Night GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr00 GMT_Min00_05 GMT_Q1 location istio-system istio measurements cause prometheus-ratings-v1-abort" (icontext: any - 83%)
+
+7:apprxnr)                "event anomaly cluster +rareDlCpoihenerecskicpshotefiecnkatcpgieognirgneotgian" may be related to "prometheus-reviews-v3-delay" (icontext: log anomaly - 80%)
+
+8:expr-by)                  "prometheus-reviews-v3-delay" is an attribute of "app saw event anomaly cluster +rareagregatemesages on Night Monday Day20 November Yr2017 at Hr01 Min00_05 Q1 on GMT_Night GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr00 GMT_Min00_05 GMT_Q1 location istio-system istio measurements cause prometheus-reviews-v3-delay" (icontext: any - 83%)
+
+                          ++ more similar....
+                    ++ more similar....
+2:expr-by)      "event anomaly cluster +rareulrinesxtoefrnaglgrieogaktsecloigenmtesgsoagteosolpsercatc" is an attribute of "app saw event anomaly cluster +rareulrinesxtoefrnaglgrieogaktsecloigenmtesgsoagteosolpsercatc on Evening Saturday Day20 November Yr9999 at Hr19 Min55_00 Q4 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr18 GMT_Min55_00 GMT_Q4 location istio-system istio measurements cause istio-initializer-reviews-v2-delay" (icontext: any - 83%)
+
+2:expr-by)      "event anomaly cluster +rareulrinesxtoefrnaglgrieogaktsecloigenmtesgsoagteosolpsercatc" is an attribute of "app saw event anomaly cluster +rareulrinesxtoefrnaglgrieogaktsecloigenmtesgsoagteosolpsercatc on Evening Saturday Day20 November Yr9999 at Hr23 Min15_20 Q2 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr22 GMT_Min15_20 GMT_Q2 location istio-system istio measurements cause istio-initializer-normal" (icontext: any - 83%)
+
+2:expr-by)      "event anomaly cluster +rareulrinesxtoefrnaglgrieogaktsecloigenmtesgsoagteosolpsercatc" is an attribute of "app saw event anomaly cluster +rareulrinesxtoefrnaglgrieogaktsecloigenmtesgsoagteosolpsercatc on Evening Saturday Day20 November Yr9999 at Hr18 Min35_40 Q3 on GMT_Afternoon GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr17 GMT_Min35_40 GMT_Q3 location istio-system istio measurements cause istio-initializer-ratings-reviews-v2-abort" (icontext: any - 83%)
+
+2:expr-by)      "event anomaly cluster +rareulrinesxtoefrnaglgrieogaktsecloigenmtesgsoagteosolpsercatc" is an attribute of "app saw event anomaly cluster +rareulrinesxtoefrnaglgrieogaktsecloigenmtesgsoagteosolpsercatc on Evening Saturday Day20 November Yr9999 at Hr23 Min45_50 Q4 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr22 GMT_Min45_50 GMT_Q4 location istio-system istio measurements cause istio-pilot-details-v1-abort-50-percent" (icontext: any - 83%)
+
+2:expr-by)      "event anomaly cluster +rareulrinesxtoefrnaglgrieogaktsecloigenmtesgsoagteosolpsercatc" is an attribute of "app saw event anomaly cluster +rareulrinesxtoefrnaglgrieogaktsecloigenmtesgsoagteosolpsercatc on Evening Saturday Day20 November Yr9999 at Hr18 Min15_20 Q2 on GMT_Afternoon GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr17 GMT_Min15_20 GMT_Q2 location istio-system istio measurements cause istio-initializer-ratings-v1-delay" (icontext: any - 83%)
+
+2:expr-by)      "event anomaly cluster +rareulrinesxtoefrnaglgrieogaktsecloigenmtesgsoagteosolpsercatc" is an attribute of "app saw event anomaly cluster +rareulrinesxtoefrnaglgrieogaktsecloigenmtesgsoagteosolpsercatc on Evening Saturday Day20 November Yr9999 at Hr19 Min45_50 Q4 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr18 GMT_Min45_50 GMT_Q4 location istio-system istio measurements cause istio-pilot-reviews-v2-abort" (icontext: any - 83%)
+
+2:expr-by)      "event anomaly cluster +rareulrinesxtoefrnaglgrieogaktsecloigenmtesgsoagteosolpsercatc" is an attribute of "app saw event anomaly cluster +rareulrinesxtoefrnaglgrieogaktsecloigenmtesgsoagteosolpsercatc on Evening Saturday Day20 November Yr9999 at Hr20 Min30_35 Q3 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr19 GMT_Min30_35 GMT_Q3 location istio-system istio measurements cause istio-initializer-reviews-v3-delay" (icontext: any - 83%)
+
+2:expr-by)      "event anomaly cluster +rareulrinesxtoefrnaglgrieogaktsecloigenmtesgsoagteosolpsercatc" is an attribute of "app saw event anomaly cluster +rareulrinesxtoefrnaglgrieogaktsecloigenmtesgsoagteosolpsercatc on Evening Saturday Day20 November Yr9999 at Hr19 Min05_10 Q1 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr18 GMT_Min05_10 GMT_Q1 location istio-system istio measurements cause istio-initializer-reviews-v1-abort" (icontext: any - 83%)
+
+2:expr-by)      "event anomaly cluster +rareulrinesxtoefrnaglgrieogaktsecloigenmtesgsoagteosolpsercatc" is an attribute of "app saw event anomaly cluster +rareulrinesxtoefrnaglgrieogaktsecloigenmtesgsoagteosolpsercatc on Evening Saturday Day20 November Yr9999 at Hr18 Min55_00 Q4 on GMT_Afternoon GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr17 GMT_Min55_00 GMT_Q4 location istio-system istio measurements cause istio-pilot-ratings-reviews-v2-delay" (icontext: any - 83%)
+
+2:expr-by)      "event anomaly cluster +rareulrinesxtoefrnaglgrieogaktsecloigenmtesgsoagteosolpsercatc" is an attribute of "app saw event anomaly cluster +rareulrinesxtoefrnaglgrieogaktsecloigenmtesgsoagteosolpsercatc on Afternoon Saturday Day20 November Yr9999 at Hr17 Min15_20 Q2 on GMT_Afternoon GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr16 GMT_Min15_20 GMT_Q2 location istio-system istio measurements cause istio-initializer-details-v1-delay-abort" (icontext: any - 83%)
+
+2:expr-by)      "event anomaly cluster +rareulrinesxtoefrnaglgrieogaktsecloigenmtesgsoagteosolpsercatc" is an attribute of "app saw event anomaly cluster +rareulrinesxtoefrnaglgrieogaktsecloigenmtesgsoagteosolpsercatc on Evening Saturday Day20 November Yr9999 at Hr23 Min40_45 Q3 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr22 GMT_Min40_45 GMT_Q3 location istio-system istio measurements cause istio-initializer-details-v1-abort" (icontext: any - 83%)
+
+2:expr-by)      "event anomaly cluster +rareulrinesxtoefrnaglgrieogaktsecloigenmtesgsoagteosolpsercatc" is an attribute of "app saw event anomaly cluster +rareulrinesxtoefrnaglgrieogaktsecloigenmtesgsoagteosolpsercatc on Evening Saturday Day20 November Yr9999 at Hr19 Min25_30 Q2 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr18 GMT_Min25_30 GMT_Q2 location istio-system istio measurements cause istio-initializer-reviews-v1-delay" (icontext: any - 83%)
+
+                ++ more similar....
+1:apprxnr)    "istio-initializer-details-v1-abort-50-percent" may be related to "event anomaly cluster +rareMesageintervalogagrEgte" (icontext: log anomaly - 80%)
+
+2:hasprop)      "event anomaly cluster +rareMesageintervalogagrEgte" expresses an attribute "anomaly cluster +rareMesageintervalogagrEgte" (icontext: any - 109%)
+
+3:hasprop)        "anomaly cluster +rareMesageintervalogagrEgte" expresses an attribute "+rare_Message_interval____log_aggrEg_te" (icontext: log analysis - 89%)
+
+4:cntaind)          "+rare_Message_interval____log_aggrEg_te" belongs to or is part of "+rarejujMjsrsesoiosonsndafofgfiuieilbleleienchctchahehanarandnv" (icontext: system monitoring measurement - 87%)
+
+5:expr-by)            "+rarejujMjsrsesoiosonsndafofgfiuieilbleleienchctchahehanarandnv" is an attribute of "logging anomaly +rarejujMjsrsesoiosonsndafofgfiuieilbleleienchctchahehanarandnv" (icontext: any - 113%)
+
+6:expr-by)              "logging anomaly +rarejujMjsrsesoiosonsndafofgfiuieilbleleienchctchahehanarandnv" is an attribute of "log anomaly logging anomaly +rarejujMjsrsesoiosonsndafofgfiuieilbleleienchctchahehanarandnv occurred on Afternoon Saturday Day20 November Yr9999 at Hr17 Min35_40 Q3 on GMT_Afternoon GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr16 GMT_Min35_40 GMT_Q3" (icontext: any - 84%)
+
+4:cntaind)          "+rare_Message_interval____log_aggrEg_te" belongs to or is part of "+rareuMreisargceinvtoeyrvmailxermlioxgeragcgornEtgrotle" (icontext: system monitoring measurement - 89%)
+
+5:expr-by)            "+rareuMreisargceinvtoeyrvmailxermlioxgeragcgornEtgrotle" is an attribute of "logging anomaly +rareuMreisargceinvtoeyrvmailxermlioxgeragcgornEtgrotle" (icontext: any - 113%)
+
+6:expr-by)              "logging anomaly +rareuMreisargceinvtoeyrvmailxermlioxgeragcgornEtgrotle" is an attribute of "log anomaly logging anomaly +rareuMreisargceinvtoeyrvmailxermlioxgeragcgornEtgrotle occurred on Night Monday Day20 November Yr2017 at Hr01 Min00_05 Q1 on GMT_Night GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr00 GMT_Min00_05 GMT_Q1" (icontext: any - 84%)
+
+4:cntaind)          "+rare_Message_interval____log_aggrEg_te" belongs to or is part of "+rareGMuertsisagapepivnvtnenaramvmeaeslspaceslsokgkubabegegsrsy" (icontext: system monitoring measurement - 87%)
+
+5:expr-by)            "+rareGMuertsisagapepivnvtnenaramvmeaeslspaceslsokgkubabegegsrsy" is an attribute of "logging anomaly +rareGMuertsisagapepivnvtnenaramvmeaeslspaceslsokgkubabegegsrsy" (icontext: any - 113%)
+
+6:expr-by)              "logging anomaly +rareGMuertsisagapepivnvtnenaramvmeaeslspaceslsokgkubabegegsrsy" is an attribute of "log anomaly logging anomaly +rareGMuertsisagapepivnvtnenaramvmeaeslspaceslsokgkubabegegsrsy occurred on Night Thursday Day1 January Yr1970 at Hr01 Min00_05 Q1 on GMT_Night GMT_Thursday GMT_Day1 GMT_January GMT_Yr1970 at GMT_Hr00 GMT_Min00_05 GMT_Q1" (icontext: any - 84%)
+
+5:expr-by)            "+rareGMuertsisagapepivnvtnenaramvmeaeslspaceslsokgkubabegegsrsy" is an attribute of "anomaly cluster +rareGMuertsisagapepivnvtnenaramvmeaeslspaceslsokgkubabegegsrsy" (icontext: any - 113%)
+
+6:expr-by)              "anomaly cluster +rareGMuertsisagapepivnvtnenaramvmeaeslspaceslsokgkubabegegsrsy" is an attribute of "event anomaly cluster +rareGMuertsisagapepivnvtnenaramvmeaeslspaceslsokgkubabegegsrsy" (icontext: any - 105%)
+
+7:expr-by)                "event anomaly cluster +rareGMuertsisagapepivnvtnenaramvmeaeslspaceslsokgkubabegegsrsy" is an attribute of "app saw event anomaly cluster +rareGMuertsisagapepivnvtnenaramvmeaeslspaceslsokgkubabegegsrsy repeated event location kube-system istio measurements cause kube-apiserver-details-v1-delay" (icontext: any - 87%)
+
+7:expr-by)                "event anomaly cluster +rareGMuertsisagapepivnvtnenaramvmeaeslspaceslsokgkubabegegsrsy" is an attribute of "app saw event anomaly cluster +rareGMuertsisagapepivnvtnenaramvmeaeslspaceslsokgkubabegegsrsy repeated event location kube-system istio measurements cause kube-apiserver-reviews-v3-delay" (icontext: any - 87%)
+
+7:apprxnr)                "event anomaly cluster +rareGMuertsisagapepivnvtnenaramvmeaeslspaceslsokgkubabegegsrsy" may be related to "kube-apiserver-details-v1-delay" (icontext: log anomaly - 80%)
+
+8:expr-by)                  "kube-apiserver-details-v1-delay" is an attribute of "app saw event anomaly cluster +rareulGuGuGrierereintititesapopifivavgngnaramemegesasptpaeacel on Afternoon Saturday Day20 November Yr9999 at Hr17 Min55_00 Q4 on GMT_Afternoon GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr16 GMT_Min55_00 GMT_Q4 location kube-system istio measurements cause kube-apiserver-details-v1-delay" (icontext: any - 83%)
+
+7:apprxnr)                "event anomaly cluster +rareGMuertsisagapepivnvtnenaramvmeaeslspaceslsokgkubabegegsrsy" may be related to "kube-apiserver-reviews-v3-delay" (icontext: log anomaly - 80%)
+
+8:expr-by)                  "kube-apiserver-reviews-v3-delay" is an attribute of "app saw event anomaly cluster +rareulGuGuGrierereintititesapopifivavgngnaramemegesasptpaeacel on Evening Saturday Day20 November Yr9999 at Hr20 Min40_45 Q3 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr19 GMT_Min40_45 GMT_Q3 location kube-system istio measurements cause kube-apiserver-reviews-v3-delay" (icontext: any - 83%)
+
+4:cntaind)          "+rare_Message_interval____log_aggrEg_te" belongs to or is part of "+rareuluaMrirgeinigserseseseaxrxgtctotaefetrereinanavagamtlolgl" (icontext: system monitoring measurement - 87%)
+
+5:expr-by)            "+rareuluaMrirgeinigserseseseaxrxgtctotaefetrereinanavagamtlolgl" is an attribute of "logging anomaly +rareuluaMrirgeinigserseseseaxrxgtctotaefetrereinanavagamtlolgl" (icontext: any - 113%)
+
+5:expr-by)            "+rareuluaMrirgeinigserseseseaxrxgtctotaefetrereinanavagamtlolgl" is an attribute of "anomaly cluster +rareuluaMrirgeinigserseseseaxrxgtctotaefetrereinanavagamtlolgl" (icontext: any - 113%)
+
+6:expr-by)              "anomaly cluster +rareuluaMrirgeinigserseseseaxrxgtctotaefetrereinanavagamtlolgl" is an attribute of "event anomaly cluster +rareuluaMrirgeinigserseseseaxrxgtctotaefetrereinanavagamtlolgl" (icontext: any - 105%)
+
+7:expr-by)                "event anomaly cluster +rareuluaMrirgeinigserseseseaxrxgtctotaefetrereinanavagamtlolgl" is an attribute of "app saw event anomaly cluster +rareuluaMrirgeinigserseseseaxrxgtctotaefetrereinanavagamtlolgl on Evening Saturday Day20 November Yr9999 at Hr23 Min55_00 Q4 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr22 GMT_Min55_00 GMT_Q4 location book-info istio measurements cause productpage-details-v1-abort" (icontext: any - 83%)
+
+7:apprxnr)                "event anomaly cluster +rareuluaMrirgeinigserseseseaxrxgtctotaefetrereinanavagamtlolgl" may be related to "productpage-details-v1-abort" (icontext: log anomaly - 80%)
+
+8:expr-by)                  "productpage-details-v1-abort" is an attribute of "app saw event anomaly cluster +rareagregatemesages on Evening Monday Day20 November Yr2017 at Hr23 Min35_40 Q3 on GMT_Evening GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr22 GMT_Min35_40 GMT_Q3 location book-info istio measurements cause productpage-details-v1-abort" (icontext: any - 83%)
+
+8:expr-by)                  "productpage-details-v1-abort" is an attribute of "app saw event anomaly cluster +rareuriexternalmixerclientgitsrcheckcachec on Night Monday Day20 November Yr2017 at Hr01 Min00_05 Q1 on GMT_Night GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr00 GMT_Min00_05 GMT_Q1 location book-info istio measurements cause productpage-details-v1-abort" (icontext: any - 83%)
+
+8:expr-by)                  "productpage-details-v1-abort" is an attribute of "app saw event anomaly cluster +rareuriexternalenvoysourceserverlsiesrtvenrercm on Night Monday Day20 November Yr2017 at Hr01 Min00_05 Q1 on GMT_Night GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr00 GMT_Min00_05 GMT_Q1 location book-info istio measurements cause productpage-details-v1-abort" (icontext: any - 83%)
+
+8:expr-by)                  "productpage-details-v1-abort" is an attribute of "app saw event anomaly cluster +rareulaMrigeingserseargcoaefteinanvgmtogeyrsresvmgaiaglxtesr on Evening Saturday Day20 November Yr9999 at Hr23 Min50_55 Q4 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr22 GMT_Min50_55 GMT_Q4 location book-info istio measurements cause productpage-details-v1-abort" (icontext: any - 83%)
+
+8:expr-by)                  "productpage-details-v1-abort" is an attribute of "app saw event anomaly cluster +rareuriexternalmixerclientgitsrcquotacachec on Night Monday Day20 November Yr2017 at Hr01 Min00_05 Q1 on GMT_Night GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr00 GMT_Min00_05 GMT_Q1 location book-info istio measurements cause productpage-details-v1-abort" (icontext: any - 83%)
+
+8:expr-by)                  "productpage-details-v1-abort" is an attribute of "app saw event anomaly cluster +rareiuMGupuproEryrvizTitihalMopdpdlpdronyrdrearezterototvirhve on Evening Monday Day20 November Yr2017 at Hr23 Min35_40 Q3 on GMT_Evening GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr22 GMT_Min35_40 GMT_Q3 location book-info istio measurements cause productpage-details-v1-abort" (icontext: any - 83%)
+
+8:expr-by)                  "productpage-details-v1-abort" is an attribute of "app saw event anomaly cluster +rareulrinesrcofenavgogyremgiaxterlmoigxemrescsoangtersolpecrc on Night Monday Day20 November Yr2017 at Hr01 Min00_05 Q1 on GMT_Night GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr00 GMT_Min00_05 GMT_Q1 location book-info istio measurements cause productpage-details-v1-abort" (icontext: any - 83%)
+
+8:expr-by)                  "productpage-details-v1-abort" is an attribute of "app saw event anomaly cluster +rareuieuerptrtivcicacedetdrtrcrtctescsceserdtas on Evening Monday Day20 November Yr2017 at Hr23 Min50_55 Q4 on GMT_Evening GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr22 GMT_Min50_55 GMT_Q4 location book-info istio measurements cause productpage-details-v1-abort" (icontext: any - 83%)
+
+8:expr-by)                  "productpage-details-v1-abort" is an attribute of "app saw event anomaly cluster +rareMesageintervalogagrEgte on Night Monday Day20 November Yr2017 at Hr01 Min00_05 Q1 on GMT_Night GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr00 GMT_Min00_05 GMT_Q1 location book-info istio measurements cause productpage-details-v1-abort" (icontext: any - 83%)
+
+4:cntaind)          "+rare_Message_interval____log_aggrEg_te" belongs to or is part of "+rareuMjresisosndaogfueiblienhtcaehnradvnlageleripnroldmoegutbh" (icontext: system monitoring measurement - 87%)
+
+5:expr-by)            "+rareuMjresisosndaogfueiblienhtcaehnradvnlageleripnroldmoegutbh" is an attribute of "logging anomaly +rareuMjresisosndaogfueiblienhtcaehnradvnlageleripnroldmoegutbh" (icontext: any - 113%)
+
+6:expr-by)              "logging anomaly +rareuMjresisosndaogfueiblienhtcaehnradvnlageleripnroldmoegutbh" is an attribute of "log anomaly logging anomaly +rareuMjresisosndaogfueiblienhtcaehnradvnlageleripnroldmoegutbh occurred on Evening Saturday Day20 November Yr9999 at Hr18 Min55_00 Q4 on GMT_Afternoon GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr17 GMT_Min55_00 GMT_Q4" (icontext: any - 84%)
+
+6:expr-by)              "logging anomaly +rareuMjresisosndaogfueiblienhtcaehnradvnlageleripnroldmoegutbh" is an attribute of "log anomaly logging anomaly +rareuMjresisosndaogfueiblienhtcaehnradvnlageleripnroldmoegutbh occurred on Afternoon Saturday Day20 November Yr9999 at Hr16 Min45_50 Q4 on GMT_Afternoon GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr15 GMT_Min45_50 GMT_Q4" (icontext: any - 84%)
+
+4:cntaind)          "+rare_Message_interval____log_aggrEg_te" belongs to or is part of "+rareMesageintervalogagrEgte" (icontext: system monitoring measurement - 97%)
+
+5:expr-by)            "+rareMesageintervalogagrEgte" is an attribute of "logging anomaly +rareMesageintervalogagrEgte" (icontext: any - 113%)
+
+6:expr-by)              "logging anomaly +rareMesageintervalogagrEgte" is an attribute of "log anomaly logging anomaly +rareMesageintervalogagrEgte occurred on Afternoon Monday Day20 November Yr2017 at Hr17 Min55_00 Q4 on GMT_Afternoon GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr16 GMT_Min55_00 GMT_Q4" (icontext: any - 84%)
+
+6:expr-by)              "logging anomaly +rareMesageintervalogagrEgte" is an attribute of "log anomaly logging anomaly +rareMesageintervalogagrEgte occurred on Evening Monday Day20 November Yr2017 at Hr19 Min15_20 Q2 on GMT_Evening GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr18 GMT_Min15_20 GMT_Q2" (icontext: any - 84%)
+
+6:expr-by)              "logging anomaly +rareMesageintervalogagrEgte" is an attribute of "log anomaly logging anomaly +rareMesageintervalogagrEgte occurred on Afternoon Monday Day20 November Yr2017 at Hr16 Min50_55 Q4 on GMT_Afternoon GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr15 GMT_Min50_55 GMT_Q4" (icontext: any - 84%)
+
+6:expr-by)              "logging anomaly +rareMesageintervalogagrEgte" is an attribute of "log anomaly logging anomaly +rareMesageintervalogagrEgte occurred on Evening Saturday Day20 November Yr9999 at Hr19 Min45_50 Q4 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr18 GMT_Min45_50 GMT_Q4" (icontext: any - 84%)
+
+6:expr-by)              "logging anomaly +rareMesageintervalogagrEgte" is an attribute of "log anomaly logging anomaly +rareMesageintervalogagrEgte occurred on Evening Monday Day20 November Yr2017 at Hr20 Min40_45 Q3 on GMT_Evening GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr19 GMT_Min40_45 GMT_Q3" (icontext: any - 84%)
+
+6:expr-by)              "logging anomaly +rareMesageintervalogagrEgte" is an attribute of "log anomaly logging anomaly +rareMesageintervalogagrEgte occurred on Evening Monday Day20 November Yr2017 at Hr19 Min30_35 Q3 on GMT_Evening GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr18 GMT_Min30_35 GMT_Q3" (icontext: any - 84%)
+
+6:expr-by)              "logging anomaly +rareMesageintervalogagrEgte" is an attribute of "log anomaly logging anomaly +rareMesageintervalogagrEgte occurred on Afternoon Monday Day20 November Yr2017 at Hr17 Min00_05 Q1 on GMT_Afternoon GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr16 GMT_Min00_05 GMT_Q1" (icontext: any - 84%)
+
+6:expr-by)              "logging anomaly +rareMesageintervalogagrEgte" is an attribute of "log anomaly logging anomaly +rareMesageintervalogagrEgte occurred on Afternoon Saturday Day20 November Yr9999 at Hr16 Min45_50 Q4 on GMT_Afternoon GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr15 GMT_Min45_50 GMT_Q4" (icontext: any - 84%)
+
+6:expr-by)              "logging anomaly +rareMesageintervalogagrEgte" is an attribute of "log anomaly logging anomaly +rareMesageintervalogagrEgte occurred on Evening Monday Day20 November Yr2017 at Hr18 Min10_15 Q1 on GMT_Afternoon GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr17 GMT_Min10_15 GMT_Q1" (icontext: any - 84%)
+
+6:expr-by)              "logging anomaly +rareMesageintervalogagrEgte" is an attribute of "log anomaly logging anomaly +rareMesageintervalogagrEgte occurred on Evening Saturday Day20 November Yr9999 at Hr20 Min05_10 Q1 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr19 GMT_Min05_10 GMT_Q1" (icontext: any - 84%)
+
+6:expr-by)              "logging anomaly +rareMesageintervalogagrEgte" is an attribute of "log anomaly logging anomaly +rareMesageintervalogagrEgte occurred on Evening Saturday Day20 November Yr9999 at Hr20 Min30_35 Q3 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr19 GMT_Min30_35 GMT_Q3" (icontext: any - 84%)
+
+6:expr-by)              "logging anomaly +rareMesageintervalogagrEgte" is an attribute of "log anomaly logging anomaly +rareMesageintervalogagrEgte occurred on Evening Saturday Day20 November Yr9999 at Hr18 Min25_30 Q2 on GMT_Afternoon GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr17 GMT_Min25_30 GMT_Q2" (icontext: any - 84%)
+
+                        ++ more similar....
+4:cntaind)          "+rare_Message_interval____log_aggrEg_te" belongs to or is part of "+rarejuMjsresoisonsnmdafogfinueilgbleoliehencahtchnaehadnranldv" (icontext: system monitoring measurement - 87%)
+
+5:expr-by)            "+rarejuMjsresoisonsnmdafogfinueilgbleoliehencahtchnaehadnranldv" is an attribute of "logging anomaly +rarejuMjsresoisonsnmdafogfinueilgbleoliehencahtchnaehadnranldv" (icontext: any - 113%)
+
+6:expr-by)              "logging anomaly +rarejuMjsresoisonsnmdafogfinueilgbleoliehencahtchnaehadnranldv" is an attribute of "log anomaly logging anomaly +rarejuMjsresoisonsnmdafogfinueilgbleoliehencahtchnaehadnranldv occurred on Evening Saturday Day20 November Yr9999 at Hr19 Min30_35 Q3 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr18 GMT_Min30_35 GMT_Q3" (icontext: any - 84%)
+
+4:cntaind)          "+rare_Message_interval____log_aggrEg_te" belongs to or is part of "+rareMresfsraegsehitnitmerv" (icontext: system monitoring measurement - 98%)
+
+5:expr-by)            "+rareMresfsraegsehitnitmerv" is an attribute of "logging anomaly +rareMresfsraegsehitnitmerv" (icontext: any - 113%)
+
+6:expr-by)              "logging anomaly +rareMresfsraegsehitnitmerv" is an attribute of "log anomaly logging anomaly +rareMresfsraegsehitnitmerv occurred on Evening Monday Day20 November Yr2017 at Hr18 Min55_00 Q4 on GMT_Afternoon GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr17 GMT_Min55_00 GMT_Q4" (icontext: any - 84%)
+
+5:expr-by)            "+rareMresfsraegsehitnitmerv" is an attribute of "anomaly cluster +rareMresfsraegsehitnitmerv" (icontext: any - 113%)
+
+6:expr-by)              "anomaly cluster +rareMresfsraegsehitnitmerv" is an attribute of "event anomaly cluster +rareMresfsraegsehitnitmerv" (icontext: any - 105%)
+
+7:expr-by)                "event anomaly cluster +rareMresfsraegsehitnitmerv" is an attribute of "app saw event anomaly cluster +rareMresfsraegsehitnitmerv on Evening Monday Day20 November Yr2017 at Hr18 Min55_00 Q4 on GMT_Afternoon GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr17 GMT_Min55_00 GMT_Q4 location kube-system istio measurements cause calico-node-1-ratings-reviews-v2-delay" (icontext: any - 83%)
+
+7:apprxnr)                "event anomaly cluster +rareMresfsraegsehitnitmerv" may be related to "calico-node-1-ratings-reviews-v2-delay" (icontext: log anomaly - 80%)
+
+8:expr-by)                  "calico-node-1-ratings-reviews-v2-delay" is an attribute of "app saw event anomaly cluster +rareMresfsraegsehitnitmerv on Evening Monday Day20 November Yr2017 at Hr18 Min55_00 Q4 on GMT_Afternoon GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr17 GMT_Min55_00 GMT_Q4 location kube-system istio measurements cause calico-node-1-ratings-reviews-v2-delay" (icontext: any - 83%)
+
+4:cntaind)          "+rare_Message_interval____log_aggrEg_te" belongs to or is part of "+rareulaMrigeingserseargcoaefteinanvgmtogeyrsresvmgaiaglxtesr" (icontext: system monitoring measurement - 88%)
+
+5:expr-by)            "+rareulaMrigeingserseargcoaefteinanvgmtogeyrsresvmgaiaglxtesr" is an attribute of "logging anomaly +rareulaMrigeingserseargcoaefteinanvgmtogeyrsresvmgaiaglxtesr" (icontext: any - 113%)
+
+6:expr-by)              "logging anomaly +rareulaMrigeingserseargcoaefteinanvgmtogeyrsresvmgaiaglxtesr" is an attribute of "log anomaly logging anomaly +rareulaMrigeingserseargcoaefteinanvgmtogeyrsresvmgaiaglxtesr occurred on Afternoon Saturday Day20 November Yr9999 at Hr16 Min50_55 Q4 on GMT_Afternoon GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr15 GMT_Min50_55 GMT_Q4" (icontext: any - 84%)
+
+6:expr-by)              "logging anomaly +rareulaMrigeingserseargcoaefteinanvgmtogeyrsresvmgaiaglxtesr" is an attribute of "log anomaly logging anomaly +rareulaMrigeingserseargcoaefteinanvgmtogeyrsresvmgaiaglxtesr occurred on Evening Saturday Day20 November Yr9999 at Hr19 Min00_05 Q1 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr18 GMT_Min00_05 GMT_Q1" (icontext: any - 84%)
+
+5:expr-by)            "+rareulaMrigeingserseargcoaefteinanvgmtogeyrsresvmgaiaglxtesr" is an attribute of "anomaly cluster +rareulaMrigeingserseargcoaefteinanvgmtogeyrsresvmgaiaglxtesr" (icontext: any - 113%)
+
+6:expr-by)              "anomaly cluster +rareulaMrigeingserseargcoaefteinanvgmtogeyrsresvmgaiaglxtesr" is an attribute of "event anomaly cluster +rareulaMrigeingserseargcoaefteinanvgmtogeyrsresvmgaiaglxtesr" (icontext: any - 105%)
+
+7:expr-by)                "event anomaly cluster +rareulaMrigeingserseargcoaefteinanvgmtogeyrsresvmgaiaglxtesr" is an attribute of "app saw event anomaly cluster +rareulaMrigeingserseargcoaefteinanvgmtogeyrsresvmgaiaglxtesr on Evening Saturday Day20 November Yr9999 at Hr23 Min50_55 Q4 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr22 GMT_Min50_55 GMT_Q4 location book-info istio measurements cause productpage-details-v1-abort" (icontext: any - 83%)
+
+7:expr-by)                "event anomaly cluster +rareulaMrigeingserseargcoaefteinanvgmtogeyrsresvmgaiaglxtesr" is an attribute of "app saw event anomaly cluster +rareulaMrigeingserseargcoaefteinanvgmtogeyrsresvmgaiaglxtesr on Evening Saturday Day20 November Yr9999 at Hr19 Min00_05 Q1 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr18 GMT_Min00_05 GMT_Q1 location istio-system istio measurements cause istio-ingress-reviews-v1-abort" (icontext: any - 83%)
+
+7:apprxnr)                "event anomaly cluster +rareulaMrigeingserseargcoaefteinanvgmtogeyrsresvmgaiaglxtesr" may be related to "istio-ingress-reviews-v1-abort" (icontext: log anomaly - 80%)
+
+8:expr-by)                  "istio-ingress-reviews-v1-abort" is an attribute of "app saw event anomaly cluster +rareiuMGuproErvizTialMdplpodrarzroiedlsulscatptpcpa on Evening Monday Day20 November Yr2017 at Hr19 Min00_05 Q1 on GMT_Evening GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr18 GMT_Min00_05 GMT_Q1 location istio-system istio measurements cause istio-ingress-reviews-v1-abort" (icontext: any - 84%)
+
+8:expr-by)                  "istio-ingress-reviews-v1-abort" is an attribute of "app saw event anomaly cluster +rareurietcistioproxyenvoyrevjson on Evening Monday Day20 November Yr2017 at Hr19 Min00_05 Q1 on GMT_Evening GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr18 GMT_Min00_05 GMT_Q1 location istio-system istio measurements cause istio-ingress-reviews-v1-abort" (icontext: any - 84%)
+
+8:expr-by)                  "istio-ingress-reviews-v1-abort" is an attribute of "app saw event anomaly cluster +rareulrinesrcofenavgogyremgiaxterlmoigxemrescsoangtersolpecrc on Night Monday Day20 November Yr2017 at Hr01 Min00_05 Q1 on GMT_Night GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr00 GMT_Min00_05 GMT_Q1 location istio-system istio measurements cause istio-ingress-reviews-v1-abort" (icontext: any - 84%)
+
+8:expr-by)                  "istio-ingress-reviews-v1-abort" is an attribute of "app saw event anomaly cluster +rareiulaMGuprigoErvingzTieriaselMdpglpodroarzroftoiededlsuauls on Evening Saturday Day20 November Yr9999 at Hr19 Min00_05 Q1 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr18 GMT_Min00_05 GMT_Q1 location istio-system istio measurements cause istio-ingress-reviews-v1-abort" (icontext: any - 84%)
+
+8:expr-by)                  "istio-ingress-reviews-v1-abort" is an attribute of "app saw event anomaly cluster +rareuriexternalemnivxoeyrcsloiuernctegsietrvserclsciehsretvcek on Night Monday Day20 November Yr2017 at Hr01 Min00_05 Q1 on GMT_Night GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr00 GMT_Min00_05 GMT_Q1 location istio-system istio measurements cause istio-ingress-reviews-v1-abort" (icontext: any - 84%)
+
+8:expr-by)                  "istio-ingress-reviews-v1-abort" is an attribute of "app saw event anomaly cluster +rareuieuerptrtivcicacedetdrtrcrtctescsceserdtas on Evening Monday Day20 November Yr2017 at Hr19 Min00_05 Q1 on GMT_Evening GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr18 GMT_Min00_05 GMT_Q1 location istio-system istio measurements cause istio-ingress-reviews-v1-abort" (icontext: any - 84%)
+
+8:expr-by)                  "istio-ingress-reviews-v1-abort" is an attribute of "app saw event anomaly cluster +rareagregatemesages on Evening Monday Day20 November Yr2017 at Hr19 Min00_05 Q1 on GMT_Evening GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr18 GMT_Min00_05 GMT_Q1 location istio-system istio measurements cause istio-ingress-reviews-v1-abort" (icontext: any - 84%)
+
+8:expr-by)                  "istio-ingress-reviews-v1-abort" is an attribute of "app saw event anomaly cluster +rareuriexternalemnivxoeyrcsloiuernctegsietrvserchdqorutaoitrna on Night Monday Day20 November Yr2017 at Hr01 Min00_05 Q1 on GMT_Night GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr00 GMT_Min00_05 GMT_Q1 location istio-system istio measurements cause istio-ingress-reviews-v1-abort" (icontext: any - 84%)
+
+7:apprxnr)                "event anomaly cluster +rareulaMrigeingserseargcoaefteinanvgmtogeyrsresvmgaiaglxtesr" may be related to "productpage-details-v1-abort" (icontext: log anomaly - 80%)
+
+8:expr-by)                  "productpage-details-v1-abort" is an attribute of "app saw event anomaly cluster +rareagregatemesages on Evening Monday Day20 November Yr2017 at Hr23 Min35_40 Q3 on GMT_Evening GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr22 GMT_Min35_40 GMT_Q3 location book-info istio measurements cause productpage-details-v1-abort" (icontext: any - 83%)
+
+8:expr-by)                  "productpage-details-v1-abort" is an attribute of "app saw event anomaly cluster +rareuriexternalmixerclientgitsrcheckcachec on Night Monday Day20 November Yr2017 at Hr01 Min00_05 Q1 on GMT_Night GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr00 GMT_Min00_05 GMT_Q1 location book-info istio measurements cause productpage-details-v1-abort" (icontext: any - 83%)
+
+8:expr-by)                  "productpage-details-v1-abort" is an attribute of "app saw event anomaly cluster +rareuriexternalenvoysourceserverlsiesrtvenrercm on Night Monday Day20 November Yr2017 at Hr01 Min00_05 Q1 on GMT_Night GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr00 GMT_Min00_05 GMT_Q1 location book-info istio measurements cause productpage-details-v1-abort" (icontext: any - 83%)
+
+8:expr-by)                  "productpage-details-v1-abort" is an attribute of "app saw event anomaly cluster +rareulaMrigeingserseargcoaefteinanvgmtogeyrsresvmgaiaglxtesr on Evening Saturday Day20 November Yr9999 at Hr23 Min50_55 Q4 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr22 GMT_Min50_55 GMT_Q4 location book-info istio measurements cause productpage-details-v1-abort" (icontext: any - 83%)
+
+8:expr-by)                  "productpage-details-v1-abort" is an attribute of "app saw event anomaly cluster +rareuriexternalmixerclientgitsrcquotacachec on Night Monday Day20 November Yr2017 at Hr01 Min00_05 Q1 on GMT_Night GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr00 GMT_Min00_05 GMT_Q1 location book-info istio measurements cause productpage-details-v1-abort" (icontext: any - 83%)
+
+8:expr-by)                  "productpage-details-v1-abort" is an attribute of "app saw event anomaly cluster +rareiuMGupuproEryrvizTitihalMopdpdlpdronyrdrearezterototvirhve on Evening Monday Day20 November Yr2017 at Hr23 Min35_40 Q3 on GMT_Evening GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr22 GMT_Min35_40 GMT_Q3 location book-info istio measurements cause productpage-details-v1-abort" (icontext: any - 83%)
+
+8:expr-by)                  "productpage-details-v1-abort" is an attribute of "app saw event anomaly cluster +rareulrinesrcofenavgogyremgiaxterlmoigxemrescsoangtersolpecrc on Night Monday Day20 November Yr2017 at Hr01 Min00_05 Q1 on GMT_Night GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr00 GMT_Min00_05 GMT_Q1 location book-info istio measurements cause productpage-details-v1-abort" (icontext: any - 83%)
+
+8:expr-by)                  "productpage-details-v1-abort" is an attribute of "app saw event anomaly cluster +rareuieuerptrtivcicacedetdrtrcrtctescsceserdtas on Evening Monday Day20 November Yr2017 at Hr23 Min50_55 Q4 on GMT_Evening GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr22 GMT_Min50_55 GMT_Q4 location book-info istio measurements cause productpage-details-v1-abort" (icontext: any - 83%)
+
+8:expr-by)                  "productpage-details-v1-abort" is an attribute of "app saw event anomaly cluster +rareMesageintervalogagrEgte on Night Monday Day20 November Yr2017 at Hr01 Min00_05 Q1 on GMT_Night GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr00 GMT_Min00_05 GMT_Q1 location book-info istio measurements cause productpage-details-v1-abort" (icontext: any - 83%)
+
+4:cntaind)          "+rare_Message_interval____log_aggrEg_te" belongs to or is part of "+rareuGuMuGrerereitisitsagapepivnvtnenaramvmeaeslspaceslsokigki" (icontext: system monitoring measurement - 87%)
+
+5:expr-by)            "+rareuGuMuGrerereitisitsagapepivnvtnenaramvmeaeslspaceslsokigki" is an attribute of "anomaly cluster +rareuGuMuGrerereitisitsagapepivnvtnenaramvmeaeslspaceslsokigki" (icontext: any - 113%)
+
+6:expr-by)              "anomaly cluster +rareuGuMuGrerereitisitsagapepivnvtnenaramvmeaeslspaceslsokigki" is an attribute of "event anomaly cluster +rareuGuMuGrerereitisitsagapepivnvtnenaramvmeaeslspaceslsokigki" (icontext: any - 105%)
+
+7:expr-by)                "event anomaly cluster +rareuGuMuGrerereitisitsagapepivnvtnenaramvmeaeslspaceslsokigki" is an attribute of "app saw event anomaly cluster +rareuGuMuGrerereitisitsagapepivnvtnenaramvmeaeslspaceslsokigki on Evening Saturday Day20 November Yr9999 at Hr23 Min35_40 Q3 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr22 GMT_Min35_40 GMT_Q3 location kube-system istio measurements cause kube-apiserver-normal" (icontext: any - 83%)
+
+7:apprxnr)                "event anomaly cluster +rareuGuMuGrerereitisitsagapepivnvtnenaramvmeaeslspaceslsokigki" may be related to "kube-apiserver-normal" (icontext: log anomaly - 80%)
+
+8:expr-by)                  "kube-apiserver-normal" is an attribute of "app saw event anomaly cluster +rareuGuMuGrerereitisitsagapepivnvtnenaramvmeaeslspaceslsokigki on Evening Saturday Day20 November Yr9999 at Hr23 Min35_40 Q3 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr22 GMT_Min35_40 GMT_Q3 location kube-system istio measurements cause kube-apiserver-normal" (icontext: any - 83%)
+
+8:expr-by)                  "kube-apiserver-normal" is an attribute of "app saw event anomaly cluster +rareGuGuerertitiapivnamespaceskubesystempodscalicopnpnoldldiei repeated event location kube-system istio measurements cause kube-apiserver-normal" (icontext: any - 89%)
+
+4:cntaind)          "+rare_Message_interval____log_aggrEg_te" belongs to or is part of "+rareuiuMeuerpretrtiviscicsacedegetdtertrcrctcteiscsincesterter" (icontext: system monitoring measurement - 87%)
+
+5:expr-by)            "+rareuiuMeuerpretrtiviscicsacedegetdtertrcrctcteiscsincesterter" is an attribute of "logging anomaly +rareuiuMeuerpretrtiviscicsacedegetdtertrcrctcteiscsincesterter" (icontext: any - 113%)
+
+6:expr-by)              "logging anomaly +rareuiuMeuerpretrtiviscicsacedegetdtertrcrctcteiscsincesterter" is an attribute of "log anomaly logging anomaly +rareuiuMeuerpretrtiviscicsacedegetdtertrcrctcteiscsincesterter occurred on Afternoon Monday Day20 November Yr2017 at Hr16 Min50_55 Q4 on GMT_Afternoon GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr15 GMT_Min50_55 GMT_Q4" (icontext: any - 84%)
+
+                    ++ more similar....
+3:hasprop)        "anomaly cluster +rareMesageintervalogagrEgte" expresses an attribute "+rareMesageintervalogagrEgte" (icontext: any - 146%)
+
+2:expr-by)      "event anomaly cluster +rareMesageintervalogagrEgte" is an attribute of "app saw event anomaly cluster +rareMesageintervalogagrEgte on Evening Monday Day20 November Yr2017 at Hr19 Min30_35 Q3 on GMT_Evening GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr18 GMT_Min30_35 GMT_Q3 location kube-system istio measurements cause calico-node-2-reviews-v1-delay" (icontext: any - 83%)
+
+2:expr-by)      "event anomaly cluster +rareMesageintervalogagrEgte" is an attribute of "app saw event anomaly cluster +rareMesageintervalogagrEgte on Night Monday Day20 November Yr2017 at Hr01 Min00_05 Q1 on GMT_Night GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr00 GMT_Min00_05 GMT_Q1 location istio-system istio measurements cause istio-ingress-reviews-v2-delay" (icontext: any - 83%)
+
+2:expr-by)      "event anomaly cluster +rareMesageintervalogagrEgte" is an attribute of "app saw event anomaly cluster +rareMesageintervalogagrEgte on Night Monday Day20 November Yr2017 at Hr01 Min00_05 Q1 on GMT_Night GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr00 GMT_Min00_05 GMT_Q1 location istio-system istio measurements cause istio-ingress-ratings-v1-abort" (icontext: any - 83%)
+
+2:expr-by)      "event anomaly cluster +rareMesageintervalogagrEgte" is an attribute of "app saw event anomaly cluster +rareMesageintervalogagrEgte on Evening Saturday Day20 November Yr9999 at Hr23 Min40_45 Q3 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr22 GMT_Min40_45 GMT_Q3 location istio-system istio measurements cause istio-initializer-details-v1-abort-50-percent" (icontext: any - 83%)
+
+2:expr-by)      "event anomaly cluster +rareMesageintervalogagrEgte" is an attribute of "app saw event anomaly cluster +rareMesageintervalogagrEgte on Evening Monday Day20 November Yr2017 at Hr20 Min20_25 Q2 on GMT_Evening GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr19 GMT_Min20_25 GMT_Q2 location kube-system istio measurements cause calico-node-2-reviews-v3-abort" (icontext: any - 83%)
+
+2:expr-by)      "event anomaly cluster +rareMesageintervalogagrEgte" is an attribute of "app saw event anomaly cluster +rareMesageintervalogagrEgte on Afternoon Monday Day20 November Yr2017 at Hr17 Min35_40 Q3 on GMT_Afternoon GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr16 GMT_Min35_40 GMT_Q3 location kube-system istio measurements cause calico-node-2-details-v1-delay-50-percent" (icontext: any - 83%)
+
+2:expr-by)      "event anomaly cluster +rareMesageintervalogagrEgte" is an attribute of "app saw event anomaly cluster +rareMesageintervalogagrEgte on Evening Monday Day20 November Yr2017 at Hr19 Min20_25 Q2 on GMT_Evening GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr18 GMT_Min20_25 GMT_Q2 location kube-system istio measurements cause calico-node-1-reviews-v1-abort" (icontext: any - 83%)
+
+2:expr-by)      "event anomaly cluster +rareMesageintervalogagrEgte" is an attribute of "app saw event anomaly cluster +rareMesageintervalogagrEgte on Evening Saturday Day20 November Yr9999 at Hr18 Min25_30 Q2 on GMT_Afternoon GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr17 GMT_Min25_30 GMT_Q2 location kube-system istio measurements cause kube-controller-ratings-v1-delay" (icontext: any - 83%)
+
+2:expr-by)      "event anomaly cluster +rareMesageintervalogagrEgte" is an attribute of "app saw event anomaly cluster +rareMesageintervalogagrEgte on Evening Monday Day20 November Yr2017 at Hr23 Min35_40 Q3 on GMT_Evening GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr22 GMT_Min35_40 GMT_Q3 location kube-system istio measurements cause calico-node-5-normal" (icontext: any - 83%)
+
+2:expr-by)      "event anomaly cluster +rareMesageintervalogagrEgte" is an attribute of "app saw event anomaly cluster +rareMesageintervalogagrEgte on Evening Monday Day20 November Yr2017 at Hr18 Min40_45 Q3 on GMT_Afternoon GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr17 GMT_Min40_45 GMT_Q3 location kube-system istio measurements cause calico-node-2-ratings-reviews-v2-abort" (icontext: any - 83%)
+
+2:expr-by)      "event anomaly cluster +rareMesageintervalogagrEgte" is an attribute of "app saw event anomaly cluster +rareMesageintervalogagrEgte on Evening Monday Day20 November Yr2017 at Hr19 Min30_35 Q3 on GMT_Evening GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr18 GMT_Min30_35 GMT_Q3 location kube-system istio measurements cause calico-node-5-reviews-v1-delay" (icontext: any - 83%)
+
+2:expr-by)      "event anomaly cluster +rareMesageintervalogagrEgte" is an attribute of "app saw event anomaly cluster +rareMesageintervalogagrEgte on Night Monday Day20 November Yr2017 at Hr01 Min00_05 Q1 on GMT_Night GMT_Monday GMT_Day20 GMT_November GMT_Yr2017 at GMT_Hr00 GMT_Min00_05 GMT_Q1 location istio-system istio measurements cause istio-ingress-details-v1-abort" (icontext: any - 83%)
+
+                ++ more similar....
+           [0]---------------------------------------------------------------------------------
+
+new story) "app saw event anomaly cluster +rareagregatemesages on Evening Saturday Day20 November Yr9999 at Hr23 Min35_40 Q3 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr22 GMT_Min35_40 GMT_Q3 location istio-system istio measurements cause istio-initializer-details-v1-abort-50-percent" may express "istio measurements"
+
+0:hasprop)  "app saw event anomaly cluster +rareagregatemesages on Evening Saturday Day20 November Yr9999 at Hr23 Min35_40 Q3 on GMT_Evening GMT_Saturday GMT_Day20 GMT_November GMT_Yr9999 at GMT_Hr22 GMT_Min35_40 GMT_Q3 location istio-system istio measurements cause istio-initializer-details-v1-abort-50-percent" expresses an attribute "istio measurements" (icontext: any - 85%)
+
+1:hasprop)    "istio measurements" has the role of "how" (icontext: log anomaly - 80%)
+
+           [0]---------------------------------------------------------------------------------
+

@@ -2017,6 +2017,9 @@ static void DiffInvariants(EvalContext *ctx,Item **process_syndrome,Item **perfo
  
  for (ip1 = current_state; ip1 != NULL; ip1=ip1->next)
     {
+    char name[CF_BUFSIZE];
+    snprintf(name,CF_BUFSIZE,"+%s",ip1->name);
+    
     if (IsItemIn(prev_state,ip1->name))
        {
        PrependItem(invariants,ip1->name,NULL);
@@ -2024,9 +2027,6 @@ static void DiffInvariants(EvalContext *ctx,Item **process_syndrome,Item **perfo
        }
     else
        {
-       char name[CF_BUFSIZE];
-       snprintf(name,CF_BUFSIZE,"+%s",ip1->name);
-       
        if (strncmp(ip1->name,"JOB",3) == 0)
           {
           PrependItem(process_syndrome,name,NULL);

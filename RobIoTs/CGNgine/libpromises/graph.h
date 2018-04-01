@@ -103,6 +103,7 @@ char *SUser(char *name);
 
 #ifndef GRAPH
 extern Association A[a_ass_dim+1];
+extern char *Aname[a_ass_dim+1];
 #endif
 
 #ifndef CGN_BUFSIZE
