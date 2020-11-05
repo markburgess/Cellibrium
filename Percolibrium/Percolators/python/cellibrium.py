@@ -219,7 +219,7 @@ class Cellibrium:
         day = "Day%02d" % lt[2]
         dow = "%s" % self.GR_DAY_TEXT[lt[6]]
         hour = "Hr%02d" % lt[3]
-        shift = "%s" % self.GR_SHIFT_TEXT[lt[3] / 6];
+        shift = "%s" % self.GR_SHIFT_TEXT[int(lt[3] / 6)];
         quarter = "Q%d" % ((lt[4] / 15) + 1)
         min = "Min%02d" % lt[4]
         interval_start = (lt[4] / 5) * 5
@@ -273,7 +273,7 @@ class Cellibrium:
         day = "Day%02d" % lt[2]
         dow = "%3.3s" % self.GR_DAY_TEXT[lt[6]]
         hour = "Hr%02d" % lt[3]
-        shift = "%s" % self.GR_SHIFT_TEXT[lt[3] / 6];
+        shift = "%s" % self.GR_SHIFT_TEXT[int(lt[3] / 6)];
         quarter = "Q%d" % ((lt[4] / 15) + 1)
         min = "Min%02d" % lt[4]
         interval_start = (lt[4] / 5) * 5
@@ -352,26 +352,27 @@ class Cellibrium:
         macs = []
         ipv4s = []
         ipv6s = []
+
         
         for i in netifaces.interfaces():
             addrs = netifaces.ifaddresses(i)
             iface_details = netifaces.ifaddresses(i)
-            
-            if iface_details.has_key(netifaces.AF_INET):
+
+            if 'netifaces.AF_INET' in iface_details:
                 ipv4 = iface_details[netifaces.AF_INET]
                 if ipv4 == "127.0.0.1":
                     continue
-                ipv4s.extend(map(lambda x: x['addr'], filter(lambda x: x.has_key('addr'), ipv4)))
-                
-            if iface_details.has_key(netifaces.AF_INET6):
+                ipv4s.extend(map(lambda x: x['addr'], filter(lambda x: 'addr' in x, ipv4)))
+
+            if 'netifaces.AF_INET6' in iface_details:
                 ipv6 = iface_details[netifaces.AF_INET6]
                 if ipv6 == "::1":
                     continue
-                ipv6s.extend(map(lambda x: x['addr'], filter(lambda x: x.has_key('addr'), ipv6)))
-                    
-            if iface_details.has_key(netifaces.AF_LINK):
+                ipv6s.extend(map(lambda x: x['addr'], filter(lambda x: 'addr' in x, ipv6)))
+
+            if 'netifaces.AF_LINK' in iface_details:
                 mac = iface_details[netifaces.AF_LINK]
-                macs.extend(map(lambda x: x['addr'], filter(lambda x: x.has_key('addr'), mac)))
+                macs.extend(map(lambda x: x['addr'], filter(lambda x: 'addr' in x, mac)))
 
         fqhn = socket.getfqdn()
         
